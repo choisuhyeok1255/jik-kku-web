@@ -8,6 +8,7 @@ import {
   useGetStadiums,
   useGetTeams,
   useGetUser,
+  TeamIcon,
 } from "@/src/entities";
 import { Header, cn } from "@/src/shared";
 
@@ -49,7 +50,7 @@ const MyPageCard = ({
       {icon}
       <span className="text-[14px] text-[#ffffff]">{label}</span>
     </div>
-    <div className="pl-11">{children}</div>
+    <div className="">{children}</div>
   </div>
 );
 
@@ -125,21 +126,25 @@ const MyPage = () => {
       />
       <div className="flex min-h-0 flex-1 flex-col gap-[12px] overflow-y-auto px-[16px] pb-[100px]">
         <MyPageCardButton onClick={() => router.push("/myPage/nickname")}>
-          <div className="flex items-center gap-3">
-            <CardIcon className="bg-white/10">👤</CardIcon>
-            <span className="text-lg font-bold text-white">
+          <div className="flex h-[40px] min-w-0 items-center gap-3">
+            <CardIcon className="shrink-0 bg-white/10">👤</CardIcon>
+            <span className="min-w-0 truncate text-[20px] font-bold text-[#ffffff]">
               {user?.nickname ?? ""}
             </span>
           </div>
         </MyPageCardButton>
 
         <MyPageCardButton onClick={() => router.push("/myPage/team")}>
-          <div className="flex flex-col gap-2">
+          <div className="flex flex-col gap-[16px]">
             <div className="flex items-center gap-3">
-              <CardIcon className="bg-red-600/80">🎯</CardIcon>
+              {user?.team_id ? (
+                <TeamIcon teamId={user.team_id} size={28} />
+              ) : (
+                <CardIcon className="bg-white/10">🎯</CardIcon>
+              )}
               <span className="font-[14px] text-[#ffffff]">응원팀</span>
             </div>
-            <span className="pl-11 text-[20px] font-bold text-[#ffffff]">
+            <span className="text-left text-[20px] font-bold text-[#ffffff]">
               {user?.team_id
                 ? teams?.find((t) => t.id === user.team_id)?.team_name
                 : ""}
