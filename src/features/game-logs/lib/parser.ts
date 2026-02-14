@@ -30,6 +30,7 @@ export const transformFormToApiBody = (
     note: formData.note,
     is_certify: false,
     ...(gameLogImage && { game_log_image: gameLogImage }),
+    stadium_id: formData.stadiumId ?? null,
     ...(formData.weather && { weather: Number(formData.weather) }),
   };
 };
@@ -38,7 +39,7 @@ export const transformApiToForm = (
   gameLog: GameLogServerModel,
 ): CreateGameLogForm | UpdateGameLogForm => {
   return {
-    stadiumId: gameLog.stadium,
+    stadiumId: gameLog.stadium_id,
     homeTeamId: gameLog.home_team_id,
     awayTeamId: gameLog.away_team_id,
     homeTeamScore: gameLog.home_team_score,

@@ -11,10 +11,11 @@ describe("transformFormToApiBody", () => {
       homeTeamScore: 3,
       awayTeamScore: 2,
       matchDate: "2024-01-01",
+      stadiumId: 5,
       companion: "친구",
       mvp: "홍길동",
       note: "재밌는 경기",
-      weather: "맑음",
+      weather: "1",
     };
 
     const result = transformFormToApiBody("user-123", formData);
@@ -26,10 +27,11 @@ describe("transformFormToApiBody", () => {
       home_team_score: 3,
       away_team_score: 2,
       match_date: "2024-01-01",
+      stadium_id: 5,
       companion: "친구",
       mvp: "홍길동",
       note: "재밌는 경기",
-      weather: "맑음",
+      weather: 1,
       is_certify: false,
     });
   });
@@ -41,6 +43,7 @@ describe("transformFormToApiBody", () => {
       homeTeamScore: 3,
       awayTeamScore: 2,
       matchDate: null, // 필수 필드 누락
+      stadiumId: null,
       companion: "",
       mvp: "",
       note: "",
@@ -59,6 +62,7 @@ describe("transformFormToApiBody", () => {
       homeTeamScore: 3,
       awayTeamScore: 2,
       matchDate: "2024-01-01",
+      stadiumId: null,
       companion: "",
       mvp: "",
       note: "",
@@ -81,6 +85,7 @@ describe("transformFormToApiBody", () => {
       homeTeamScore: 3,
       awayTeamScore: 2,
       matchDate: "2024-01-01",
+      stadiumId: null,
       companion: "",
       mvp: "",
       note: "",
@@ -99,6 +104,7 @@ describe("transformFormToApiBody", () => {
       homeTeamScore: 3,
       awayTeamScore: 2,
       matchDate: "2024-01-01",
+      stadiumId: null,
       companion: "",
       mvp: "",
       note: "",
@@ -117,15 +123,16 @@ describe("transformFormToApiBody", () => {
       homeTeamScore: 3,
       awayTeamScore: 2,
       matchDate: "2024-01-01",
+      stadiumId: null,
       companion: "",
       mvp: "",
       note: "",
-      weather: "비",
+      weather: "2",
     };
 
     const result = transformFormToApiBody("user-123", formData);
 
-    expect(result.weather).toBe("비");
+    expect(result.weather).toBe(2);
   });
 });
 
@@ -139,10 +146,11 @@ describe("transformApiToForm", () => {
       home_team_score: 3,
       away_team_score: 2,
       match_date: "2024-01-01",
+      stadium_id: 5,
       companion: "친구",
       mvp: "홍길동",
       note: "재밌는 경기",
-      weather: "맑음",
+      weather: 1,
       game_log_image: "image.jpg",
       is_certify: false,
       created_at: "2024-01-01T00:00:00Z",
@@ -151,6 +159,7 @@ describe("transformApiToForm", () => {
     const result = transformApiToForm(apiData);
 
     expect(result).toEqual({
+      stadiumId: 5,
       homeTeamId: 1,
       awayTeamId: 2,
       homeTeamScore: 3,
@@ -159,7 +168,7 @@ describe("transformApiToForm", () => {
       companion: "친구",
       mvp: "홍길동",
       note: "재밌는 경기",
-      weather: "맑음",
+      weather: "1",
       gameLogImage: "image.jpg",
     });
   });
@@ -173,6 +182,7 @@ describe("transformApiToForm", () => {
       home_team_score: 3,
       away_team_score: 2,
       match_date: "2024-01-01",
+      stadium_id: null,
       companion: null,
       mvp: null,
       note: null,

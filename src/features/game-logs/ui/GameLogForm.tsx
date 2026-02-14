@@ -3,7 +3,6 @@ import { Controller, useForm } from "react-hook-form";
 import dayjs from "dayjs";
 
 import {
-  useGetSignedUrl,
   useUploadFile,
   UploadFileQueryModel,
   cn,
@@ -26,6 +25,7 @@ import {
   useAuthStore,
   CreateGameLogQueryModel,
   UpdateGameLogQueryModel,
+  useGetStadiums,
 } from "@/src/entities";
 import {
   CreateGameLogForm,
@@ -69,8 +69,8 @@ const GameLogForm = ({
   const { user } = useAuthStore();
 
   const { data: teams } = useGetTeams();
+  const { data: stadiums } = useGetStadiums();
   const { mutateAsync: uploadFile } = useUploadFile();
-  const { mutateAsync: getSignedUrl } = useGetSignedUrl();
 
   const { control, setValue, register, reset, watch, handleSubmit } = useForm<
     CreateGameLogForm | UpdateGameLogForm
@@ -91,7 +91,6 @@ const GameLogForm = ({
     shouldFocusError: false,
   });
 
-  const [imageUrl, setImageUrl] = useState<string | null>(null);
   const [isCalendarOpen, setIsCalendarOpen] = useState(false);
   const [isHomeTeamModalOpen, setIsHomeTeamModalOpen] = useState(false);
   const [isAwayTeamModalOpen, setIsAwayTeamModalOpen] = useState(false);
@@ -100,12 +99,15 @@ const GameLogForm = ({
   useEffect(() => {
     if (!defaultValues) return;
 
+    console.log(defaultValues);
+
     reset({
       homeTeamId: defaultValues.homeTeamId,
       awayTeamId: defaultValues.awayTeamId,
       homeTeamScore: defaultValues.homeTeamScore,
       awayTeamScore: defaultValues.awayTeamScore,
       matchDate: defaultValues.matchDate,
+      stadiumId: defaultValues.stadiumId,
       companion: defaultValues.companion,
       mvp: defaultValues.mvp,
       note: defaultValues.note,
@@ -113,26 +115,6 @@ const GameLogForm = ({
       gameLogImage: defaultValues.gameLogImage,
     });
   }, [defaultValues, reset]);
-
-  useEffect(() => {
-    if (!defaultValues) return;
-
-    const fetchSignedUrl = async () => {
-      if (
-        !defaultValues.gameLogImage ||
-        typeof defaultValues.gameLogImage !== "string"
-      )
-        return;
-
-      const { signedUrl } = await getSignedUrl({
-        bucket: "game-log-images",
-        path: defaultValues.gameLogImage,
-      });
-      setImageUrl(signedUrl);
-    };
-
-    fetchSignedUrl();
-  }, [defaultValues, getSignedUrl]);
 
   return (
     <form
@@ -223,7 +205,7 @@ const GameLogForm = ({
                   onClick={() => setIsStadiumModalOpen(true)}
                 >
                   {value
-                    ? teams?.find((team) => team.id === value)?.team_name
+                    ? stadiums?.find((stadium) => stadium.id === value)?.name
                     : "경기장 선택"}
                 </button>
               )}
@@ -372,7 +354,7 @@ const GameLogForm = ({
         </div>
         <div className="flex justify-center gap-8">
           <button className="h-[56px] w-full rounded-[20px] bg-[#5724F0] text-[16px]">
-            직관 등록하기
+            {defaultValues ? "수정완료" : "직관 등록하기"}
           </button>
         </div>
       </div>

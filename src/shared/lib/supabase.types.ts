@@ -53,7 +53,7 @@ export type Database = {
           match_date: string | null
           mvp: string | null
           note: string | null
-          stadium: number | null
+          stadium_id: number | null
           user_id: string
           weather: number | null
         }
@@ -70,7 +70,7 @@ export type Database = {
           match_date?: string | null
           mvp?: string | null
           note?: string | null
-          stadium?: number | null
+          stadium_id?: number | null
           user_id?: string
           weather?: number | null
         }
@@ -87,7 +87,7 @@ export type Database = {
           match_date?: string | null
           mvp?: string | null
           note?: string | null
-          stadium?: number | null
+          stadium_id?: number | null
           user_id?: string
           weather?: number | null
         }
@@ -107,8 +107,8 @@ export type Database = {
             referencedColumns: ["id"]
           },
           {
-            foreignKeyName: "game_logs_stadium_fkey"
-            columns: ["stadium"]
+            foreignKeyName: "game_logs_stadium_id_fkey"
+            columns: ["stadium_id"]
             isOneToOne: false
             referencedRelation: "stadium"
             referencedColumns: ["id"]
