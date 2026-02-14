@@ -6,6 +6,7 @@ export * from "./lib/tailwind";
 export { default as BottomNavigation } from "./ui/BottomNavigation";
 export * from "./ui/shadcn/button";
 export { default as Header } from "./ui/Header";
+export { default as LabelContent } from "./ui/LabelContent";
 export { default as Notification } from "./ui/Notification";
 export * from "./ui/shadcn/calendar";
 export * from "./ui/shadcn/popover";

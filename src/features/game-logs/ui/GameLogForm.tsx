@@ -12,13 +12,8 @@ import {
   PopoverTrigger,
   Button,
   PopoverContent,
-  Select,
-  SelectTrigger,
-  SelectValue,
-  SelectContent,
-  SelectItem,
-  SelectGroup,
   FileDropzone,
+  LabelContent,
 } from "@/src/shared";
 import {
   useGetTeams,
@@ -34,28 +29,6 @@ import {
 } from "@/src/features";
 import GameLogTeamModal from "./GameLogTeamModal";
 import GameLogStadiumModal from "./GameLogStadiumModal";
-
-const LabelContent = ({
-  className,
-  label,
-  isRequired,
-  children,
-}: {
-  className?: string;
-  label: string;
-  isRequired?: boolean;
-  children: React.ReactNode;
-}) => {
-  return (
-    <div className={cn(className)}>
-      <div className="mb-[4px]">
-        {label}
-        {isRequired && <span className="text-red-500">*</span>}
-      </div>
-      {children}
-    </div>
-  );
-};
 
 const GameLogForm = ({
   defaultValues,
@@ -98,8 +71,6 @@ const GameLogForm = ({
 
   useEffect(() => {
     if (!defaultValues) return;
-
-    console.log(defaultValues);
 
     reset({
       homeTeamId: defaultValues.homeTeamId,
