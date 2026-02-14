@@ -71,7 +71,9 @@ const Header = ({ className, title, prevPage }: HeaderProps) => {
           <ChevronLeftIcon size={32} />
         </button>
       )}
-      <h2 className={cn("font-bold", getTitleClassName())}>{title.text}</h2>
+      <h2 className={cn("text-[20px] font-bold", getTitleClassName())}>
+        {title.text}
+      </h2>
       {/* center일 때 prevPage가 있으면 spacer 추가 */}
       {prevPage && title.position === "center" && (
         <div className="w-[48px] flex-0" />
