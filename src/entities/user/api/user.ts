@@ -1,6 +1,10 @@
 import { supabase } from "@/src/shared";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { UpdateNicknameQueryModel, UserServerModel } from "../model/types/api";
+import {
+  UpdateNicknameQueryModel,
+  UpdateTeamQueryModel,
+  UserServerModel,
+} from "../model/types/api";
 
 export const useGetUser = () => {
   return useQuery({
@@ -28,6 +32,24 @@ export const useUpdateNickname = () => {
 
   return useMutation({
     mutationFn: async (req: UpdateNicknameQueryModel) => {
+      const {
+        data: { user },
+      } = await supabase.auth.getUser();
+      if (!user) return;
+
+      await supabase.from("users").update(req.body).eq("id", user.id);
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["user"] });
+    },
+  });
+};
+
+export const useUpdateTeam = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async (req: UpdateTeamQueryModel) => {
       const {
         data: { user },
       } = await supabase.auth.getUser();

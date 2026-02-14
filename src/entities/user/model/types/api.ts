@@ -5,3 +5,10 @@ export interface UpdateNicknameQueryModel {
 }
 
 export type UserServerModel = Database["public"]["Tables"]["users"]["Row"];
+
+export interface UpdateTeamQueryModel {
+  body: { team_id: Database["public"]["Tables"]["users"]["Row"]["team_id"] };
+}
+
+export type UpdateTeamQueryResponseModel =
+  Database["public"]["Tables"]["users"]["Row"];
