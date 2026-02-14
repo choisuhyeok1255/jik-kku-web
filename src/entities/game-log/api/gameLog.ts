@@ -38,7 +38,7 @@ export const useGetGameLogs = (req: GetGameLogsQueryModel) => {
       const { data, error } = await supabase
         .from("game_logs")
         .select(
-          "id, home_team_id, away_team_id, home_team_score, away_team_score, weather, match_date, companion, mvp, note, game_log_image, is_certify",
+          "id, home_team_id, away_team_id, home_team_score, away_team_score, match_date, note, game_log_image, is_certify, stadium_id, weather, companion, mvp",
         )
         .eq("user_id", req.query.userId)
         .order("match_date", { ascending: false }); // match_date 최신순 정렬

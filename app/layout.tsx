@@ -1,13 +1,24 @@
 import type { Metadata } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
+import localFont from "next/font/local";
 
 import { Providers, ConditionalBottomNavigation } from "@/src/app";
 import "./globals.css";
 
-const geistSans = Geist({ variable: "--font-geist-sans", subsets: ["latin"] });
-const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
-  subsets: ["latin"],
+const laundryGothic = localFont({
+  src: [
+    {
+      path: "../public/fonts/laundrygo Regular.woff",
+      weight: "400",
+      style: "normal",
+    },
+    {
+      path: "../public/fonts/laundrygo Bold.woff",
+      weight: "700",
+      style: "normal",
+    },
+  ],
+  variable: "--font-laundry-gothic",
+  display: "swap",
 });
 
 export const metadata: Metadata = {
@@ -29,7 +40,7 @@ const RootLayout = ({
   return (
     <html lang="ko" className="h-screen overflow-hidden">
       <body
-        className={`${geistSans.variable} ${geistMono.variable} h-screen overflow-hidden bg-[#232323]`}
+        className={`${laundryGothic.variable} ${laundryGothic.className} h-screen overflow-hidden bg-[#232323]`}
       >
         <Providers>
           <div className="flex justify-center">

@@ -3,7 +3,12 @@
 import type { ReactNode } from "react";
 import { useMemo } from "react";
 import { useRouter } from "next/navigation";
-import { useGetCertifyGameLogs, useGetTeams, useGetUser } from "@/src/entities";
+import {
+  useGetGameLogs,
+  useGetStadiums,
+  useGetTeams,
+  useGetUser,
+} from "@/src/entities";
 import { Header, cn } from "@/src/shared";
 
 const CARD_BASE =
@@ -42,7 +47,7 @@ const MyPageCard = ({
   <div className={cn(CARD_BASE, "flex flex-col gap-[16px]", className)}>
     <div className="flex items-center gap-3">
       {icon}
-      <span className="text-base text-white/60">{label}</span>
+      <span className="text-[14px] text-[#ffffff]">{label}</span>
     </div>
     <div className="pl-11">{children}</div>
   </div>
@@ -71,30 +76,46 @@ const MyPage = () => {
 
   const { data: teams } = useGetTeams();
   const { data: user } = useGetUser();
-  const { data: certifyGameLogs } = useGetCertifyGameLogs({
+  const { data: stadiums } = useGetStadiums();
+  const { data: gameLogs } = useGetGameLogs({
     query: { userId: user?.id || "" },
   });
 
   const winCount = useMemo(() => {
     return (
-      certifyGameLogs?.filter(
+      gameLogs?.filter(
         (g) => (g.home_team_score ?? 0) > (g.away_team_score ?? 0),
       ).length ?? 0
     );
-  }, [certifyGameLogs]);
+  }, [gameLogs]);
 
   const avgScore = useMemo(() => {
-    const withScore =
-      certifyGameLogs?.filter((g) => g.home_team_score != null) ?? [];
+    const withScore = gameLogs?.filter((g) => g.home_team_score != null) ?? [];
     if (withScore.length === 0) return "0점";
     const total = withScore.reduce(
       (sum, g) => sum + (g.home_team_score ?? 0),
       0,
     );
     return `${(total / withScore.length).toFixed(1)}점`;
-  }, [certifyGameLogs]);
+  }, [gameLogs]);
 
-  const gameCount = certifyGameLogs?.length ?? 0;
+  const gameCount = gameLogs?.length ?? 0;
+
+  const mostVisitedStadiums = useMemo(() => {
+    const withStadium = gameLogs?.filter((g) => g.stadium_id !== null) ?? [];
+    if (withStadium.length === 0) return [];
+
+    const countMap = new Map<number, number>();
+    for (const g of withStadium) {
+      const id = g.stadium_id!;
+      countMap.set(id, (countMap.get(id) ?? 0) + 1);
+    }
+
+    const maxCount = Math.max(...countMap.values());
+    return [...countMap.entries()]
+      .filter(([, count]) => count === maxCount)
+      .map(([stadiumId]) => stadiumId);
+  }, [gameLogs]);
 
   return (
     <div className="flex h-screen flex-col">
@@ -116,9 +137,9 @@ const MyPage = () => {
           <div className="flex flex-col gap-2">
             <div className="flex items-center gap-3">
               <CardIcon className="bg-red-600/80">🎯</CardIcon>
-              <span className="text-base text-white/60">응원팀</span>
+              <span className="font-[14px] text-[#ffffff]">응원팀</span>
             </div>
-            <span className="pl-11 text-xl font-bold text-white">
+            <span className="pl-11 text-[20px] font-bold text-[#ffffff]">
               {user?.team_id
                 ? teams?.find((t) => t.id === user.team_id)?.team_name
                 : ""}
@@ -132,14 +153,18 @@ const MyPage = () => {
             label="응원팀 이긴 횟수"
             className="flex-1"
           >
-            <span className="text-2xl font-bold text-white">{winCount}번</span>
+            <span className="text-[20px] font-bold text-[#ffffff]">
+              {winCount}번
+            </span>
           </MyPageCard>
           <MyPageCard
             icon={<CardIcon className="bg-blue-500/80">📊</CardIcon>}
             label="응원팀 평균 점수"
             className="flex-1"
           >
-            <span className="text-2xl font-bold text-white">{avgScore}</span>
+            <span className="text-[20px] font-bold text-[#ffffff]">
+              {avgScore}
+            </span>
           </MyPageCard>
         </div>
 
@@ -148,7 +173,14 @@ const MyPage = () => {
           label="내가 자주가는 구장"
         >
           <span className="text-xl font-bold text-white">
-            인천 SSG 랜더스필드
+            {mostVisitedStadiums.length === 0
+              ? "-"
+              : mostVisitedStadiums
+                  .map(
+                    (id) =>
+                      stadiums?.find((s) => s.id === id)?.name ?? `구장 #${id}`,
+                  )
+                  .join(", ")}
           </span>
         </MyPageCard>
 
@@ -156,7 +188,9 @@ const MyPage = () => {
           icon={<CardIcon className="bg-purple-600/80">⛹️</CardIcon>}
           label="야구장 방문횟수"
         >
-          <span className="text-xl font-bold text-white">{gameCount}경기</span>
+          <span className="text-[20px] font-bold text-[#ffffff]">
+            {gameCount}경기
+          </span>
         </MyPageCard>
       </div>
     </div>
