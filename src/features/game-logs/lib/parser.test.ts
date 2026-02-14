@@ -1,6 +1,6 @@
 import { describe, it, expect } from "vitest";
+import type { GameLogServerModel } from "@/src/entities";
 import { transformFormToApiBody, transformApiToForm } from "./parser";
-import type { GameLogServerModel } from "../model/types/api";
 import type { CreateGameLogForm } from "../model/types/form";
 
 describe("transformFormToApiBody", () => {
@@ -72,7 +72,7 @@ describe("transformFormToApiBody", () => {
     const result = transformFormToApiBody(
       "user-123",
       formData,
-      "image/path.jpg"
+      "image/path.jpg",
     );
 
     expect(result.game_log_image).toBe("image/path.jpg");
