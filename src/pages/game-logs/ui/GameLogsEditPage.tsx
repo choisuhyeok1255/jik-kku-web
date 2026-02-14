@@ -50,7 +50,10 @@ const GameLogEditPage = () => {
     <div className="flex h-screen flex-col">
       <Header
         title={{ text: "직관 수정", position: "center" }}
-        prevPage={{ href: `/game-logs/${id}` }}
+        prevPage={{
+          href: `/?tab=gameLogs&scrollTo=${id}`,
+          forceUseHref: true,
+        }}
       />
       <div className="flex-1 overflow-y-auto">
         <GameLogForm
