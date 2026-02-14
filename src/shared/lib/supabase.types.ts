@@ -173,18 +173,29 @@ export type Database = {
           created_at: string
           id: string
           nickname: string
+          team_id: number | null
         }
         Insert: {
           created_at?: string
           id: string
           nickname: string
+          team_id?: number | null
         }
         Update: {
           created_at?: string
           id?: string
           nickname?: string
+          team_id?: number | null
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "users_team_id_fkey"
+            columns: ["team_id"]
+            isOneToOne: false
+            referencedRelation: "teams"
+            referencedColumns: ["id"]
+          }
+        ]
       }
     }
     Views: {
