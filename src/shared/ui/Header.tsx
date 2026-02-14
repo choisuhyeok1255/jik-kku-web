@@ -8,7 +8,7 @@ import { cn } from "../lib/tailwind";
 interface HeaderProps {
   className?: string;
   title: { text: string; position: "left" | "center" | "right" };
-  prevPage?: { href: string };
+  prevPage?: { href: string; forceUseHref?: boolean };
 }
 
 const Header = ({ className, title, prevPage }: HeaderProps) => {
@@ -49,7 +49,11 @@ const Header = ({ className, title, prevPage }: HeaderProps) => {
     const referrer = document.referrer;
     const currentOrigin = window.location.origin;
 
-    if (referrer && referrer.startsWith(currentOrigin)) {
+    if (
+      !prevPage?.forceUseHref &&
+      referrer &&
+      referrer.startsWith(currentOrigin)
+    ) {
       // 같은 앱 내에서 이동한 경우 router.back() 사용
       router.back();
     } else {
