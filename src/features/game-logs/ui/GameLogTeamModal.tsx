@@ -2,49 +2,8 @@
 
 import { useState } from "react";
 
-import { AppTab, cn, Modal } from "@/src/shared";
-import { useGetTeams } from "@/src/entities";
-
-const TeamCard = ({
-  teamName,
-  teamId,
-  selectedTeamIds,
-  currentTab,
-  handleSelectTeam,
-}: {
-  teamName: string;
-  teamId: number;
-  selectedTeamIds: { homeTeamId: number | null; awayTeamId: number | null };
-  currentTab: "homeTeam" | "awayTeam";
-  handleSelectTeam: (teamId: number) => void;
-}) => {
-  const handleClickTeam = () => {
-    // 다른 탭에서 선택된 팀은 선택 불가 (서로 바뀌는 것 방지)
-    const isSelectedInOtherTab =
-      (currentTab === "homeTeam" && selectedTeamIds.awayTeamId === teamId) ||
-      (currentTab === "awayTeam" && selectedTeamIds.homeTeamId === teamId);
-    if (isSelectedInOtherTab) return;
-
-    // 현재 탭에서 선택된 팀은 선택 해제 가능, 선택되지 않은 팀은 선택 가능
-    handleSelectTeam(teamId);
-  };
-
-  return (
-    <button
-      className={cn(
-        "h-[96px] rounded-[20px] border border-[#FFFFFF]/10 bg-[#FFFFFF]/4 p-[12px]",
-        selectedTeamIds.homeTeamId === teamId &&
-          "border-[#5724F0] bg-[#5724F0]/4",
-        selectedTeamIds.awayTeamId === teamId &&
-          "border-[#FFFFFF] bg-[#FFFFFF]/8",
-      )}
-      type="button"
-      onClick={handleClickTeam}
-    >
-      <div className="text-[14px] font-bold text-white">{teamName}</div>
-    </button>
-  );
-};
+import { AppTab, Modal } from "@/src/shared";
+import { TeamCard, useGetTeams } from "@/src/entities";
 
 const GameLogTeamModal = ({
   initSelectedTeamId,
@@ -65,7 +24,7 @@ const GameLogTeamModal = ({
 }) => {
   const { data: teams } = useGetTeams();
 
-  const [selectedTeamIds, setSelectedTeamIds] = useState<{
+  const [selectedTeamId, setSelectedTeamId] = useState<{
     homeTeamId: number | null;
     awayTeamId: number | null;
   }>({
@@ -78,7 +37,7 @@ const GameLogTeamModal = ({
 
   const handleSelectTeam = (teamId: number) => {
     if (currentTab === "homeTeam") {
-      setSelectedTeamIds((prev) => {
+      setSelectedTeamId((prev) => {
         if (prev.homeTeamId === teamId) {
           return { ...prev, homeTeamId: null };
         }
@@ -86,7 +45,7 @@ const GameLogTeamModal = ({
         return { ...prev, homeTeamId: teamId };
       });
     } else {
-      setSelectedTeamIds((prev) => {
+      setSelectedTeamId((prev) => {
         if (prev.awayTeamId === teamId) {
           return { ...prev, awayTeamId: null };
         }
@@ -98,15 +57,15 @@ const GameLogTeamModal = ({
 
   const handleClickSubmit = () => {
     handleClickTeam({
-      homeTeamId: selectedTeamIds.homeTeamId,
-      awayTeamId: selectedTeamIds.awayTeamId,
+      homeTeamId: selectedTeamId.homeTeamId,
+      awayTeamId: selectedTeamId.awayTeamId,
     });
     handleCloseModal();
   };
 
   const selectedTeamCount = [
-    selectedTeamIds.homeTeamId,
-    selectedTeamIds.awayTeamId,
+    selectedTeamId.homeTeamId,
+    selectedTeamId.awayTeamId,
   ].filter(Boolean).length;
 
   return (
@@ -122,16 +81,35 @@ const GameLogTeamModal = ({
       />
       <div className="mb-[32px] flex-1 overflow-y-auto">
         <div className="grid grid-cols-2 gap-[12px]">
-          {teams?.map((team) => (
-            <TeamCard
-              key={team.id}
-              teamName={team.team_name}
-              teamId={team.id}
-              selectedTeamIds={selectedTeamIds}
-              handleSelectTeam={handleSelectTeam}
-              currentTab={currentTab}
-            />
-          ))}
+          {teams?.map((team) => {
+            const isHomeSelected = selectedTeamId.homeTeamId === team.id;
+            const isAwaySelected = selectedTeamId.awayTeamId === team.id;
+            const isSelected = isHomeSelected || isAwaySelected;
+            const isSelectedInOtherTab =
+              (currentTab === "homeTeam" &&
+                selectedTeamId.awayTeamId === team.id) ||
+              (currentTab === "awayTeam" &&
+                selectedTeamId.homeTeamId === team.id);
+            const teamType =
+              selectedTeamId.homeTeamId === team.id ? "myTeam" : "opponentTeam";
+            const selectText = teamType === "myTeam" ? "응원팀" : "상대팀";
+
+            return (
+              <TeamCard
+                key={team.id}
+                teamId={team.id}
+                teamName={team.team_name ?? ""}
+                teamType={teamType}
+                selectText={selectText}
+                isSelected={isSelected}
+                onClick={
+                  isSelectedInOtherTab
+                    ? undefined
+                    : () => handleSelectTeam(team.id)
+                }
+              />
+            );
+          })}
         </div>
       </div>
       <button
