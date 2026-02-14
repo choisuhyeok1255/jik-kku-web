@@ -4,7 +4,11 @@ import { usePathname } from "next/navigation";
 
 import { BottomNavigation } from "@/src/shared";
 
-const HIDDEN_PATHS: string[] = ["/game-logs/create", "/admin"];
+const HIDDEN_PATHS: string[] = [
+  "/game-logs/create",
+  "/admin",
+  "/myPage/nickname",
+];
 
 const ConditionalBootomNavigation = () => {
   const pathname = usePathname();

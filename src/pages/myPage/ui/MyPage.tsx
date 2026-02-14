@@ -2,6 +2,7 @@
 
 import type { ReactNode } from "react";
 import { useMemo } from "react";
+import { useRouter } from "next/navigation";
 import { useGetCertifyGameLogs, useGetUser } from "@/src/entities";
 import { Header, cn } from "@/src/shared";
 
@@ -66,6 +67,8 @@ const CardIcon = ({
 );
 
 const MyPage = () => {
+  const router = useRouter();
+
   const { data: user } = useGetUser();
   const { data: certifyGameLogs } = useGetCertifyGameLogs({
     query: { userId: user?.id || "" },
@@ -99,7 +102,7 @@ const MyPage = () => {
         title={{ text: "마이페이지", position: "left" }}
       />
       <div className="flex min-h-0 flex-1 flex-col gap-[12px] overflow-y-auto px-[16px] pb-[100px]">
-        <MyPageCardButton onClick={() => console.log("click")}>
+        <MyPageCardButton onClick={() => router.push("/myPage/nickname")}>
           <div className="flex items-center gap-3">
             <CardIcon className="bg-white/10">👤</CardIcon>
             <span className="text-lg font-bold text-white">
