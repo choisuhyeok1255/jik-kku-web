@@ -1,13 +1,37 @@
+import { useEffect, useRef } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
+
 import { useAuthStore, useGetGameLogs } from "@/src/entities";
 
 import GameLogsItem from "./GameLogsItem";
 
 const GameLogsTabItem = () => {
+  const router = useRouter();
+  const searchParams = useSearchParams();
+  const scrollToId = searchParams?.get("scrollTo");
+  const hasScrolledRef = useRef(false);
+
   const { user, isLoading } = useAuthStore();
 
   const { data: gameLogs = [] } = useGetGameLogs({
     query: { userId: user?.id || "" },
   });
+
+  useEffect(() => {
+    if (!scrollToId || isLoading || !gameLogs.length || hasScrolledRef.current)
+      return;
+
+    const el = document.getElementById(`game-log-${scrollToId}`);
+    if (el) {
+      el.scrollIntoView({ behavior: "smooth", block: "center" });
+      hasScrolledRef.current = true;
+
+      const params = new URLSearchParams(searchParams?.toString() ?? "");
+      params.delete("scrollTo");
+      const queryString = params.toString();
+      router.replace(queryString ? `/?${queryString}` : "/", { scroll: false });
+    }
+  }, [scrollToId, isLoading, gameLogs.length, searchParams, router]);
 
   if (isLoading) {
     return <div>로딩 중...</div>;
@@ -19,6 +43,7 @@ const GameLogsTabItem = () => {
         <GameLogsItem
           key={gameLog.id}
           gameLog={{
+            game_log_id: gameLog.id || 0,
             home_team_score: gameLog.home_team_score || 0,
             away_team_score: gameLog.away_team_score || 0,
             home_team_id: gameLog.home_team_id || 0,

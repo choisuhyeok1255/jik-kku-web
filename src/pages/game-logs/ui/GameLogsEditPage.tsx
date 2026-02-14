@@ -7,11 +7,12 @@ import {
   UpdateGameLogQueryModel,
 } from "@/src/entities";
 import { GameLogForm, transformApiToForm } from "@/src/features";
+import { Header } from "@/src/shared";
 
 const GameLogEditPage = () => {
   const router = useRouter();
   const { id } = useParams<{ id: string | undefined }>();
-  const { data: gameLog } = useGetGameLogDetail({
+  const { data: gameLog, isLoading } = useGetGameLogDetail({
     query: { gameLogId: Number(id) },
   });
   const { mutate: updateGameLog } = useUpdateGameLog();
@@ -21,25 +22,36 @@ const GameLogEditPage = () => {
       { query: { gameLogId: Number(id) }, body },
       {
         onSuccess: () => {
-          router.push(`game-logs/${id}`);
+          router.push(`/?tab=gameLogs&scrollTo=${id}`);
           alert("직관 기록이 성공적으로 수정되었습니다.");
         },
         onError: () => {
           alert("직관 기록 수정에 실패했습니다.");
         },
-      }
+      },
     );
   };
 
-  if (!gameLog) return null;
+  if (isLoading || !gameLog) {
+    return (
+      <div className="flex h-screen items-center justify-center">
+        <span>로딩 중...</span>
+      </div>
+    );
+  }
 
   return (
-    <div className="flex flex-col items-center justify-center h-screen gap-4 p-4">
-      <h1 className="text-2xl font-bold">직관 기록 수정</h1>
-      <GameLogForm
-        defaultValues={transformApiToForm(gameLog)}
-        handleClickSubmit={handleClickSubmit}
+    <div className="flex h-screen flex-col">
+      <Header
+        title={{ text: "직관 수정", position: "center" }}
+        prevPage={{ href: `/game-logs/${id}` }}
       />
+      <div className="flex-1 overflow-y-auto">
+        <GameLogForm
+          defaultValues={transformApiToForm(gameLog)}
+          handleClickSubmit={handleClickSubmit}
+        />
+      </div>
     </div>
   );
 };

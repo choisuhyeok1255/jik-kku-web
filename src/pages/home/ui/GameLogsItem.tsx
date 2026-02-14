@@ -5,11 +5,13 @@ import Image from "next/image";
 
 import { useGetTeams } from "@/src/entities";
 import { useGetSignedUrl } from "@/src/shared";
+import Link from "next/link";
 
 const GameLogsItem = ({
   gameLog,
 }: {
   gameLog: {
+    game_log_id: number;
     home_team_score: number;
     away_team_score: number;
     home_team_id: number;
@@ -66,7 +68,11 @@ const GameLogsItem = ({
   }, [gameLog.game_log_image, getSignedUrl]);
 
   return (
-    <div className="rounded-[20px] border border-white/10 bg-white/4 p-[20px]">
+    <Link
+      id={`game-log-${gameLog.game_log_id}`}
+      href={`/game-logs/${gameLog.game_log_id}/edit`}
+      className="rounded-[20px] border border-white/10 bg-white/4 p-[20px]"
+    >
       <div className="mb-[12px] flex justify-between">
         <div className="flex flex-col gap-[4px]">
           <div className="flex gap-[4px]">
@@ -100,7 +106,7 @@ const GameLogsItem = ({
         )}
         {gameLog.note && <div>{gameLog.note}</div>}
       </div>
-    </div>
+    </Link>
   );
 };
 
