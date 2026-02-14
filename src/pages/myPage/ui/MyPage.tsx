@@ -3,7 +3,7 @@
 import type { ReactNode } from "react";
 import { useMemo } from "react";
 import { useRouter } from "next/navigation";
-import { useGetCertifyGameLogs, useGetUser } from "@/src/entities";
+import { useGetCertifyGameLogs, useGetTeams, useGetUser } from "@/src/entities";
 import { Header, cn } from "@/src/shared";
 
 const CARD_BASE =
@@ -69,6 +69,7 @@ const CardIcon = ({
 const MyPage = () => {
   const router = useRouter();
 
+  const { data: teams } = useGetTeams();
   const { data: user } = useGetUser();
   const { data: certifyGameLogs } = useGetCertifyGameLogs({
     query: { userId: user?.id || "" },
@@ -111,14 +112,16 @@ const MyPage = () => {
           </div>
         </MyPageCardButton>
 
-        <MyPageCardButton onClick={() => console.log("click")}>
+        <MyPageCardButton onClick={() => router.push("/myPage/team")}>
           <div className="flex flex-col gap-2">
             <div className="flex items-center gap-3">
               <CardIcon className="bg-red-600/80">🎯</CardIcon>
               <span className="text-base text-white/60">응원팀</span>
             </div>
             <span className="pl-11 text-xl font-bold text-white">
-              SSG 랜더스
+              {user?.team_id
+                ? teams?.find((t) => t.id === user.team_id)?.team_name
+                : ""}
             </span>
           </div>
         </MyPageCardButton>

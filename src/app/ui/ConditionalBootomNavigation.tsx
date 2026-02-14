@@ -8,6 +8,7 @@ const HIDDEN_PATHS: string[] = [
   "/game-logs/create",
   "/admin",
   "/myPage/nickname",
+  "/myPage/team",
 ];
 
 const ConditionalBootomNavigation = () => {
