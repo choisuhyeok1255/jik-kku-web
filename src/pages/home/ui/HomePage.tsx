@@ -1,35 +1,33 @@
 "use client";
 
-import { useState } from "react";
-import { useRouter } from "next/navigation";
-import { useQueryClient } from "@tanstack/react-query";
+import { useRouter, useSearchParams } from "next/navigation";
 
-import {
-  useAuthStore,
-  useDeleteGameLog,
-  useGetGameLogs,
-  gameLogKeys,
-  useGetTeams,
-} from "@/src/entities";
+import { useAuthStore } from "@/src/entities";
 import { AppTab, supabase } from "@/src/shared";
 
 import WinningRateTabItem from "./WinningRateTabItem";
 import GameLogsTabItem from "./GameLogsTabItem";
 
 const HomePage = () => {
-  const queryClient = useQueryClient();
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const tabParam = searchParams?.get("tab");
+  const currentTab: "game" | "gameLogs" =
+    tabParam === "gameLogs" ? "gameLogs" : "game";
 
   const { user, isLoading } = useAuthStore();
 
-  // 로그인한 사용자의 직관 데이터 가져오기
-  const { data: gameLogs, isLoading: isLoadingLogs } = useGetGameLogs({
-    query: { userId: user?.id || "" },
-  });
-  const { data: teams } = useGetTeams();
-  const { mutate: deleteGameLog } = useDeleteGameLog();
-
-  const [currentTab, setCurrentTab] = useState<"game" | "gameLogs">("game");
+  const handleChangeTab = (tab: string) => {
+    const newTab = tab as "game" | "gameLogs";
+    const params = new URLSearchParams(searchParams?.toString() ?? "");
+    if (newTab === "game") {
+      params.delete("tab");
+    } else {
+      params.set("tab", newTab);
+    }
+    const queryString = params.toString();
+    router.replace(queryString ? `/?${queryString}` : "/");
+  };
 
   if (isLoading) {
     return (
@@ -77,7 +75,7 @@ const HomePage = () => {
           { label: "직관", value: "game" },
           { label: "직관 기록", value: "gameLogs" },
         ]}
-        handleChangeTab={(tab) => setCurrentTab(tab as "game" | "gameLogs")}
+        handleChangeTab={handleChangeTab}
       />
       {currentTab === "game" && <WinningRateTabItem />}
       {currentTab === "gameLogs" && <GameLogsTabItem />}
