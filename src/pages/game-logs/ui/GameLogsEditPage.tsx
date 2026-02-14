@@ -1,5 +1,6 @@
 "use client";
 
+import { useMemo } from "react";
 import { useRouter, useParams } from "next/navigation";
 import {
   useGetGameLogDetail,
@@ -32,6 +33,11 @@ const GameLogEditPage = () => {
     );
   };
 
+  const defaultValues = useMemo(
+    () => (gameLog ? transformApiToForm(gameLog) : undefined),
+    [gameLog],
+  );
+
   if (isLoading || !gameLog) {
     return (
       <div className="flex h-screen items-center justify-center">
@@ -48,7 +54,7 @@ const GameLogEditPage = () => {
       />
       <div className="flex-1 overflow-y-auto">
         <GameLogForm
-          defaultValues={transformApiToForm(gameLog)}
+          defaultValues={defaultValues}
           handleClickSubmit={handleClickSubmit}
         />
       </div>
