@@ -137,11 +137,7 @@ const MyPage = () => {
         <MyPageCardButton onClick={() => router.push("/myPage/team")}>
           <div className="flex flex-col gap-[16px]">
             <div className="flex items-center gap-3">
-              {user?.team_id ? (
-                <TeamIcon teamId={user.team_id} size={28} />
-              ) : (
-                <CardIcon className="bg-white/10">🎯</CardIcon>
-              )}
+              {user?.team_id && <TeamIcon teamId={user.team_id} size={28} />}
               <span className="font-[14px] text-[#ffffff]">응원팀</span>
             </div>
             <span className="text-left text-[20px] font-bold text-[#ffffff]">

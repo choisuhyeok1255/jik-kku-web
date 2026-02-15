@@ -24,11 +24,12 @@ const ICON_SIZE_MAP: Record<number, number> = {
   40: 24,
 };
 
+type TeamIconSize = 28 | 40;
+
 interface TeamIconProps {
   teamId: number;
   className?: string;
-  /** px 단위 (28 또는 40) */
-  size?: number;
+  size?: TeamIconSize;
 }
 
 const ICON_SIZE_CLASSES: Record<number, string> = {
@@ -37,7 +38,7 @@ const ICON_SIZE_CLASSES: Record<number, string> = {
 };
 
 const TeamIcon = ({ teamId, className, size = 40 }: TeamIconProps) => {
-  const iconSize = ICON_SIZE_MAP[size] ?? 24;
+  const iconSize = ICON_SIZE_MAP[size];
   const colors = COLOR_MAP[teamId];
 
   return (
@@ -51,7 +52,7 @@ const TeamIcon = ({ teamId, className, size = 40 }: TeamIconProps) => {
     >
       <HelmetIcon
         className={cn(
-          ICON_SIZE_CLASSES[iconSize] ?? "h-[24px] w-[24px]",
+          ICON_SIZE_CLASSES[iconSize],
           colors?.iconClassName ?? "fill-white",
         )}
       />
