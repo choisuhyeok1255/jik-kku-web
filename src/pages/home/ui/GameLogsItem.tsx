@@ -2,13 +2,14 @@
 
 import { useEffect, useState } from "react";
 import Image from "next/image";
-
-import { useGetTeams } from "@/src/entities";
-import { useGetSignedUrl } from "@/src/shared";
 import Link from "next/link";
+
+import { useGetStadiums, useGetTeams } from "@/src/entities";
+import { useGetSignedUrl } from "@/src/shared";
 
 const GameLogsItem = ({
   gameLog,
+  enterDelay = 0,
 }: {
   gameLog: {
     game_log_id: number;
@@ -20,12 +21,16 @@ const GameLogsItem = ({
     game_log_image: string;
     note: string;
     is_certify: boolean;
+    stadium_id: number | null;
   };
+  enterDelay?: number;
 }) => {
   const { mutateAsync: getSignedUrl } = useGetSignedUrl();
   const { data: teams } = useGetTeams();
+  const { data: stadiums } = useGetStadiums();
 
   const [imageUrl, setImageUrl] = useState<string | null>(null);
+  const [isFlipped, setIsFlipped] = useState(false);
 
   const getResult = () => {
     if (!gameLog.home_team_score || !gameLog.away_team_score) return "";
@@ -44,6 +49,11 @@ const GameLogsItem = ({
     const awayTeam = teams?.find((team) => team.id === gameLog.away_team_id);
     return awayTeam?.team_name;
   };
+
+  const getStadiumName = () =>
+    gameLog.stadium_id
+      ? (stadiums?.find((s) => s.id === gameLog.stadium_id)?.name ?? null)
+      : null;
 
   useEffect(() => {
     if (!gameLog.game_log_image) {
@@ -67,46 +77,89 @@ const GameLogsItem = ({
     fetchSignedUrl();
   }, [gameLog.game_log_image, getSignedUrl]);
 
+  const cardBaseClass =
+    "rounded-[20px] border border-white/10 bg-white/4 p-[20px]";
+
   return (
-    <Link
+    <div
       id={`game-log-${gameLog.game_log_id}`}
-      href={`/game-logs/${gameLog.game_log_id}/edit`}
-      className="rounded-[20px] border border-white/10 bg-white/4 p-[20px]"
+      className="flip-card card-enter cursor-pointer"
+      style={{ animationDelay: `${enterDelay}ms` }}
+      onClick={() => setIsFlipped((prev) => !prev)}
     >
-      <div className="mb-[12px] flex justify-between">
-        <div className="flex flex-col gap-[4px]">
-          <div className="flex gap-[4px]">
-            <div>{gameLog.match_date}</div>
-            <div>{gameLog.is_certify && "인증"}</div>
+      <div className={`flip-card-inner ${isFlipped ? "is-flipped" : ""}`}>
+        {/* 앞면 */}
+        <div className={`flip-card-front ${cardBaseClass}`}>
+          <div className="mb-[12px] flex justify-between">
+            <div className="flex flex-col gap-[4px]">
+              <div className="flex gap-[4px]">
+                <div>{gameLog.match_date}</div>
+                <div>{gameLog.is_certify && "인증"}</div>
+              </div>
+              <div>{getStadiumName() ?? "-"}</div>
+            </div>
+            <div>{getResult()}</div>
           </div>
-          <div>잠실야구장</div>
+          <div className="flex justify-around border-t border-b border-white/30 py-[20px]">
+            <div className="flex flex-col items-center gap-[8px]">
+              <div>{getHomeTeamName()}</div>
+              <div>{gameLog.home_team_score}</div>
+            </div>
+            <div>VS</div>
+            <div className="flex flex-col items-center gap-[8px]">
+              <div>{getAwayTeamName()}</div>
+              <div>{gameLog.away_team_score}</div>
+            </div>
+          </div>
         </div>
-        <div>{getResult()}</div>
-      </div>
-      <div className="mb-[12px] flex justify-around border-t border-b border-white/30 py-[20px]">
-        <div className="flex flex-col items-center gap-[8px]">
-          <div>{getHomeTeamName()}</div>
-          <div>{gameLog.home_team_score}</div>
+
+        {/* 뒷면 */}
+        <div
+          className={`flip-card-back ${cardBaseClass} relative flex flex-col overflow-y-auto`}
+        >
+          {/* 수정하기 - absolute로 띄움 (전면 승리/패배 위치) */}
+          <Link
+            href={`/game-logs/${gameLog.game_log_id}/edit`}
+            onClick={(e) => e.stopPropagation()}
+            className="absolute top-[20px] right-[20px] z-10 text-[14px] font-bold text-white transition-opacity hover:opacity-80"
+          >
+            수정하기
+          </Link>
+
+          {/* 사진 + 메모 (전체 높이 사용) */}
+          <div className="flex min-h-0 flex-1 gap-[12px]">
+            {/* 사진 영역 - 높이 꽉 채움 */}
+            <div className="flex min-h-0 min-w-0 flex-1 flex-col overflow-hidden rounded-[12px] bg-white/5">
+              {imageUrl ? (
+                <div className="relative min-h-[100px] w-full flex-1">
+                  <Image
+                    src={imageUrl}
+                    alt="직관 사진"
+                    fill
+                    className="object-cover"
+                  />
+                </div>
+              ) : (
+                <div className="flex flex-1 items-center justify-center">
+                  <span className="text-[14px] text-white/30">
+                    사진이 없어요.
+                  </span>
+                </div>
+              )}
+            </div>
+
+            {/* 메모 영역 - 수정하기 버튼 아래로 */}
+            <div className="mt-[44px] flex min-h-[100px] min-w-0 flex-1 overflow-y-auto">
+              {gameLog.note && (
+                <p className="text-[14px] wrap-break-word text-white/90">
+                  {gameLog.note}
+                </p>
+              )}
+            </div>
+          </div>
         </div>
-        <div>VS</div>
-        <div className="flex flex-col items-center gap-[8px]">
-          <div>{getAwayTeamName()}</div>
-          <div>{gameLog.away_team_score}</div>
-        </div>
       </div>
-      <div className="flex gap-[12px]">
-        {imageUrl && (
-          <Image
-            className="rounded-[10px]"
-            src={imageUrl}
-            alt="gameLogImage"
-            width={60}
-            height={60}
-          />
-        )}
-        {gameLog.note && <div>{gameLog.note}</div>}
-      </div>
-    </Link>
+    </div>
   );
 };
 

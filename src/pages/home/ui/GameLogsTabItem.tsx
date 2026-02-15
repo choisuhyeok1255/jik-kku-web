@@ -39,9 +39,10 @@ const GameLogsTabItem = () => {
 
   return (
     <div className="flex flex-1 flex-col gap-[16px] overflow-y-auto px-[16px] pb-[116px]">
-      {gameLogs.map((gameLog) => (
+      {gameLogs.map((gameLog, index) => (
         <GameLogsItem
           key={gameLog.id}
+          enterDelay={index * 80}
           gameLog={{
             game_log_id: gameLog.id || 0,
             home_team_score: gameLog.home_team_score || 0,
@@ -52,6 +53,7 @@ const GameLogsTabItem = () => {
             game_log_image: gameLog.game_log_image || "",
             note: gameLog.note || "",
             is_certify: gameLog.is_certify || false,
+            stadium_id: gameLog.stadium_id ?? null,
           }}
         />
       ))}
