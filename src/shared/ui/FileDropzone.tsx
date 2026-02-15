@@ -8,11 +8,13 @@ import { cn } from "@/src/shared/lib/tailwind";
 const FileDropzone = ({
   onChange,
   className,
+  initImageUrl,
 }: {
   onChange: (files: FileList | null) => void;
   className?: string;
+  initImageUrl?: string | null;
 }) => {
-  const [imageUrl, setImageUrl] = useState<string | null>(null);
+  const [droppedImageUrl, setDroppedImageUrl] = useState<string | null>(null);
 
   const { getRootProps, getInputProps, isDragActive } = useDropzone({
     accept: {
@@ -29,29 +31,33 @@ const FileDropzone = ({
 
         // 이미지 미리보기 URL 생성
         const url = URL.createObjectURL(file);
-        setImageUrl(url);
+        setDroppedImageUrl(url);
       }
     },
   });
 
+  const displayImageUrl = droppedImageUrl ?? initImageUrl ?? null;
+
   const handleDelete = () => {
-    if (imageUrl) {
-      URL.revokeObjectURL(imageUrl);
-      setImageUrl(null);
-      onChange(null);
+    if (droppedImageUrl) {
+      URL.revokeObjectURL(droppedImageUrl);
+      setDroppedImageUrl(null);
     }
+    onChange(null);
   };
 
-  if (imageUrl) {
+  if (displayImageUrl) {
     return (
       <div
+        {...getRootProps()}
         className={cn(
-          "relative overflow-hidden rounded-[20px] border border-[#FFFFFF]/10",
+          "relative cursor-pointer overflow-hidden rounded-[20px] border border-[#FFFFFF]/10",
           className,
         )}
       >
+        <input {...getInputProps()} />
         <Image
-          src={imageUrl}
+          src={displayImageUrl}
           alt="미리보기"
           width={500}
           height={500}
@@ -59,7 +65,10 @@ const FileDropzone = ({
         />
         <button
           type="button"
-          onClick={handleDelete}
+          onClick={(e) => {
+            e.stopPropagation();
+            handleDelete();
+          }}
           className="absolute top-2 right-2 flex h-8 w-8 items-center justify-center rounded-full bg-black/50 text-lg font-bold text-white hover:bg-black/70"
         >
           x

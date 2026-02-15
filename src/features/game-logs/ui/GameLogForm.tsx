@@ -4,6 +4,7 @@ import dayjs from "dayjs";
 
 import {
   useUploadFile,
+  useGetSignedUrl,
   UploadFileQueryModel,
   cn,
   Notification,
@@ -44,6 +45,8 @@ const GameLogForm = ({
   const { data: teams } = useGetTeams();
   const { data: stadiums } = useGetStadiums();
   const { mutateAsync: uploadFile } = useUploadFile();
+  const { mutateAsync: getSignedUrl } = useGetSignedUrl();
+  const [initImageUrl, setInitImageUrl] = useState<string | null>(null);
 
   const { control, setValue, register, reset, watch, handleSubmit } = useForm<
     CreateGameLogForm | UpdateGameLogForm
@@ -87,6 +90,22 @@ const GameLogForm = ({
     });
   }, [defaultValues, reset]);
 
+  useEffect(() => {
+    if (
+      defaultValues?.gameLogImage &&
+      typeof defaultValues.gameLogImage === "string"
+    ) {
+      getSignedUrl({
+        bucket: "game-log-images",
+        path: defaultValues.gameLogImage,
+      })
+        .then((data) => setInitImageUrl(data.signedUrl))
+        .catch(() => setInitImageUrl(null));
+    } else {
+      setInitImageUrl(null);
+    }
+  }, [defaultValues?.gameLogImage, getSignedUrl]);
+
   return (
     <form
       className="px-[16px] py-[20px]"
@@ -94,6 +113,7 @@ const GameLogForm = ({
         async (formData) => {
           if (!user?.id) return;
 
+          let imagePath: string | null;
           if (
             formData.gameLogImage &&
             formData.gameLogImage instanceof FileList
@@ -103,15 +123,18 @@ const GameLogForm = ({
               file: formData.gameLogImage[0],
               userId: user.id,
             };
-
-            const imageUrl = await uploadFile(file);
-
-            handleClickSubmit(
-              transformFormToApiBody(user.id, formData, imageUrl.path),
-            );
+            const result = await uploadFile(file);
+            imagePath = result.path;
           } else {
-            handleClickSubmit(transformFormToApiBody(user.id, formData));
+            imagePath =
+              typeof formData.gameLogImage === "string"
+                ? formData.gameLogImage
+                : null;
           }
+
+          handleClickSubmit(
+            transformFormToApiBody(user.id, formData, imagePath),
+          );
         },
         () => {
           alert("필수 입력 해주세요!");
@@ -301,8 +324,9 @@ const GameLogForm = ({
               <textarea
                 className="w-full resize-none justify-start rounded-[20px] border border-white/10 bg-[#ffffff]/4 px-[12px] py-[8px]"
                 rows={2}
-                placeholder="오늘 경기는 어땠나요? 자유롭게 기록해보세요 ✨"
-                {...register("note")}
+                maxLength={200}
+                placeholder="오늘 경기는 어땠나요? 자유롭게 기록해보세요 ✨ (최대 200자)"
+                {...register("note", { maxLength: 200 })}
               />
             </LabelContent>
             <LabelContent label="사진">
@@ -313,9 +337,12 @@ const GameLogForm = ({
               <Controller
                 control={control}
                 name="gameLogImage"
-                render={({ field: { onChange } }) => (
+                render={({ field: { value, onChange } }) => (
                   <FileDropzone
                     className="h-[144px]"
+                    initImageUrl={
+                      typeof value === "string" ? initImageUrl : undefined
+                    }
                     onChange={(files) => onChange(files)}
                   />
                 )}

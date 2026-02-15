@@ -6,7 +6,7 @@ export const transformFormToApiBody = (
   formData:
     | Omit<CreateGameLogForm, "gameLogImage">
     | Omit<UpdateGameLogForm, "gameLogImage">,
-  gameLogImage?: string,
+  gameLogImage?: string | null,
 ): CreateGameLogQueryModel["body"] => {
   if (
     !formData.homeTeamId ||
@@ -29,7 +29,7 @@ export const transformFormToApiBody = (
     mvp: formData.mvp,
     note: formData.note,
     is_certify: false,
-    ...(gameLogImage && { game_log_image: gameLogImage }),
+    ...(gameLogImage !== undefined && { game_log_image: gameLogImage ?? null }),
     stadium_id: formData.stadiumId ?? null,
     ...(formData.weather && { weather: Number(formData.weather) }),
   };
