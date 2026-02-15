@@ -36,7 +36,7 @@ const WinningRateTabItem = () => {
         </div>
       </div>
       <div className="relative min-h-0 flex-1">
-        <Character1 className="absolute bottom-0 left-1/2 max-w-none -translate-x-1/2 translate-y-[47%]" />
+        <Character1 className="absolute left-1/2 w-[200%] -translate-x-1/2" />
       </div>
     </div>
   );
