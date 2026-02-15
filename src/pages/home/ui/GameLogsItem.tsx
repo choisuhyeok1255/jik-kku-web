@@ -30,6 +30,7 @@ const GameLogsItem = ({
   const { data: stadiums } = useGetStadiums();
 
   const [imageUrl, setImageUrl] = useState<string | null>(null);
+  const [isImageLoading, setIsImageLoading] = useState(false);
   const [isFlipped, setIsFlipped] = useState(false);
 
   const getResult = () => {
@@ -56,11 +57,17 @@ const GameLogsItem = ({
       : null;
 
   useEffect(() => {
+    setImageUrl(null);
+  }, [gameLog.game_log_image]);
+
+  useEffect(() => {
     if (!gameLog.game_log_image) {
-      setImageUrl(null);
+      setIsImageLoading(false);
       return;
     }
+    if (!isFlipped || imageUrl) return;
 
+    setIsImageLoading(true);
     const fetchSignedUrl = async () => {
       try {
         const { signedUrl } = await getSignedUrl({
@@ -71,11 +78,13 @@ const GameLogsItem = ({
       } catch (error) {
         console.error("Signed URL 생성 실패:", error);
         setImageUrl(null);
+      } finally {
+        setIsImageLoading(false);
       }
     };
 
     fetchSignedUrl();
-  }, [gameLog.game_log_image, getSignedUrl]);
+  }, [isFlipped, gameLog.game_log_image, getSignedUrl, imageUrl]);
 
   const cardBaseClass =
     "rounded-[20px] border border-white/10 bg-white/4 p-[20px]";
@@ -139,6 +148,10 @@ const GameLogsItem = ({
                     className="object-cover"
                   />
                 </div>
+              ) : isImageLoading ? (
+                <div className="flex flex-1 items-center justify-center">
+                  <span className="text-[14px] text-white/40">로딩 중...</span>
+                </div>
               ) : (
                 <div className="flex flex-1 items-center justify-center">
                   <span className="text-[14px] text-white/30">
@@ -149,7 +162,7 @@ const GameLogsItem = ({
             </div>
 
             {/* 메모 영역 - 수정하기 버튼 아래로 */}
-            <div className="mt-[44px] flex min-h-[100px] min-w-0 flex-1 overflow-y-auto">
+            <div className="mt-[22px] flex min-h-[100px] min-w-0 flex-1 overflow-y-auto">
               {gameLog.note && (
                 <p className="text-[14px] wrap-break-word text-white/90">
                   {gameLog.note}
