@@ -1,1 +1,16 @@
-export { SharePage as default } from "@/src/pages/share";
+import { Suspense } from "react";
+import { SharePage } from "@/src/pages/share";
+
+export default function Page() {
+  return (
+    <Suspense
+      fallback={
+        <div className="flex h-screen items-center justify-center">
+          <span className="text-white/60">로딩 중...</span>
+        </div>
+      }
+    >
+      <SharePage />
+    </Suspense>
+  );
+}
