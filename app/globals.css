@@ -92,6 +92,7 @@ button {
   }
 }
 
-.flip-card.card-enter {
+.flip-card.card-enter,
+.card-enter {
   animation: card-enter 0.4s ease-out both;
 }
