@@ -64,6 +64,7 @@ const GameLogForm = ({
       weather: null,
       gameLogImage: null,
     },
+    mode: "all",
     shouldFocusError: false,
   });
 
