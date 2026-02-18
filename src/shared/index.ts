@@ -9,6 +9,7 @@ export { default as Header } from "./ui/Header";
 export { default as LabelContent } from "./ui/LabelContent";
 export { default as Notification } from "./ui/Notification";
 export * from "./ui/shadcn/calendar";
+export * from "./ui/shadcn/date-time-picker";
 export * from "./ui/shadcn/popover";
 export * from "./ui/shadcn/select";
 export { default as FileDropzone } from "./ui/FileDropzone";

@@ -115,6 +115,50 @@ export type Database = {
           },
         ]
       }
+      share: {
+        Row: {
+          attendee_user_ids: Json | null
+          content: string | null
+          created_at: string | null
+          deadline: string
+          id: number
+          max_attendees: number
+          stadium_id: number | null
+          title: string | null
+          user_id: string | null
+        }
+        Insert: {
+          attendee_user_ids?: Json | null
+          content?: string | null
+          created_at?: string | null
+          deadline: string
+          id?: number
+          max_attendees: number
+          stadium_id?: number | null
+          title?: string | null
+          user_id?: string | null
+        }
+        Update: {
+          attendee_user_ids?: Json | null
+          content?: string | null
+          created_at?: string | null
+          deadline?: string
+          id?: number
+          max_attendees?: number
+          stadium_id?: number | null
+          title?: string | null
+          user_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "share_stadium_id_fkey"
+            columns: ["stadium_id"]
+            isOneToOne: false
+            referencedRelation: "stadium"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       stadium: {
         Row: {
           home_order: number | null
@@ -194,7 +238,7 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "teams"
             referencedColumns: ["id"]
-          }
+          },
         ]
       }
     }
