@@ -7,7 +7,7 @@ import {
   useUpdateGameLog,
   UpdateGameLogQueryModel,
 } from "@/src/entities";
-import { GameLogForm, transformApiToForm } from "@/src/features";
+import { GameLogForm, transformApiToGameLogForm } from "@/src/features";
 import { Header } from "@/src/shared";
 
 const GameLogEditPage = () => {
@@ -34,7 +34,7 @@ const GameLogEditPage = () => {
   };
 
   const defaultValues = useMemo(
-    () => (gameLog ? transformApiToForm(gameLog) : undefined),
+    () => (gameLog ? transformApiToGameLogForm(gameLog) : undefined),
     [gameLog],
   );
 

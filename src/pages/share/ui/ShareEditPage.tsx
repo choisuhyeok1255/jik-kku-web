@@ -9,12 +9,12 @@ import {
   useUpdateShare,
   useAuthStore,
 } from "@/src/entities";
-import { ShareForm, transformApiToForm } from "@/src/features";
+import { ShareForm, transformApiToShareForm } from "@/src/features";
 import { Header } from "@/src/shared";
 
 const ShareEditPage = () => {
   const router = useRouter();
-  const { id } = useParams<{ id: string }>();
+  const { id } = useParams<{ id: string | undefined }>();
   const shareId = Number(id);
 
   const { user } = useAuthStore();
@@ -53,7 +53,7 @@ const ShareEditPage = () => {
   };
 
   const defaultValues = useMemo(
-    () => (share ? transformApiToForm(share) : undefined),
+    () => (share ? transformApiToShareForm(share) : undefined),
     [share],
   );
 
@@ -80,10 +80,7 @@ const ShareEditPage = () => {
         />
         <div className="flex flex-1 flex-col items-center justify-center gap-4">
           <span className="text-white/60">수정 권한이 없습니다.</span>
-          <Link
-            href={`/share/${shareId}`}
-            className="text-[#5724F0] underline"
-          >
+          <Link href={`/share/${shareId}`} className="text-[#5724F0] underline">
             상세 페이지로 돌아가기
           </Link>
         </div>

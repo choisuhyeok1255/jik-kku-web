@@ -35,7 +35,7 @@ export const transformFormToApiBody = (
   };
 };
 
-export const transformApiToForm = (
+export const transformApiToGameLogForm = (
   gameLog: GameLogServerModel,
 ): CreateGameLogForm | UpdateGameLogForm => {
   return {

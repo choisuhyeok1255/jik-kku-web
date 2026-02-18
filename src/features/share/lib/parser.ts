@@ -1,7 +1,9 @@
 import type { ShareServerModel } from "@/src/entities";
 import type { CreateShareForm } from "../model/types/form";
 
-export const transformApiToForm = (share: ShareServerModel): CreateShareForm => {
+export const transformApiToShareForm = (
+  share: ShareServerModel,
+): CreateShareForm => {
   return {
     title: share.title ?? "",
     content: share.content ?? "",
