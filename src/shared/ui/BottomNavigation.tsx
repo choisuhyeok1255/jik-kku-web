@@ -33,8 +33,8 @@ const navigationItems = [
     unActiveIcon: AddWhiteIcon, // 특별한 버튼이므로 같은 아이콘
   },
   {
-    label: "게시판",
-    href: "/gameLogs",
+    label: "나눔",
+    href: "/share",
     activeIcon: NoticeBoardActiveIcon,
     unActiveIcon: NoticeBoardUnActiveIcon,
   },
