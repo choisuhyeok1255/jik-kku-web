@@ -57,6 +57,12 @@ const ShareEditPage = () => {
     [share],
   );
 
+  const applicantCount = (() => {
+    const ids = share?.attendee_user_ids;
+    if (!ids || !Array.isArray(ids)) return 0;
+    return ids.length;
+  })();
+
   if (isLoading || !share) {
     return (
       <div className="flex h-screen flex-col">
@@ -97,6 +103,7 @@ const ShareEditPage = () => {
       <div className="flex min-h-0 flex-1 flex-col">
         <ShareForm
           defaultValues={defaultValues}
+          minAttendees={applicantCount}
           handleClickSubmit={handleClickSubmit}
         />
       </div>
