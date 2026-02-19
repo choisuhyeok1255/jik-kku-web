@@ -1,7 +1,7 @@
 "use client";
 
 import * as React from "react";
-import { format, setHours, setMinutes } from "date-fns";
+import { format, setHours, setMinutes, startOfDay } from "date-fns";
 
 import { cn } from "@/src/shared/lib/tailwind";
 import { Button } from "@/src/shared/ui/shadcn/button";
@@ -20,6 +20,10 @@ export interface DateTimePickerProps {
   className?: string;
   /** 시간 선택 숨김 (날짜만) */
   hideTime?: boolean;
+  /** 이 날짜 이전 선택 불가 */
+  minDate?: Date;
+  /** 달력 열 때 표시할 월 (기본: 오늘) */
+  defaultMonth?: Date;
 }
 
 const HOURS = Array.from({ length: 24 }, (_, i) => i);
@@ -32,13 +36,15 @@ export function DateTimePicker({
   disabled,
   className,
   hideTime = false,
+  minDate,
+  defaultMonth,
 }: DateTimePickerProps) {
   const [open, setOpen] = React.useState(false);
   const [date, setDate] = React.useState<Date | undefined>(
     value ? new Date(value) : undefined,
   );
-  const [hour, setHour] = React.useState(value?.getHours() ?? 23);
-  const [minute, setMinute] = React.useState(value?.getMinutes() ?? 59);
+  const [hour, setHour] = React.useState(value?.getHours() ?? 0);
+  const [minute, setMinute] = React.useState(value?.getMinutes() ?? 0);
 
   React.useEffect(() => {
     if (value) {
@@ -47,8 +53,8 @@ export function DateTimePicker({
       setMinute(value.getMinutes());
     } else {
       setDate(undefined);
-      setHour(23);
-      setMinute(59);
+      setHour(0);
+      setMinute(0);
     }
   }, [value, open]);
 
@@ -105,6 +111,8 @@ export function DateTimePicker({
             mode="single"
             selected={date}
             onSelect={handleDateSelect}
+            defaultMonth={defaultMonth ?? value ?? new Date()}
+            disabled={minDate ? { before: startOfDay(minDate) } : undefined}
             classNames={{ root: "bg-transparent" }}
             formatters={{
               formatCaption: (d) => {
