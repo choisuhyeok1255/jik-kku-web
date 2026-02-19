@@ -1,5 +1,14 @@
 import { Database } from "@/src/shared";
 
+export interface GetUsersByIdsQueryModel {
+  query: { userIds: string[] };
+}
+
+export type UserNicknameModel = Pick<
+  Database["public"]["Tables"]["users"]["Row"],
+  "id" | "nickname"
+>;
+
 export interface UpdateNicknameQueryModel {
   body: { nickname: Database["public"]["Tables"]["users"]["Row"]["nickname"] };
 }
