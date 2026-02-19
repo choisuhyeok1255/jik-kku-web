@@ -53,7 +53,7 @@ const MyPageTeamPage = () => {
         title={{ text: "응원팀 변경", position: "center" }}
         prevPage={{ href: "/myPage" }}
       />
-      <div className="flex flex-1 flex-col px-[16px]">
+      <div className="flex min-h-0 flex-1 flex-col overflow-y-auto px-[16px] pb-[24px]">
         <div className="grid grid-cols-2 gap-[12px]">
           {teams?.map((team) => (
             <TeamCard
