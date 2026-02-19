@@ -7,6 +7,7 @@ import {
   useGetShareDetail,
   useUpdateShareAttendees,
   useGetStadiums,
+  useGetUsersByIds,
   useAuthStore,
 } from "@/src/entities";
 import { Header } from "@/src/shared";
@@ -23,6 +24,11 @@ const ShareDetailPage = () => {
   });
   const { data: stadiums } = useGetStadiums();
   const { mutate: updateAttendees } = useUpdateShareAttendees();
+
+  const attendeeIds = (share?.attendee_user_ids as string[] | undefined) ?? [];
+  const { data: attendeeUsers } = useGetUsersByIds({
+    query: { userIds: attendeeIds },
+  });
 
   const getStadiumName = () =>
     share?.stadium_id
@@ -130,8 +136,7 @@ const ShareDetailPage = () => {
             <div>마감 {formatDeadline()}</div>
             <div>
               {[
-                `나눔 ${share.max_attendees}명`,
-                `신청 ${getApplicantCount()}명`,
+                `신청 ${getApplicantCount()}/${share.max_attendees}명`,
                 getStadiumName(),
               ]
                 .filter(Boolean)
@@ -142,6 +147,30 @@ const ShareDetailPage = () => {
             <p className="text-[14px] whitespace-pre-wrap text-white/90">
               {share.content}
             </p>
+          )}
+          {attendeeIds.length > 0 && (
+            <div className="mt-[16px] border-t border-white/10 pt-[16px]">
+              <div className="mb-[8px] text-[14px] font-medium text-white/80">
+                신청자 ({attendeeIds.length}명)
+              </div>
+              <ul className="flex flex-wrap gap-[8px]">
+                {attendeeIds.map((userId) => {
+                  const attendee = attendeeUsers?.find((u) => u.id === userId);
+                  const displayName =
+                    attendeeUsers === undefined
+                      ? "로딩 중..."
+                      : (attendee?.nickname ?? "알 수 없음");
+                  return (
+                    <li
+                      key={userId}
+                      className="rounded-[12px] bg-white/10 px-[12px] py-[8px] text-[14px] text-white/90"
+                    >
+                      {displayName}
+                    </li>
+                  );
+                })}
+              </ul>
+            </div>
           )}
         </div>
         {canShowAttendButton && (

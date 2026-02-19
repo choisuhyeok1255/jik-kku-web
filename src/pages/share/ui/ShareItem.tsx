@@ -58,8 +58,9 @@ const ShareItem = ({
               )}
               <div>
                 {[
-                  share.max_attendees ? `나눔 ${share.max_attendees}명` : null,
-                  `신청 ${applicantCount}명`,
+                  share.max_attendees
+                    ? `신청 ${applicantCount}/${share.max_attendees}명`
+                    : null,
                   getStadiumName(),
                 ]
                   .filter(Boolean)
