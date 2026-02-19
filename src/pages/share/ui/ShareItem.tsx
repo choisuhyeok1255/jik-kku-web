@@ -5,6 +5,8 @@ import dayjs from "dayjs";
 
 import { useGetStadiums, type ShareServerModel } from "@/src/entities";
 
+import { isShareExpired } from "../lib/isShareExpired";
+
 const ShareItem = ({
   share,
   enterDelay = 0,
@@ -36,10 +38,15 @@ const ShareItem = ({
       ? `${share.content.slice(0, 80)}...`
       : share.content ?? "";
 
-  const cardBaseClass =
-    "rounded-[20px] border border-white/10 bg-white/4 p-[20px]";
-
   const applicantCount = getApplicantCount();
+  const isExpired = isShareExpired(share.deadline);
+  const isFull =
+    share.max_attendees != null && applicantCount >= share.max_attendees;
+  const isNotApplicable = isExpired || isFull;
+
+  const cardBaseClass =
+    "rounded-[20px] border border-white/10 p-[20px] " +
+    (isNotApplicable ? "bg-white/[0.02]" : "bg-white/4");
 
   return (
     <Link
