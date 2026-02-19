@@ -79,10 +79,10 @@ const GameLogsItem = ({
           path: gameLog.game_log_image!,
         });
         setImageUrl(signedUrl);
+        // isImageLoading은 Image onLoad에서 false로 설정 (실제 이미지 로드 완료 시)
       } catch (error) {
         console.error("Signed URL 생성 실패:", error);
         setImageUrl(null);
-      } finally {
         setIsImageLoading(false);
       }
     };
@@ -150,7 +150,14 @@ const GameLogsItem = ({
                     alt="직관 사진"
                     fill
                     className="object-cover"
+                    onLoad={() => setIsImageLoading(false)}
+                    onError={() => setIsImageLoading(false)}
                   />
+                  {isImageLoading && (
+                    <div className="absolute inset-0 flex items-center justify-center bg-white/5">
+                      <span className="text-[14px] text-white/40">로딩 중...</span>
+                    </div>
+                  )}
                 </div>
               ) : isImageLoading ? (
                 <div className="flex flex-1 items-center justify-center">
