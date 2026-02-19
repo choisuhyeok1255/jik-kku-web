@@ -68,7 +68,7 @@ const ShareForm = ({
         },
       )}
     >
-      <div className="flex-1 overflow-y-auto px-[16px] py-[20px]">
+      <div className="flex flex-1 flex-col overflow-y-auto px-[16px] py-[20px]">
         <div className="flex flex-col gap-[40px]">
           <div className="flex flex-col gap-[16px]">
             <LabelContent label="제목" isRequired>
@@ -101,6 +101,8 @@ const ShareForm = ({
                       value={value ?? undefined}
                       onChange={(date) => onChange(date ?? null)}
                       placeholder="마감일과 시간 선택"
+                      minDate={new Date()}
+                      defaultMonth={new Date()}
                     />
                     {error && (
                       <span className="text-[14px] text-red-500">
@@ -219,14 +221,14 @@ const ShareForm = ({
             </LabelContent>
           </div>
         </div>
-      </div>
-      <div className="shrink-0 px-[16px] pb-[20px]">
-        <button
-          className="h-[56px] w-full rounded-[20px] bg-[#5724F0] text-[16px]"
-          type="submit"
-        >
-          {defaultValues ? "수정완료" : "나눔 등록하기"}
-        </button>
+        <div className="mt-[40px] shrink-0">
+          <button
+            className="h-[56px] w-full rounded-[20px] bg-[#5724F0] text-[16px]"
+            type="submit"
+          >
+            {defaultValues ? "수정완료" : "나눔 등록하기"}
+          </button>
+        </div>
       </div>
     </form>
   );
