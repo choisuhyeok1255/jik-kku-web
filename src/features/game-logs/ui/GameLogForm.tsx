@@ -16,6 +16,7 @@ import {
   FileDropzone,
   LabelContent,
 } from "@/src/shared";
+import { toast } from "sonner";
 import {
   useGetTeams,
   useAuthStore,
@@ -138,7 +139,7 @@ const GameLogForm = ({
           );
         },
         () => {
-          alert("필수 입력 해주세요!");
+          toast.error("필수 입력 해주세요!");
         },
       )}
     >

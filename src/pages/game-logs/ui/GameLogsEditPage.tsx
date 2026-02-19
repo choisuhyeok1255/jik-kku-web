@@ -9,6 +9,7 @@ import {
 } from "@/src/entities";
 import { GameLogForm, transformApiToGameLogForm } from "@/src/features";
 import { Header } from "@/src/shared";
+import { toast } from "sonner";
 
 const GameLogEditPage = () => {
   const router = useRouter();
@@ -24,10 +25,10 @@ const GameLogEditPage = () => {
       {
         onSuccess: () => {
           router.push(`/?tab=gameLogs&scrollTo=${id}`);
-          alert("직관 기록이 성공적으로 수정되었습니다.");
+          toast.success("직관 기록이 성공적으로 수정되었습니다.");
         },
         onError: () => {
-          alert("직관 기록 수정에 실패했습니다.");
+          toast.error("직관 기록 수정에 실패했습니다.");
         },
       },
     );

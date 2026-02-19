@@ -11,6 +11,7 @@ import {
 } from "@/src/entities";
 import { ShareForm, transformApiToShareForm } from "@/src/features";
 import { Header } from "@/src/shared";
+import { toast } from "sonner";
 
 const ShareEditPage = () => {
   const router = useRouter();
@@ -46,7 +47,7 @@ const ShareEditPage = () => {
           router.push(`/share/${shareId}`);
         },
         onError: () => {
-          alert("나눔 수정에 실패했습니다.");
+          toast.error("나눔 수정에 실패했습니다.");
         },
       },
     );

@@ -3,6 +3,8 @@
 import { useEffect, useState } from "react";
 import { Controller, useForm } from "react-hook-form";
 
+import { toast } from "sonner";
+
 import { cn, DateTimePicker, LabelContent } from "@/src/shared";
 import { useGetStadiums, useAuthStore } from "@/src/entities";
 import { GameLogStadiumModal } from "@/src/features";
@@ -64,7 +66,7 @@ const ShareForm = ({
           });
         },
         () => {
-          alert("모든 필수 항목을 입력해 주세요!");
+          toast.error("모든 필수 항목을 입력해 주세요!");
         },
       )}
     >

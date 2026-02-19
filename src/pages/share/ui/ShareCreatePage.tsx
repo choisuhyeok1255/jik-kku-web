@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { usePostShare, useAuthStore } from "@/src/entities";
 import { ShareForm } from "@/src/features";
 import { Header } from "@/src/shared";
+import { toast } from "sonner";
 
 const ShareCreatePage = () => {
   const router = useRouter();
@@ -27,7 +28,7 @@ const ShareCreatePage = () => {
           router.push("/share");
         },
         onError: () => {
-          alert("나눔 등록에 실패했습니다.");
+          toast.error("나눔 등록에 실패했습니다.");
         },
       },
     );

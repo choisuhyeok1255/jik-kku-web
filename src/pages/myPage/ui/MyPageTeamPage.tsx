@@ -7,6 +7,7 @@ import {
   useUpdateTeam,
 } from "@/src/entities";
 import { Header } from "@/src/shared";
+import { toast } from "sonner";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 
@@ -30,11 +31,11 @@ const MyPageTeamPage = () => {
       { body: { team_id: selectedTeamId } },
       {
         onSuccess: () => {
-          alert("응원팀이 성공적으로 변경되었습니다.");
+          toast.success("응원팀이 성공적으로 변경되었습니다.");
           router.push("/myPage");
         },
         onError: () => {
-          alert("응원팀 변경에 실패했습니다.");
+          toast.error("응원팀 변경에 실패했습니다.");
         },
       },
     );

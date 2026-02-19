@@ -9,6 +9,7 @@ import {
 } from "@/src/entities";
 import { GameLogForm } from "@/src/features";
 import { Header } from "@/src/shared";
+import { toast } from "sonner";
 
 const GameLogCreatePage = () => {
   const router = useRouter();
@@ -29,7 +30,7 @@ const GameLogCreatePage = () => {
           }, 0);
         },
         onError: () => {
-          alert("직관 기록 저장에 실패했습니다.");
+          toast.error("직관 기록 저장에 실패했습니다.");
         },
       },
     );

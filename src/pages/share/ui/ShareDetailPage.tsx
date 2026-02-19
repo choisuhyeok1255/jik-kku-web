@@ -11,6 +11,7 @@ import {
   useAuthStore,
 } from "@/src/entities";
 import { Header } from "@/src/shared";
+import { toast } from "sonner";
 
 import { isShareExpired } from "../lib/isShareExpired";
 
@@ -68,7 +69,7 @@ const ShareDetailPage = () => {
       { query: { shareId }, body: { attendee_user_ids: newIds } },
       {
         onError: () => {
-          alert("참석 처리에 실패했습니다.");
+          toast.error("참석 처리에 실패했습니다.");
         },
       },
     );

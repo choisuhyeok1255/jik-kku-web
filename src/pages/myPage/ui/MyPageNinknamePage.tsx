@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 
 import { useGetUser, useUpdateNickname } from "@/src/entities";
 import { Header, LabelContent } from "@/src/shared";
+import { toast } from "sonner";
 
 const MyPageNinknamePage = () => {
   const router = useRouter();
@@ -21,11 +22,11 @@ const MyPageNinknamePage = () => {
       { body: { nickname } },
       {
         onSuccess: () => {
-          alert("닉네임이 성공적으로 수정되었습니다.");
+          toast.success("닉네임이 성공적으로 수정되었습니다.");
           router.push("/myPage");
         },
         onError: () => {
-          alert("닉네임 수정에 실패했습니다.");
+          toast.error("닉네임 수정에 실패했습니다.");
         },
       },
     );

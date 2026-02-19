@@ -4,6 +4,7 @@ import { useRouter, useSearchParams } from "next/navigation";
 
 import { useAuthStore } from "@/src/entities";
 import { AppTab, supabase } from "@/src/shared";
+import { toast } from "sonner";
 
 import WinningRateTabItem from "./WinningRateTabItem";
 import GameLogsTabItem from "./GameLogsTabItem";
@@ -47,7 +48,7 @@ const HomePage = () => {
               data: { session },
             } = await supabase.auth.getSession();
             if (session) {
-              alert("이미 로그인되어 있습니다.");
+              toast.info("이미 로그인되어 있습니다.");
               return;
             }
 
