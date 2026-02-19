@@ -30,7 +30,7 @@ const ShareOngoingTabItem = () => {
   }
 
   return (
-    <div className="flex flex-1 flex-col gap-[16px] overflow-y-auto px-[16px] pb-[116px]">
+    <div className="flex min-h-0 flex-1 flex-col gap-[16px] overflow-y-auto px-[16px] pb-[116px]">
       {ongoingShares.map((share, index) => (
         <ShareItem
           key={share.id}

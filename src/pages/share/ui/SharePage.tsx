@@ -33,7 +33,7 @@ const SharePage = () => {
         className="mb-[12px] shrink-0"
         title={{ text: "나눔", position: "left" }}
       />
-      <div className="flex flex-1 flex-col pt-[8px]">
+      <div className="flex min-h-0 flex-1 flex-col pt-[8px]">
         <div className="mb-[12px] px-[16px]">
           <AppTab
             className="mx-0"
