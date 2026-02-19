@@ -2,6 +2,7 @@
 
 import type { ReactNode } from "react";
 import { useMemo } from "react";
+import { useQueryClient } from "@tanstack/react-query";
 import { useRouter } from "next/navigation";
 import {
   useGetGameLogs,
@@ -74,6 +75,7 @@ const CardIcon = ({
 
 const MyPage = () => {
   const router = useRouter();
+  const queryClient = useQueryClient();
 
   const { data: teams } = useGetTeams();
   const { data: user } = useGetUser();
@@ -197,6 +199,7 @@ const MyPage = () => {
         <MyPageCardButton
           onClick={async () => {
             await supabase.auth.signOut();
+            queryClient.clear();
             router.push("/");
           }}
         >
