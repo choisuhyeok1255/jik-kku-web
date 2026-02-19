@@ -34,7 +34,11 @@ const GameLogsItem = ({
   const [isFlipped, setIsFlipped] = useState(false);
 
   const getResult = () => {
-    if (!gameLog.home_team_score || !gameLog.away_team_score) return "";
+    if (
+      typeof gameLog.home_team_score !== "number" ||
+      typeof gameLog.away_team_score !== "number"
+    )
+      return "";
 
     if (gameLog.home_team_score > gameLog.away_team_score) return "승리";
     if (gameLog.home_team_score < gameLog.away_team_score) return "패배";
