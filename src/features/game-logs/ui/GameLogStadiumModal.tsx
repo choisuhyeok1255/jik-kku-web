@@ -99,7 +99,7 @@ const GameLogStadiumModal = ({
   return (
     <Modal handleCloseModal={handleCloseModal}>
       <div className="mb-[24px] text-[20px]">경기장</div>
-      <div className="mb-[32px] flex-1 overflow-y-auto">
+      <div className="mb-[32px] min-h-0 flex-1 overflow-y-auto">
         <div className="grid grid-cols-2 gap-[12px]">
           {uniqueStadiums.map((stadium) => (
             <StadiumCard

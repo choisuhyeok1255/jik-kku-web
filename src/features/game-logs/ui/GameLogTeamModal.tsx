@@ -71,7 +71,7 @@ const GameLogTeamModal = ({
   return (
     <Modal handleCloseModal={handleCloseModal}>
       <AppTab
-        className="mb-[24px] w-full"
+        className="mb-[24px] w-full shrink-0"
         currentTab={currentTab}
         tabItems={[
           { label: "응원팀", value: "homeTeam" },
@@ -79,7 +79,7 @@ const GameLogTeamModal = ({
         ]}
         handleChangeTab={(tab) => setCurrentTab(tab as "homeTeam" | "awayTeam")}
       />
-      <div className="mb-[32px] flex-1 overflow-y-auto">
+      <div className="mb-[32px] min-h-0 flex-1 overflow-y-auto">
         <div className="grid grid-cols-2 gap-[12px]">
           {teams?.map((team) => {
             const isHomeSelected = selectedTeamId.homeTeamId === team.id;
@@ -113,7 +113,7 @@ const GameLogTeamModal = ({
         </div>
       </div>
       <button
-        className="h-[48px] w-full rounded-[20px] bg-[#5724F0] text-[16px] text-white"
+        className="h-[48px] w-full shrink-0 rounded-[20px] bg-[#5724F0] text-[16px] text-white"
         type="button"
         onClick={handleClickSubmit}
       >
