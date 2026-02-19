@@ -10,7 +10,7 @@ import {
   useGetUser,
   TeamIcon,
 } from "@/src/entities";
-import { Header, cn } from "@/src/shared";
+import { Header, cn, supabase } from "@/src/shared";
 
 const CARD_BASE =
   "rounded-[20px] border border-white/10 bg-white/[0.04] p-[20px]";
@@ -193,6 +193,20 @@ const MyPage = () => {
             {gameCount}경기
           </span>
         </MyPageCard>
+
+        <MyPageCardButton
+          onClick={async () => {
+            await supabase.auth.signOut();
+            router.push("/");
+          }}
+        >
+          <div className="flex h-[40px] min-w-0 items-center gap-3">
+            <CardIcon className="shrink-0 bg-white/10">🚪</CardIcon>
+            <span className="min-w-0 truncate text-[20px] font-bold text-[#ffffff]">
+              로그아웃
+            </span>
+          </div>
+        </MyPageCardButton>
       </div>
     </div>
   );
