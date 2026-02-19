@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import localFont from "next/font/local";
+import { Toaster } from "sonner";
 
 import { Providers, ConditionalBottomNavigation } from "@/src/app";
 import "./globals.css";
@@ -49,6 +50,7 @@ const RootLayout = ({
               <ConditionalBottomNavigation />
             </div>
           </div>
+          <Toaster richColors position="top-center" />
         </Providers>
       </body>
     </html>
