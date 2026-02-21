@@ -3,8 +3,7 @@
 import { useRouter, useSearchParams } from "next/navigation";
 
 import { useAuthStore } from "@/src/entities";
-import { AppTab, supabase } from "@/src/shared";
-import { toast } from "sonner";
+import { AppTab, NotLogin } from "@/src/shared";
 
 import WinningRateTabItem from "./WinningRateTabItem";
 import GameLogsTabItem from "./GameLogsTabItem";
@@ -39,35 +38,7 @@ const HomePage = () => {
   }
 
   if (!user) {
-    return (
-      <div className="flex h-screen flex-col items-center justify-center">
-        <button
-          onClick={async () => {
-            // 이미 로그인된 경우 확인
-            const {
-              data: { session },
-            } = await supabase.auth.getSession();
-            if (session) {
-              toast.info("이미 로그인되어 있습니다.");
-              return;
-            }
-
-            const { error } = await supabase.auth.signInWithOAuth({
-              provider: "kakao",
-              options: {
-                redirectTo: `${window.location.origin}/auth/callback`,
-              },
-            });
-
-            if (error) {
-              console.error("로그인 오류:", error);
-            }
-          }}
-        >
-          kakao 로그인
-        </button>
-      </div>
-    );
+    return <NotLogin />;
   }
 
   return (

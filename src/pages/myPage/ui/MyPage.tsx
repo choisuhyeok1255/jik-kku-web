@@ -11,7 +11,7 @@ import {
   useGetUser,
   TeamIcon,
 } from "@/src/entities";
-import { Header, cn, supabase } from "@/src/shared";
+import { Header, NotLogin, cn, supabase } from "@/src/shared";
 
 const CARD_BASE =
   "rounded-[20px] border border-white/10 bg-white/[0.04] p-[20px]";
@@ -78,7 +78,7 @@ const MyPage = () => {
   const queryClient = useQueryClient();
 
   const { data: teams } = useGetTeams();
-  const { data: user } = useGetUser();
+  const { data: user, isLoading: isLoadingUser } = useGetUser();
   const { data: stadiums } = useGetStadiums();
   const { data: gameLogs } = useGetGameLogs({
     query: { userId: user?.id || "" },
@@ -119,6 +119,18 @@ const MyPage = () => {
       .filter(([, count]) => count === maxCount)
       .map(([stadiumId]) => stadiumId);
   }, [gameLogs]);
+
+  if (isLoadingUser) {
+    return (
+      <div className="flex h-screen flex-col items-center justify-center">
+        <span>로딩 중...</span>
+      </div>
+    );
+  }
+
+  if (!user) {
+    return <NotLogin />;
+  }
 
   return (
     <div className="flex h-screen flex-col">
