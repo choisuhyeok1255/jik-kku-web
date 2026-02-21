@@ -13,41 +13,64 @@ import NoticeBoardUnActiveIcon from "@/public/notice-board-un-active.svg";
 import PersonActiveIcon from "@/public/person-active.svg";
 import PersonUnActiveIcon from "@/public/person-un-active.svg";
 
-const navigationItems = [
-  {
-    label: "홈",
-    href: "/",
-    activeIcon: HomeActiveIcon,
-    unActiveIcon: HomeUnActiveIcon,
-  },
-  {
-    label: "랭킹",
-    href: "/ranking",
-    activeIcon: RankActiveIcon,
-    unActiveIcon: RankUnActiveIcon,
-  },
-  {
-    label: "",
-    href: "/game-logs/create",
-    activeIcon: AddWhiteIcon,
-    unActiveIcon: AddWhiteIcon, // 특별한 버튼이므로 같은 아이콘
-  },
-  {
-    label: "나눔",
-    href: "/share",
-    activeIcon: NoticeBoardActiveIcon,
-    unActiveIcon: NoticeBoardUnActiveIcon,
-  },
-  {
-    label: "마이페이지",
-    href: "/myPage",
-    activeIcon: PersonActiveIcon,
-    unActiveIcon: PersonUnActiveIcon,
-  },
+const homeItem = {
+  label: "홈",
+  href: "/",
+  activeIcon: HomeActiveIcon,
+  unActiveIcon: HomeUnActiveIcon,
+};
+const rankItem = {
+  label: "랭킹",
+  href: "/ranking",
+  activeIcon: RankActiveIcon,
+  unActiveIcon: RankUnActiveIcon,
+};
+const gameLogAddItem = {
+  label: "",
+  href: "/game-logs/create",
+  activeIcon: AddWhiteIcon,
+  unActiveIcon: AddWhiteIcon,
+};
+const shareAddItem = {
+  label: "",
+  href: "/share/create",
+  activeIcon: AddWhiteIcon,
+  unActiveIcon: AddWhiteIcon,
+};
+const shareItem = {
+  label: "나눔",
+  href: "/share",
+  activeIcon: NoticeBoardActiveIcon,
+  unActiveIcon: NoticeBoardUnActiveIcon,
+};
+const myPageItem = {
+  label: "마이페이지",
+  href: "/myPage",
+  activeIcon: PersonActiveIcon,
+  unActiveIcon: PersonUnActiveIcon,
+};
+
+const gameLogNavigationItems = [
+  homeItem,
+  rankItem,
+  gameLogAddItem,
+  shareItem,
+  myPageItem,
+];
+const shareNavigationItems = [
+  homeItem,
+  rankItem,
+  shareAddItem,
+  shareItem,
+  myPageItem,
 ];
 
 const BottomNavigation = () => {
   const pathname = usePathname();
+
+  const navigationItems = pathname?.startsWith("/share")
+    ? shareNavigationItems
+    : gameLogNavigationItems;
 
   return (
     <nav className="fixed bottom-[21px] left-1/2 z-50 flex w-[361px] -translate-x-1/2 items-center justify-between rounded-[999px] bg-[#1E1E1E] px-[10px] py-[12px] shadow-lg">
