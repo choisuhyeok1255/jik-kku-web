@@ -1,6 +1,5 @@
 "use client";
 
-import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 
 import { Header, AppTab } from "@/src/shared";
@@ -44,14 +43,6 @@ const SharePage = () => {
             ]}
             handleChangeTab={handleChangeTab}
           />
-          <div className="mt-[12px] flex justify-end">
-            <Link
-              href="/share/create"
-              className="rounded-[20px] bg-[#5724F0] px-[16px] py-[10px] text-[14px] font-medium"
-            >
-              등록
-            </Link>
-          </div>
         </div>
         {currentTab === "ongoing" && <ShareOngoingTabItem />}
         {currentTab === "expired" && <ShareExpiredTabItem />}
