@@ -43,53 +43,47 @@ export type Database = {
         Row: {
           away_team_id: number | null
           away_team_score: number | null
-          companion: string | null
           created_at: string
           game_log_image: string | null
+          game_log_image_thumbnail: string | null
           home_team_id: number | null
           home_team_score: number | null
           id: number
           is_certify: boolean
           match_date: string | null
-          mvp: string | null
           note: string | null
           stadium_id: number | null
           user_id: string
-          weather: number | null
         }
         Insert: {
           away_team_id?: number | null
           away_team_score?: number | null
-          companion?: string | null
           created_at?: string
           game_log_image?: string | null
+          game_log_image_thumbnail?: string | null
           home_team_id?: number | null
           home_team_score?: number | null
           id?: number
           is_certify?: boolean
           match_date?: string | null
-          mvp?: string | null
           note?: string | null
           stadium_id?: number | null
           user_id?: string
-          weather?: number | null
         }
         Update: {
           away_team_id?: number | null
           away_team_score?: number | null
-          companion?: string | null
           created_at?: string
           game_log_image?: string | null
+          game_log_image_thumbnail?: string | null
           home_team_id?: number | null
           home_team_score?: number | null
           id?: number
           is_certify?: boolean
           match_date?: string | null
-          mvp?: string | null
           note?: string | null
           stadium_id?: number | null
           user_id?: string
-          weather?: number | null
         }
         Relationships: [
           {
@@ -117,37 +111,37 @@ export type Database = {
       }
       share: {
         Row: {
-          attendee_user_ids: Json | null
-          content: string | null
-          created_at: string | null
+          attendee_user_ids: Json
+          content: string
+          created_at: string
           deadline: string
           id: number
           max_attendees: number
-          stadium_id: number | null
-          title: string | null
-          user_id: string | null
+          stadium_id: number
+          title: string
+          user_id: string
         }
         Insert: {
-          attendee_user_ids?: Json | null
-          content?: string | null
-          created_at?: string | null
+          attendee_user_ids?: Json
+          content: string
+          created_at?: string
           deadline: string
           id?: number
           max_attendees: number
-          stadium_id?: number | null
-          title?: string | null
-          user_id?: string | null
+          stadium_id: number
+          title: string
+          user_id: string
         }
         Update: {
-          attendee_user_ids?: Json | null
-          content?: string | null
-          created_at?: string | null
+          attendee_user_ids?: Json
+          content?: string
+          created_at?: string
           deadline?: string
           id?: number
           max_attendees?: number
-          stadium_id?: number | null
-          title?: string | null
-          user_id?: string | null
+          stadium_id?: number
+          title?: string
+          user_id?: string
         }
         Relationships: [
           {

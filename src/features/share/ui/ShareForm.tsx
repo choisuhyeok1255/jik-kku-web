@@ -20,9 +20,9 @@ const ShareForm = ({
   minAttendees?: number;
   handleClickSubmit: (body: {
     title: string;
-    content: string | null;
+    content: string;
     deadline: string;
-    stadium_id: number | null;
+    stadium_id: number;
     max_attendees: number;
   }) => void;
 }) => {
@@ -55,12 +55,15 @@ const ShareForm = ({
       className="flex min-h-0 flex-1 flex-col"
       onSubmit={handleSubmit(
         (formData) => {
-          if (!user?.id) return;
+          if (!user?.id || !formData.stadiumId || !formData.deadline) {
+            toast.error("모든 필수 항목을 입력해 주세요!");
+            return;
+          }
 
           handleClickSubmit({
             title: formData.title,
-            content: formData.content || null,
-            deadline: formData.deadline!.toISOString(),
+            content: formData.content,
+            deadline: formData.deadline.toISOString(),
             stadium_id: formData.stadiumId,
             max_attendees: formData.maxAttendees,
           });
