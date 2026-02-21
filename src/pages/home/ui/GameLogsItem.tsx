@@ -10,6 +10,7 @@ import { useGetSignedUrl } from "@/src/shared";
 const GameLogsItem = ({
   gameLog,
   enterDelay = 0,
+  animate = true,
 }: {
   gameLog: {
     game_log_id: number;
@@ -24,6 +25,8 @@ const GameLogsItem = ({
     stadium_id: number | null;
   };
   enterDelay?: number;
+  /** false면 카드 등장 애니메이션 없음 (무한스크롤 로드 항목용) */
+  animate?: boolean;
 }) => {
   const { mutateAsync: getSignedUrl } = useGetSignedUrl();
   const { data: teams } = useGetTeams();
@@ -96,8 +99,8 @@ const GameLogsItem = ({
   return (
     <div
       id={`game-log-${gameLog.game_log_id}`}
-      className="flip-card card-enter cursor-pointer"
-      style={{ animationDelay: `${enterDelay}ms` }}
+      className={`flip-card cursor-pointer ${animate ? "card-enter" : ""}`}
+      style={animate ? { animationDelay: `${enterDelay}ms` } : undefined}
       onClick={() => setIsFlipped((prev) => !prev)}
     >
       <div className={`flip-card-inner ${isFlipped ? "is-flipped" : ""}`}>
