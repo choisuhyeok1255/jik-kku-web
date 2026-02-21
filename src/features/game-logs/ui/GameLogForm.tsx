@@ -15,6 +15,7 @@ import {
   PopoverContent,
   FileDropzone,
   LabelContent,
+  compressImage,
 } from "@/src/shared";
 import { toast } from "sonner";
 import {
@@ -59,10 +60,7 @@ const GameLogForm = ({
       awayTeamScore: null,
       matchDate: dayjs().format("YYYY-MM-DD"),
       stadiumId: null,
-      companion: "",
-      mvp: "",
       note: "",
-      weather: null,
       gameLogImage: null,
     },
     mode: "all",
@@ -84,10 +82,7 @@ const GameLogForm = ({
       awayTeamScore: defaultValues.awayTeamScore,
       matchDate: defaultValues.matchDate,
       stadiumId: defaultValues.stadiumId,
-      companion: defaultValues.companion,
-      mvp: defaultValues.mvp,
       note: defaultValues.note,
-      weather: defaultValues.weather,
       gameLogImage: defaultValues.gameLogImage,
     });
   }, [defaultValues, reset]);
@@ -98,7 +93,7 @@ const GameLogForm = ({
       typeof defaultValues.gameLogImage === "string"
     ) {
       getSignedUrl({
-        bucket: "game-log-images",
+        bucket: "game-log-images-thumbnail",
         path: defaultValues.gameLogImage,
       })
         .then((data) => setInitImageUrl(data.signedUrl))
@@ -113,30 +108,45 @@ const GameLogForm = ({
       className="px-[16px] py-[20px]"
       onSubmit={handleSubmit(
         async (formData) => {
-          if (!user?.id) return;
-
-          let imagePath: string | null;
-          if (
-            formData.gameLogImage &&
-            formData.gameLogImage instanceof FileList
-          ) {
-            const file: UploadFileQueryModel = {
-              bucket: "game-log-images",
-              file: formData.gameLogImage[0],
-              userId: user.id,
-            };
-            const result = await uploadFile(file);
-            imagePath = result.path;
-          } else {
-            imagePath =
-              typeof formData.gameLogImage === "string"
-                ? formData.gameLogImage
-                : null;
+          if (!user?.id) {
+            toast.error("로그인 후 이용해 주세요!");
+            return;
           }
 
-          handleClickSubmit(
-            transformFormToApiBody(user.id, formData, imagePath),
-          );
+          console.log("formData", formData);
+          const imageFile = formData.gameLogImage?.[0];
+          console.log("imageFile", imageFile);
+          const hasImage = imageFile && imageFile instanceof File;
+          console.log("hasImage", hasImage);
+
+          if (hasImage) {
+            const originalFile: UploadFileQueryModel = {
+              bucket: "game-log-images",
+              file: imageFile,
+              userId: user.id,
+            };
+            const thumbnailFile: UploadFileQueryModel = {
+              bucket: "game-log-images-thumbnail",
+              file: await compressImage(imageFile),
+              userId: user.id,
+            };
+            const originalFileResult = await uploadFile(originalFile);
+            const thumbnailFileResult = await uploadFile(thumbnailFile);
+
+            console.log("originalFileResult", originalFileResult);
+            console.log("thumbnailFileResult", thumbnailFileResult);
+
+            handleClickSubmit(
+              transformFormToApiBody(
+                user.id,
+                formData,
+                originalFileResult.path,
+                thumbnailFileResult.path,
+              ),
+            );
+          } else {
+            handleClickSubmit(transformFormToApiBody(user.id, formData));
+          }
         },
         () => {
           toast.error("필수 입력 해주세요!");

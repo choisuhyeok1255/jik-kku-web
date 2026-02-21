@@ -4,10 +4,7 @@ interface BaseGameLogForm {
   awayTeamId: number | null;
   awayTeamScore: number | null;
   matchDate: string | null;
-  companion: string;
-  mvp: string;
   note: string;
-  weather: string | null;
   stadiumId: number | null;
 }
 
