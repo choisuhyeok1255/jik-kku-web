@@ -50,7 +50,7 @@ const GameLogsTabItem = () => {
             home_team_id: gameLog.home_team_id || 0,
             away_team_id: gameLog.away_team_id || 0,
             match_date: gameLog.match_date || "",
-            game_log_image: gameLog.game_log_image || "",
+            game_log_image_thumbnail: gameLog.game_log_image_thumbnail || "",
             note: gameLog.note || "",
             is_certify: gameLog.is_certify || false,
             stadium_id: gameLog.stadium_id ?? null,

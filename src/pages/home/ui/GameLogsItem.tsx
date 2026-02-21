@@ -18,7 +18,7 @@ const GameLogsItem = ({
     home_team_id: number;
     away_team_id: number;
     match_date: string;
-    game_log_image: string;
+    game_log_image_thumbnail: string;
     note: string;
     is_certify: boolean;
     stadium_id: number | null;
@@ -62,10 +62,10 @@ const GameLogsItem = ({
 
   useEffect(() => {
     setImageUrl(null);
-  }, [gameLog.game_log_image]);
+  }, [gameLog.game_log_image_thumbnail]);
 
   useEffect(() => {
-    if (!gameLog.game_log_image) {
+    if (!gameLog.game_log_image_thumbnail) {
       setIsImageLoading(false);
       return;
     }
@@ -75,8 +75,8 @@ const GameLogsItem = ({
     const fetchSignedUrl = async () => {
       try {
         const { signedUrl } = await getSignedUrl({
-          bucket: "game-log-images",
-          path: gameLog.game_log_image!,
+          bucket: "game-log-images-thumbnail",
+          path: gameLog.game_log_image_thumbnail!,
         });
         setImageUrl(signedUrl);
         // isImageLoading은 Image onLoad에서 false로 설정 (실제 이미지 로드 완료 시)
@@ -88,7 +88,7 @@ const GameLogsItem = ({
     };
 
     fetchSignedUrl();
-  }, [isFlipped, gameLog.game_log_image, getSignedUrl, imageUrl]);
+  }, [isFlipped, gameLog.game_log_image_thumbnail, getSignedUrl, imageUrl]);
 
   const cardBaseClass =
     "rounded-[20px] border border-white/10 bg-white/4 p-[20px]";
@@ -155,7 +155,9 @@ const GameLogsItem = ({
                   />
                   {isImageLoading && (
                     <div className="absolute inset-0 flex items-center justify-center bg-white/5">
-                      <span className="text-[14px] text-white/40">로딩 중...</span>
+                      <span className="text-[14px] text-white/40">
+                        로딩 중...
+                      </span>
                     </div>
                   )}
                 </div>
