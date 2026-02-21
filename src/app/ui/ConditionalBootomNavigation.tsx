@@ -6,6 +6,7 @@ import { BottomNavigation } from "@/src/shared";
 
 const HIDDEN_PATHS: string[] = [
   "/game-logs/create",
+  "/game-logs/", // [id]/edit
   "/share/create",
   "/share/",
   "/admin",
