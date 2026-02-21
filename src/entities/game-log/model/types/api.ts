@@ -20,6 +20,13 @@ export interface GetGameLogsQueryModel {
   query: { userId: Database["public"]["Tables"]["users"]["Row"]["id"] };
 }
 
+export interface GetGameLogsInfiniteQueryModel {
+  query: {
+    userId: Database["public"]["Tables"]["users"]["Row"]["id"];
+    pageSize?: number;
+  };
+}
+
 export interface GetNotCertifyGameLogsQueryModel {
   query: { userId: Database["public"]["Tables"]["users"]["Row"]["id"] };
 }

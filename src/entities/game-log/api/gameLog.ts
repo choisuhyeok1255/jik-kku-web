@@ -1,10 +1,16 @@
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import {
+  useInfiniteQuery,
+  useMutation,
+  useQuery,
+  useQueryClient,
+} from "@tanstack/react-query";
 
 import { supabase } from "@/src/shared";
 import {
   CertifyGameLogQueryModel,
   CreateGameLogQueryModel,
   GameLogServerModel,
+  GetGameLogsInfiniteQueryModel,
   GetGameLogsQueryModel,
   GetNotCertifyGameLogsQueryModel,
   GetCertifyGameLogsQueryModel,
@@ -15,11 +21,16 @@ import {
   GetCertifyGameLogsServerModel,
 } from "../model/types/api";
 
+export const GAME_LOGS_PAGE_SIZE = 10;
+
 // 쿼리 키 팩토리
 export const gameLogKeys = {
   all: ["game_logs"] as const,
   lists: () => [...gameLogKeys.all, "list"] as const,
   list: (req: GetGameLogsQueryModel) => [...gameLogKeys.lists(), req] as const,
+  listsInfinite: () => [...gameLogKeys.all, "listInfinite"] as const,
+  listInfinite: (req: GetGameLogsInfiniteQueryModel) =>
+    [...gameLogKeys.listsInfinite(), req] as const,
   notCertified: (req: GetNotCertifyGameLogsQueryModel) =>
     [...gameLogKeys.all, "not_certified", req] as const,
   certify: (req: GetCertifyGameLogsQueryModel) =>
@@ -48,6 +59,41 @@ export const useGetGameLogs = (req: GetGameLogsQueryModel) => {
       return data || [];
     },
     enabled: !!req?.query?.userId, // userId가 있을 때만 실행
+  });
+};
+
+export const useGetGameLogsInfinite = (
+  req: GetGameLogsInfiniteQueryModel,
+) => {
+  const pageSize = req.query.pageSize ?? GAME_LOGS_PAGE_SIZE;
+
+  return useInfiniteQuery({
+    queryKey: gameLogKeys.listInfinite(req),
+    queryFn: async ({ pageParam }) => {
+      if (!req.query.userId) return [];
+
+      const from = pageParam * pageSize;
+      const to = from + pageSize - 1;
+
+      const { data, error } = await supabase
+        .from("game_logs")
+        .select(
+          "id, home_team_id, away_team_id, home_team_score, away_team_score, match_date, note, game_log_image, game_log_image_thumbnail, is_certify, stadium_id",
+        )
+        .eq("user_id", req.query.userId)
+        .order("match_date", { ascending: false })
+        .order("created_at", { ascending: false })
+        .range(from, to);
+
+      if (error) throw error;
+      return data || [];
+    },
+    initialPageParam: 0,
+    getNextPageParam: (lastPage, allPages) => {
+      if (lastPage.length < pageSize) return undefined;
+      return allPages.length;
+    },
+    enabled: !!req?.query?.userId,
   });
 };
 
@@ -113,6 +159,9 @@ export const usePostGameLog = () => {
       queryClient.invalidateQueries({
         queryKey: gameLogKeys.list({ query: { userId: req.body.user_id } }),
       });
+      queryClient.invalidateQueries({
+        queryKey: gameLogKeys.listsInfinite(),
+      });
     },
   });
 };
@@ -126,6 +175,9 @@ export const useDeleteGameLog = () => {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: gameLogKeys.all });
+      queryClient.invalidateQueries({
+        queryKey: gameLogKeys.listsInfinite(),
+      });
     },
   });
 };
@@ -162,6 +214,9 @@ export const useUpdateGameLog = () => {
         queryKey: gameLogKeys.list({ query: { userId: gameLog.body.user_id } }),
       });
       queryClient.invalidateQueries({
+        queryKey: gameLogKeys.listsInfinite(),
+      });
+      queryClient.invalidateQueries({
         queryKey: gameLogKeys.detail({
           query: { gameLogId: gameLog.query.gameLogId },
         }),
@@ -182,6 +237,9 @@ export const useCertifyGameLog = () => {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: gameLogKeys.all });
+      queryClient.invalidateQueries({
+        queryKey: gameLogKeys.listsInfinite(),
+      });
     },
   });
 };

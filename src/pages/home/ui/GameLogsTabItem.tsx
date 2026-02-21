@@ -1,7 +1,11 @@
 import { useEffect, useRef } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 
-import { useAuthStore, useGetGameLogs } from "@/src/entities";
+import {
+  GAME_LOGS_PAGE_SIZE,
+  useAuthStore,
+  useGetGameLogsInfinite,
+} from "@/src/entities";
 
 import GameLogsItem from "./GameLogsItem";
 
@@ -10,15 +14,30 @@ const GameLogsTabItem = () => {
   const searchParams = useSearchParams();
   const scrollToId = searchParams?.get("scrollTo");
   const hasScrolledRef = useRef(false);
+  const sentinelRef = useRef<HTMLDivElement>(null);
 
-  const { user, isLoading } = useAuthStore();
+  const { user, isLoading: isAuthLoading } = useAuthStore();
 
-  const { data: gameLogs = [] } = useGetGameLogs({
+  const {
+    data,
+    isLoading: isGameLogsLoading,
+    isFetchingNextPage,
+    hasNextPage,
+    fetchNextPage,
+  } = useGetGameLogsInfinite({
     query: { userId: user?.id || "" },
   });
 
+  const gameLogs = data?.pages.flatMap((page) => page) ?? [];
+
   useEffect(() => {
-    if (!scrollToId || isLoading || !gameLogs.length || hasScrolledRef.current)
+    if (
+      !scrollToId ||
+      isAuthLoading ||
+      isGameLogsLoading ||
+      !gameLogs.length ||
+      hasScrolledRef.current
+    )
       return;
 
     const el = document.getElementById(`game-log-${scrollToId}`);
@@ -31,10 +50,40 @@ const GameLogsTabItem = () => {
       const queryString = params.toString();
       router.replace(queryString ? `/?${queryString}` : "/", { scroll: false });
     }
-  }, [scrollToId, isLoading, gameLogs.length, searchParams, router]);
+  }, [
+    scrollToId,
+    isAuthLoading,
+    isGameLogsLoading,
+    gameLogs.length,
+    searchParams,
+    router,
+  ]);
 
-  if (isLoading) {
-    return <div>로딩 중...</div>;
+  useEffect(() => {
+    if (!hasNextPage || isFetchingNextPage) return;
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        const [entry] = entries;
+        if (entry?.isIntersecting) {
+          fetchNextPage();
+        }
+      },
+      { root: null, rootMargin: "100px", threshold: 0 },
+    );
+
+    const sentinel = sentinelRef.current;
+    if (sentinel) observer.observe(sentinel);
+
+    return () => observer.disconnect();
+  }, [hasNextPage, isFetchingNextPage, fetchNextPage]);
+
+  if (isAuthLoading || isGameLogsLoading) {
+    return (
+      <div className="flex flex-1 items-center justify-center">
+        <span className="text-white/60">로딩 중...</span>
+      </div>
+    );
   }
 
   return (
@@ -43,6 +92,7 @@ const GameLogsTabItem = () => {
         <GameLogsItem
           key={gameLog.id}
           enterDelay={index * 80}
+          animate={index < GAME_LOGS_PAGE_SIZE}
           gameLog={{
             game_log_id: gameLog.id || 0,
             home_team_score: gameLog.home_team_score || 0,
@@ -57,6 +107,12 @@ const GameLogsTabItem = () => {
           }}
         />
       ))}
+      <div ref={sentinelRef} className="h-px" />
+      {isFetchingNextPage && (
+        <div className="flex justify-center py-[16px]">
+          <span className="text-[14px] text-white/40">로딩 중...</span>
+        </div>
+      )}
     </div>
   );
 };
