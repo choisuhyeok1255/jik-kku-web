@@ -14,9 +14,9 @@ const ShareCreatePage = () => {
 
   const handleClickSubmit = (body: {
     title: string;
-    content: string | null;
+    content: string;
     deadline: string;
-    stadium_id: number | null;
+    stadium_id: number;
     max_attendees: number;
   }) => {
     if (!user?.id) return;
@@ -25,6 +25,7 @@ const ShareCreatePage = () => {
       { body: { ...body, user_id: user.id } },
       {
         onSuccess: () => {
+          toast.success("나눔 등록이 완료되었습니다.");
           router.push("/share");
         },
         onError: () => {
