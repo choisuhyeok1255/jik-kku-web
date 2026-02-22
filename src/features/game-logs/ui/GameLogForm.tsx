@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { Controller, useForm } from "react-hook-form";
+import { toast } from "sonner";
 import dayjs from "dayjs";
 
 import {
@@ -19,13 +20,12 @@ import {
   LabelContent,
   compressImage,
 } from "@/src/shared";
-import { toast } from "sonner";
 import {
   useGetTeams,
-  useAuthStore,
   CreateGameLogQueryModel,
   UpdateGameLogQueryModel,
   useGetStadiums,
+  useGetUser,
 } from "@/src/entities";
 import {
   CreateGameLogForm,
@@ -44,35 +44,37 @@ const GameLogForm = ({
     body: CreateGameLogQueryModel["body"] | UpdateGameLogQueryModel["body"],
   ) => void;
 }) => {
-  const { user } = useAuthStore();
-
+  const { data: user } = useGetUser();
   const { data: teams } = useGetTeams();
   const { data: stadiums } = useGetStadiums();
   const { mutateAsync: uploadFile } = useUploadFile();
   const { mutateAsync: getSignedUrl } = useGetSignedUrl();
+
   const [initImageUrl, setInitImageUrl] = useState<string | null>(null);
 
   const { control, setValue, register, reset, watch, handleSubmit } = useForm<
     CreateGameLogForm | UpdateGameLogForm
-  >({
-    defaultValues: {
-      homeTeamId: null,
-      awayTeamId: null,
-      homeTeamScore: null,
-      awayTeamScore: null,
-      matchDate: dayjs().format("YYYY-MM-DD"),
-      stadiumId: null,
-      note: "",
-      gameLogImage: null,
-    },
-    mode: "all",
-    shouldFocusError: false,
-  });
+  >({ mode: "all", shouldFocusError: false });
 
   const [isCalendarOpen, setIsCalendarOpen] = useState(false);
   const [isHomeTeamModalOpen, setIsHomeTeamModalOpen] = useState(false);
   const [isAwayTeamModalOpen, setIsAwayTeamModalOpen] = useState(false);
   const [isStadiumModalOpen, setIsStadiumModalOpen] = useState(false);
+
+  useEffect(() => {
+    if (!user || defaultValues || !stadiums) return;
+
+    reset({
+      homeTeamId: user.team_id,
+      awayTeamId: null,
+      homeTeamScore: null,
+      awayTeamScore: null,
+      matchDate: dayjs().format("YYYY-MM-DD"),
+      stadiumId: stadiums.find((stadium) => stadium.id === user.team_id)?.id,
+      note: "",
+      gameLogImage: null,
+    });
+  }, [user, stadiums, defaultValues]);
 
   useEffect(() => {
     if (!defaultValues) return;
@@ -313,17 +315,19 @@ const GameLogForm = ({
             <div className="flex gap-[16px]">
               <LabelContent className="flex-1" label="응원팀 점수" isRequired>
                 <input
-                  className="h-[48px] w-full justify-start rounded-[20px] border border-white/10 bg-[#ffffff]/4 px-[12px] py-[8px]"
+                  className="h-[48px] w-full [appearance:textfield] justify-start rounded-[20px] border border-white/10 bg-[#ffffff]/4 px-[12px] py-[8px] [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none"
                   min={0}
                   max={50}
+                  type="number"
                   {...register("homeTeamScore", { required: true })}
                 />
               </LabelContent>
               <LabelContent className="flex-1" label="상대팀 점수" isRequired>
                 <input
-                  className="h-[48px] w-full justify-start rounded-[20px] border border-white/10 bg-[#ffffff]/4 px-[12px] py-[8px]"
+                  className="h-[48px] w-full [appearance:textfield] justify-start rounded-[20px] border border-white/10 bg-[#ffffff]/4 px-[12px] py-[8px] [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none"
                   min={0}
                   max={50}
+                  type="number"
                   {...register("awayTeamScore", { required: true })}
                 />
               </LabelContent>
@@ -340,7 +344,7 @@ const GameLogForm = ({
             <LabelContent label="사진">
               <Notification
                 className="mb-[4px]"
-                text="직관 인증용 사진을 업로드하면 직관 랭킹에 반영됩니다!"
+                text="사진을 추가해주셔야 랭킹에 참여하실 수 있어요 ✨"
               />
               <Controller
                 control={control}
