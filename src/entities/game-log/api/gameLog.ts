@@ -31,8 +31,7 @@ export const gameLogKeys = {
   listsInfinite: () => [...gameLogKeys.all, "listInfinite"] as const,
   listInfinite: (req: GetGameLogsInfiniteQueryModel) =>
     [...gameLogKeys.listsInfinite(), req] as const,
-  notCertified: (req: GetNotCertifyGameLogsQueryModel) =>
-    [...gameLogKeys.all, "not_certified", req] as const,
+  notCertified: () => [...gameLogKeys.all, "not_certified"] as const,
   certify: (req: GetCertifyGameLogsQueryModel) =>
     [...gameLogKeys.all, "certify", req] as const,
   details: () => [...gameLogKeys.all, "detail"] as const,
@@ -62,9 +61,7 @@ export const useGetGameLogs = (req: GetGameLogsQueryModel) => {
   });
 };
 
-export const useGetGameLogsInfinite = (
-  req: GetGameLogsInfiniteQueryModel,
-) => {
+export const useGetGameLogsInfinite = (req: GetGameLogsInfiniteQueryModel) => {
   const pageSize = req.query.pageSize ?? GAME_LOGS_PAGE_SIZE;
 
   return useInfiniteQuery({
@@ -97,20 +94,13 @@ export const useGetGameLogsInfinite = (
   });
 };
 
-export const useGetNotCertifyGameLogs = (
-  req: GetNotCertifyGameLogsQueryModel,
-) => {
+export const useGetNotCertifyGameLogs = () => {
   return useQuery({
-    queryKey: gameLogKeys.notCertified(req),
+    queryKey: gameLogKeys.notCertified(),
     queryFn: async () => {
-      if (!req.query.userId) {
-        return [];
-      }
-
       const { data, error } = await supabase
         .from("game_logs")
-        .select("id, match_date, game_log_image")
-        .eq("user_id", req.query.userId)
+        .select("id, match_date, game_log_image, game_log_image_thumbnail")
         .eq("is_certify", false)
         .not("game_log_image", "is", null)
         .order("match_date", { ascending: false }); // match_date 최신순 정렬
@@ -118,7 +108,6 @@ export const useGetNotCertifyGameLogs = (
       if (error) throw error;
       return data || [];
     },
-    enabled: !!req?.query?.userId, // userId가 있을 때만 실행
   });
 };
 
