@@ -14,7 +14,7 @@ import { useEffect, useState } from "react";
 const MyPageTeamPage = () => {
   const router = useRouter();
 
-  const { data: user } = useGetUser();
+  const { data: user, refetch: refetchUser } = useGetUser();
   const { data: teams } = useGetTeams();
   const { mutate: updateTeam } = useUpdateTeam();
 
@@ -30,8 +30,9 @@ const MyPageTeamPage = () => {
     updateTeam(
       { body: { team_id: selectedTeamId } },
       {
-        onSuccess: () => {
+        onSuccess: async () => {
           toast.success("응원팀이 성공적으로 변경되었습니다.");
+          await refetchUser();
           router.push("/myPage");
         },
         onError: () => {
@@ -51,8 +52,11 @@ const MyPageTeamPage = () => {
     <div className="flex h-screen flex-col">
       <Header
         className="mb-[12px] shrink-0"
-        title={{ text: "응원팀 변경", position: "center" }}
-        prevPage={{ href: "/myPage" }}
+        title={{
+          text: user?.team_id ? "응원팀 변경" : "응원팀 설정",
+          position: "center",
+        }}
+        {...(user?.team_id && { prevPage: { href: "/myPage" } })}
       />
       <div className="flex min-h-0 flex-1 flex-col overflow-y-auto px-[16px] pb-[24px]">
         <div className="grid grid-cols-2 gap-[12px]">
