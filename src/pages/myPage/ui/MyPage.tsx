@@ -150,22 +150,28 @@ const MyPage = () => {
 
         <MyPageCardButton onClick={() => router.push("/myPage/team")}>
           <div className="flex flex-col gap-[16px]">
-            <div className="flex items-center gap-3">
-              {user?.team_id && <TeamIcon teamId={user.team_id} size={28} />}
-              <span className="font-[14px] text-[#ffffff]">응원팀</span>
-            </div>
-            <span className="text-left text-[20px] font-bold text-[#ffffff]">
-              {user?.team_id
-                ? teams?.find((t) => t.id === user.team_id)?.team_name
-                : ""}
-            </span>
+            {user?.team_id ? (
+              <>
+                <div className="flex items-center gap-3">
+                  <TeamIcon teamId={user.team_id} size={28} />
+                  <span className="font-[14px] text-[#ffffff]">응원팀</span>
+                </div>
+                <span className="text-left text-[20px] font-bold text-[#ffffff]">
+                  {teams?.find((t) => t.id === user.team_id)?.team_name}
+                </span>
+              </>
+            ) : (
+              <span className="text-[20px] font-bold text-[#ffffff]">
+                응원팀을 설정해 주세요
+              </span>
+            )}
           </div>
         </MyPageCardButton>
 
         <div className="flex gap-[12px]">
           <MyPageCard
             icon={<CardIcon className="bg-orange-500/80">⚾</CardIcon>}
-            label="응원팀 이긴 횟수"
+            label="이긴 횟수"
             className="flex-1"
           >
             <span className="text-[20px] font-bold text-[#ffffff]">
@@ -174,7 +180,7 @@ const MyPage = () => {
           </MyPageCard>
           <MyPageCard
             icon={<CardIcon className="bg-blue-500/80">📊</CardIcon>}
-            label="응원팀 평균 점수"
+            label="평균 점수"
             className="flex-1"
           >
             <span className="text-[20px] font-bold text-[#ffffff]">
@@ -185,7 +191,7 @@ const MyPage = () => {
 
         <MyPageCard
           icon={<CardIcon className="bg-green-600/80">🏟️</CardIcon>}
-          label="내가 자주가는 구장"
+          label="자주가는 구장"
         >
           <span className="text-xl font-bold text-white">
             {mostVisitedStadiums.length === 0
