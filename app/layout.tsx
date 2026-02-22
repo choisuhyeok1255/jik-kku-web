@@ -3,6 +3,7 @@ import localFont from "next/font/local";
 import { Toaster } from "sonner";
 
 import { Providers, ConditionalBottomNavigation } from "@/src/app";
+import { TeamSettingGuard } from "@/src/features";
 import "./globals.css";
 
 const laundryGothic = localFont({
@@ -44,13 +45,15 @@ const RootLayout = ({
         className={`${laundryGothic.variable} ${laundryGothic.className} h-screen overflow-hidden bg-[#232323]`}
       >
         <Providers>
-          <div className="flex justify-center">
-            <div className="relative h-screen w-full max-w-[440px] min-w-[360px] bg-[#181818]">
-              {children}
-              <ConditionalBottomNavigation />
+          <TeamSettingGuard>
+            <div className="flex justify-center">
+              <div className="relative h-screen w-full max-w-[440px] min-w-[360px] bg-[#181818]">
+                {children}
+                <ConditionalBottomNavigation />
+              </div>
             </div>
-          </div>
-          <Toaster richColors position="top-center" />
+            <Toaster richColors position="top-center" />
+          </TeamSettingGuard>
         </Providers>
       </body>
     </html>
