@@ -340,7 +340,7 @@ const GameLogForm = ({
             <LabelContent label="사진">
               <Notification
                 className="mb-[4px]"
-                text="직관을 인증할 수 있는 사진을 추가해 주세요. 티켓이 함께 보이는 사진이 가장 좋아요!  😊"
+                text="직관 인증용 사진을 업로드하면 직관 랭킹에 반영됩니다!"
               />
               <Controller
                 control={control}
