@@ -115,11 +115,8 @@ const GameLogForm = ({
             return;
           }
 
-          console.log("formData", formData);
           const imageFile = formData.gameLogImage?.[0];
-          console.log("imageFile", imageFile);
           const hasImage = imageFile && imageFile instanceof File;
-          console.log("hasImage", hasImage);
 
           if (hasImage) {
             const originalFile: UploadFileQueryModel = {
@@ -134,9 +131,6 @@ const GameLogForm = ({
             };
             const originalFileResult = await uploadFile(originalFile);
             const thumbnailFileResult = await uploadFile(thumbnailFile);
-
-            console.log("originalFileResult", originalFileResult);
-            console.log("thumbnailFileResult", thumbnailFileResult);
 
             handleClickSubmit(
               transformFormToApiBody(
