@@ -1,32 +1,42 @@
 "use client";
 
 import Image from "next/image";
-import {
-  useCertifyGameLog,
-  useGetNotCertifyGameLogs,
-  useAuthStore,
-} from "@/src/entities";
+import { useCertifyGameLog, useGetNotCertifyGameLogs } from "@/src/entities";
 import { useEffect, useState } from "react";
 import { useGetSignedUrl } from "@/src/shared";
 
-const GameLogImage = ({ gameLogImage }: { gameLogImage: string }) => {
+const GameLogImage = ({
+  gameLogImage,
+  gameLogImageThumbnail,
+}: {
+  gameLogImage?: string;
+  gameLogImageThumbnail?: string;
+}) => {
   const { mutateAsync: getSignedUrl } = useGetSignedUrl();
 
   const [imageUrl, setImageUrl] = useState<string | null>(null);
 
   useEffect(() => {
-    if (!gameLogImage) {
+    if (!gameLogImage && !gameLogImageThumbnail) {
       setImageUrl(null);
       return;
     }
 
     const fetchSignedUrl = async () => {
       try {
-        const { signedUrl } = await getSignedUrl({
-          bucket: "game-log-images",
-          path: gameLogImage,
-        });
-        setImageUrl(signedUrl);
+        if (gameLogImageThumbnail) {
+          const { signedUrl } = await getSignedUrl({
+            bucket: "game-log-images-thumbnail",
+            path: gameLogImageThumbnail,
+          });
+          setImageUrl(signedUrl);
+        } else if (gameLogImage) {
+          const { signedUrl } = await getSignedUrl({
+            bucket: "game-log-images",
+            path: gameLogImage,
+          });
+          setImageUrl(signedUrl);
+        }
       } catch (error) {
         console.error("Signed URL 생성 실패:", error);
         setImageUrl(null);
@@ -34,7 +44,7 @@ const GameLogImage = ({ gameLogImage }: { gameLogImage: string }) => {
     };
 
     fetchSignedUrl();
-  }, [gameLogImage, getSignedUrl]);
+  }, [gameLogImage, gameLogImageThumbnail, getSignedUrl]);
 
   if (!imageUrl) return null;
 
@@ -42,11 +52,7 @@ const GameLogImage = ({ gameLogImage }: { gameLogImage: string }) => {
 };
 
 const CertifyPage = () => {
-  const { user } = useAuthStore();
-
-  const { data: gameLogs } = useGetNotCertifyGameLogs({
-    query: { userId: user?.id || "" },
-  });
+  const { data: gameLogs } = useGetNotCertifyGameLogs();
   const { mutate: certifyGameLogMutate } = useCertifyGameLog();
 
   return (
@@ -58,9 +64,12 @@ const CertifyPage = () => {
             key={gameLog.id}
             className="flex w-[300px] items-center justify-between rounded-md border-2 border-gray-300 p-4"
           >
-            {gameLog.game_log_image && (
-              <GameLogImage gameLogImage={gameLog.game_log_image} />
-            )}
+            <GameLogImage
+              gameLogImage={gameLog.game_log_image ?? undefined}
+              gameLogImageThumbnail={
+                gameLog.game_log_image_thumbnail ?? undefined
+              }
+            />
             <div>{gameLog.match_date}</div>
             <button
               type="button"
