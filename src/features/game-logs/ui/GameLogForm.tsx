@@ -36,10 +36,12 @@ import GameLogTeamModal from "./GameLogTeamModal";
 import GameLogStadiumModal from "./GameLogStadiumModal";
 
 const GameLogForm = ({
+  isPendingGameLog,
   defaultValues,
   handleClickSubmit,
 }: {
   defaultValues?: CreateGameLogForm | UpdateGameLogForm;
+  isPendingGameLog: boolean;
   handleClickSubmit: (
     body: CreateGameLogQueryModel["body"] | UpdateGameLogQueryModel["body"],
   ) => void;
@@ -47,7 +49,8 @@ const GameLogForm = ({
   const { data: user } = useGetUser();
   const { data: teams } = useGetTeams();
   const { data: stadiums } = useGetStadiums();
-  const { mutateAsync: uploadFile } = useUploadFile();
+  const { mutateAsync: uploadFile, isPending: isUploadingFile } =
+    useUploadFile();
   const { mutateAsync: getSignedUrl } = useGetSignedUrl();
 
   const [initImageUrl, setInitImageUrl] = useState<string | null>(null);
@@ -363,7 +366,10 @@ const GameLogForm = ({
           </div>
         </div>
         <div className="flex justify-center gap-8">
-          <button className="h-[56px] w-full rounded-[20px] bg-[#5724F0] text-[16px]">
+          <button
+            className="h-[56px] w-full rounded-[20px] bg-[#5724F0] text-[16px] disabled:opacity-50"
+            disabled={isPendingGameLog || isUploadingFile}
+          >
             {defaultValues ? "수정완료" : "직관 등록하기"}
           </button>
         </div>
