@@ -39,15 +39,7 @@ const RankingPage = () => {
         title={{ text: "직관 랭킹", position: "left" }}
       />
       <div className="flex min-h-0 flex-1 flex-col overflow-y-auto px-[16px] pb-[100px]">
-        <Notification
-          text={
-            <>
-              직관 랭킹은 가벼운 재미 요소예요!
-              <br />
-              너무 경쟁하지 말고 즐겁게 야구를 즐겨요 😊
-            </>
-          }
-        />
+        <Notification text="인증된 직관 기록만 집계되어 승률이 계산됩니다 ✨" />
         <div className="mt-[24px] flex flex-col gap-[16px]">
           {ranking?.map((user, index) => (
             <div
