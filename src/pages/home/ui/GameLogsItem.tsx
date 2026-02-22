@@ -6,6 +6,7 @@ import Link from "next/link";
 
 import { useGetStadiums, useGetTeams } from "@/src/entities";
 import { useGetSignedUrl } from "@/src/shared";
+import CertifiedIcon from "@/public/certified.svg";
 
 const GameLogsItem = ({
   gameLog,
@@ -108,9 +109,9 @@ const GameLogsItem = ({
         <div className={`flip-card-front ${cardBaseClass}`}>
           <div className="mb-[12px] flex justify-between">
             <div className="flex flex-col gap-[4px]">
-              <div className="flex gap-[4px]">
+              <div className="flex items-center gap-[4px]">
                 <div>{gameLog.match_date}</div>
-                <div>{gameLog.is_certify && "인증"}</div>
+                <div>{gameLog.is_certify && <CertifiedIcon />}</div>
               </div>
               <div>{getStadiumName() ?? "-"}</div>
             </div>
