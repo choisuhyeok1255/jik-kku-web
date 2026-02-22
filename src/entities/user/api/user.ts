@@ -58,7 +58,12 @@ export const useUpdateNickname = () => {
       } = await supabase.auth.getUser();
       if (!user) return;
 
-      await supabase.from("users").update(req.body).eq("id", user.id);
+      const { error } = await supabase
+        .from("users")
+        .update(req.body)
+        .eq("id", user.id);
+
+      if (error) throw error;
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["user"] });

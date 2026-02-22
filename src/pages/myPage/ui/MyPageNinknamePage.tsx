@@ -25,8 +25,14 @@ const MyPageNinknamePage = () => {
           toast.success("닉네임이 성공적으로 수정되었습니다.");
           router.push("/myPage");
         },
-        onError: () => {
-          toast.error("닉네임 수정에 실패했습니다.");
+        onError: (error: unknown) => {
+          const err = error as { code?: string };
+
+          if (err.code === "23505") {
+            toast.error("이미 사용 중인 닉네임입니다.");
+          } else {
+            toast.error("닉네임 수정에 실패했습니다.");
+          }
         },
       },
     );
