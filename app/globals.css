@@ -16,6 +16,10 @@ body {
 
 button {
   cursor: pointer;
+
+  &:disabled {
+    cursor: not-allowed;
+  }
 }
 
 /* 스크롤바 스타일 숨기기 (스크롤 기능은 유지) */
