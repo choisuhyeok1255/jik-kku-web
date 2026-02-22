@@ -97,7 +97,7 @@ const GameLogStadiumModal = ({
   };
 
   return (
-    <Modal handleCloseModal={handleCloseModal}>
+    <Modal>
       <div className="mb-[24px] text-[20px]">경기장</div>
       <div className="mb-[32px] min-h-0 flex-1 overflow-y-auto">
         <div className="grid grid-cols-2 gap-[12px]">
@@ -118,13 +118,14 @@ const GameLogStadiumModal = ({
           "h-[56px] w-full rounded-[20px] text-[16px] text-white",
           selectedStadiumId && "bg-[#5724F0]",
         )}
+        disabled={!selectedStadiumId}
+        type="button"
+        onClick={handleClickSubmit}
         style={
           !selectedStadiumId
             ? { backgroundColor: "rgba(56, 52, 68, 0.6)" }
             : undefined
         }
-        type="button"
-        onClick={handleClickSubmit}
       >
         선택완료
       </button>
