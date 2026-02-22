@@ -111,7 +111,16 @@ const GameLogsItem = ({
             <div className="flex flex-col gap-[4px]">
               <div className="flex items-center gap-[4px]">
                 <div>{gameLog.match_date}</div>
-                <div>{gameLog.is_certify && <CertifiedIcon />}</div>
+                <div>
+                  {gameLog.is_certify && (
+                    <div className="flex items-center gap-[4px]">
+                      <CertifiedIcon />
+                      <div className="text-[12px] text-[#5724F0]">
+                        인증 완료
+                      </div>
+                    </div>
+                  )}
+                </div>
               </div>
               <div>{getStadiumName() ?? "-"}</div>
             </div>
