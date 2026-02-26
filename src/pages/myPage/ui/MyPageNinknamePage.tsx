@@ -1,11 +1,11 @@
 "use client";
 
-import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
+import { useState } from "react";
 
+import { toast } from "sonner";
 import { useGetUser, useUpdateNickname } from "@/src/entities";
 import { Header, LabelContent } from "@/src/shared";
-import { toast } from "sonner";
 
 const MyPageNinknamePage = () => {
   const router = useRouter();
@@ -13,7 +13,7 @@ const MyPageNinknamePage = () => {
   const { data: user } = useGetUser();
   const { mutate: updateNickname } = useUpdateNickname();
 
-  const [nickname, setNickname] = useState("");
+  const [nickname, setNickname] = useState(user?.nickname ?? "");
 
   const handleClickUpdateNickname = () => {
     if (!user?.id) return;
@@ -38,14 +38,8 @@ const MyPageNinknamePage = () => {
     );
   };
 
-  useEffect(() => {
-    if (!user) return;
-
-    setNickname(user.nickname);
-  }, [user]);
-
   return (
-    <div className="flex h-screen flex-col">
+    <div key={user?.id ?? "loading"} className="flex h-screen flex-col">
       <Header
         className="mb-[20px] shrink-0"
         title={{ text: "닉네임 수정", position: "center" }}

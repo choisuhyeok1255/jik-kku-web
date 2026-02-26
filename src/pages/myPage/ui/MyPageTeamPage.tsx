@@ -1,5 +1,8 @@
 "use client";
 
+import { useRouter } from "next/navigation";
+import { useState } from "react";
+import { toast } from "sonner";
 import {
   TeamCard,
   useGetTeams,
@@ -7,9 +10,6 @@ import {
   useUpdateTeam,
 } from "@/src/entities";
 import { Header } from "@/src/shared";
-import { toast } from "sonner";
-import { useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
 
 const MyPageTeamPage = () => {
   const router = useRouter();
@@ -18,7 +18,9 @@ const MyPageTeamPage = () => {
   const { data: teams } = useGetTeams();
   const { mutate: updateTeam } = useUpdateTeam();
 
-  const [selectedTeamId, setSelectedTeamId] = useState<number | null>(null);
+  const [selectedTeamId, setSelectedTeamId] = useState<number | null>(
+    user?.team_id ?? null,
+  );
 
   const handleClickTeam = (teamId: number) => {
     setSelectedTeamId(teamId);
@@ -42,14 +44,8 @@ const MyPageTeamPage = () => {
     );
   };
 
-  useEffect(() => {
-    if (!user) return;
-
-    setSelectedTeamId(user.team_id);
-  }, [user]);
-
   return (
-    <div className="flex h-screen flex-col">
+    <div key={user?.id ?? "loading"} className="flex h-screen flex-col">
       <Header
         className="mb-[12px] shrink-0"
         title={{
