@@ -5,7 +5,7 @@ import Image from "next/image";
 import Link from "next/link";
 
 import { useGetStadiums, useGetTeams } from "@/src/entities";
-import { useGetSignedUrl } from "@/src/shared";
+import { MatchResultTag, useGetSignedUrl } from "@/src/shared";
 import CertifiedIcon from "@/public/certified.svg";
 
 const GameLogsItem = ({
@@ -43,11 +43,11 @@ const GameLogsItem = ({
       typeof gameLog.home_team_score !== "number" ||
       typeof gameLog.away_team_score !== "number"
     )
-      return "";
+      return null;
 
-    if (gameLog.home_team_score > gameLog.away_team_score) return "승리";
-    if (gameLog.home_team_score < gameLog.away_team_score) return "패배";
-    return "무승부";
+    if (gameLog.home_team_score > gameLog.away_team_score) return true;
+    if (gameLog.home_team_score < gameLog.away_team_score) return false;
+    return null;
   };
 
   const getHomeTeamName = () => {
@@ -125,7 +125,7 @@ const GameLogsItem = ({
               </div>
               <div>{getStadiumName() ?? "-"}</div>
             </div>
-            <div>{getResult()}</div>
+            <MatchResultTag isVictory={getResult()} />
           </div>
           <div className="flex justify-around border-t border-b border-white/30 py-[20px]">
             <div className="flex flex-col items-center gap-[8px]">
