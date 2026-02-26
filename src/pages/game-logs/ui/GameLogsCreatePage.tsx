@@ -3,11 +3,10 @@
 import { useRouter } from "next/navigation";
 
 import {
-  usePostGameLog,
   CreateGameLogQueryModel,
   useGameLogCreateStore,
 } from "@/src/entities";
-import { GameLogForm } from "@/src/features";
+import { GameLogForm, useCreateGameLog } from "@/src/features";
 import { Header } from "@/src/shared";
 import { toast } from "sonner";
 
@@ -16,10 +15,11 @@ const GameLogCreatePage = () => {
 
   const { handleCanAccessFinishPage } = useGameLogCreateStore();
 
-  const { mutate: postGameLog, isPending: isPostingGameLog } = usePostGameLog();
+  const { mutate: createGameLog, isPending: isPostingGameLog } =
+    useCreateGameLog();
 
   const handleClickSubmit = (body: CreateGameLogQueryModel["body"]) => {
-    postGameLog(
+    createGameLog(
       { body },
       {
         onSuccess: () => {

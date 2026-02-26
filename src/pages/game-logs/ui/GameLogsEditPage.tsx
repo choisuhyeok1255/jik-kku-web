@@ -4,10 +4,13 @@ import { useMemo } from "react";
 import { useRouter, useParams } from "next/navigation";
 import {
   useGetGameLogDetail,
-  useUpdateGameLog,
   UpdateGameLogQueryModel,
 } from "@/src/entities";
-import { GameLogForm, transformApiToGameLogForm } from "@/src/features";
+import {
+  GameLogForm,
+  transformApiToGameLogForm,
+  useEditGameLog,
+} from "@/src/features";
 import { Header } from "@/src/shared";
 import { toast } from "sonner";
 
@@ -17,11 +20,11 @@ const GameLogEditPage = () => {
   const { data: gameLog, isLoading } = useGetGameLogDetail({
     query: { gameLogId: Number(id) },
   });
-  const { mutate: updateGameLog, isPending: isUpdatingGameLog } =
-    useUpdateGameLog();
+  const { mutate: editGameLog, isPending: isUpdatingGameLog } =
+    useEditGameLog();
 
   const handleClickSubmit = (body: UpdateGameLogQueryModel["body"]) => {
-    updateGameLog(
+    editGameLog(
       { query: { gameLogId: Number(id) }, body },
       {
         onSuccess: () => {

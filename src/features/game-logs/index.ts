@@ -1,3 +1,5 @@
+export { useCreateGameLog } from "./api/useCreateGameLog";
+export { useEditGameLog } from "./api/useEditGameLog";
 export {
   transformFormToApiBody,
   transformApiToGameLogForm,
