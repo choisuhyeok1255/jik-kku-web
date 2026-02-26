@@ -5,9 +5,9 @@ import { Controller, useForm } from "react-hook-form";
 
 import { toast } from "sonner";
 
-import { cn, DateTimePicker, LabelContent } from "@/src/shared";
-import { useGetStadiums, useAuthStore } from "@/src/entities";
 import { GameLogStadiumModal } from "@/src/features";
+import { useGetStadiums, useAuthStore } from "@/src/entities";
+import { cn, DateTimePicker, LabelContent } from "@/src/shared";
 import type { CreateShareForm } from "../model/types/form";
 
 const ShareForm = ({
@@ -167,7 +167,7 @@ const ShareForm = ({
                 name="stadiumId"
                 rules={{ required: "경기장을 선택해 주세요" }}
                 render={({
-                  field: { value, onChange },
+                  field: { value },
                   fieldState: { error },
                 }) => (
                   <div className="flex flex-col gap-[8px]">

@@ -1,12 +1,12 @@
 "use client";
 
 import Image from "next/image";
+import { useEffect, useState } from "react";
 import {
   useCertifyGameLog,
   useGetNotCertifyGameLogs,
   useRejectGameLog,
 } from "@/src/entities";
-import { useEffect, useState } from "react";
 import { useGetSignedUrl } from "@/src/shared";
 
 const GameLogImage = ({

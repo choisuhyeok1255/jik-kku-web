@@ -1,16 +1,16 @@
 "use client";
 
-import { useCallback, useEffect, useRef, useState } from "react";
-import { useRouter } from "next/navigation";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
+import { useCallback, useEffect, useRef, useState } from "react";
 
+import Character1 from "@/public/1.svg";
 import { useGameLogCreateStore } from "@/src/entities";
 import { Confetti, ConfettiRef } from "@/src/shared";
-import Character1 from "@/public/1.svg";
 
 const GameLogsCreateFinishPage = () => {
   const router = useRouter();
-  const { canAccessFinishPage, handleClearAccess } = useGameLogCreateStore();
+  const { handleClearAccess } = useGameLogCreateStore();
   const confettiRef = useRef<ConfettiRef>(null);
   const [countdown, setCountdown] = useState(5);
 

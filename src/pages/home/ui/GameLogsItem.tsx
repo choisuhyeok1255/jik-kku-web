@@ -1,12 +1,12 @@
 "use client";
 
-import { useEffect, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
+import { useEffect, useState } from "react";
 
+import CertifiedIcon from "@/public/certified.svg";
 import { useGetStadiums, useGetTeams } from "@/src/entities";
 import { MatchResultTag, useGetSignedUrl } from "@/src/shared";
-import CertifiedIcon from "@/public/certified.svg";
 
 const GameLogsItem = ({
   gameLog,
@@ -66,17 +66,17 @@ const GameLogsItem = ({
       : null;
 
   useEffect(() => {
-    setImageUrl(null);
+    queueMicrotask(() => setImageUrl(null));
   }, [gameLog.game_log_image_thumbnail]);
 
   useEffect(() => {
     if (!gameLog.game_log_image_thumbnail) {
-      setIsImageLoading(false);
+      queueMicrotask(() => setIsImageLoading(false));
       return;
     }
     if (!isFlipped || imageUrl) return;
 
-    setIsImageLoading(true);
+    queueMicrotask(() => setIsImageLoading(true));
     const fetchSignedUrl = async () => {
       try {
         const { signedUrl } = await getSignedUrl({

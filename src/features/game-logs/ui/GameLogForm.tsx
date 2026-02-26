@@ -1,10 +1,22 @@
 "use client";
 
+import dayjs from "dayjs";
 import { useEffect, useState } from "react";
 import { Controller, useForm } from "react-hook-form";
 import { toast } from "sonner";
-import dayjs from "dayjs";
 
+import {
+  CreateGameLogForm,
+  UpdateGameLogForm,
+  transformFormToApiBody,
+} from "@/src/features";
+import {
+  useGetTeams,
+  CreateGameLogQueryModel,
+  UpdateGameLogQueryModel,
+  useGetStadiums,
+  useGetUser,
+} from "@/src/entities";
 import {
   useUploadFile,
   useGetSignedUrl,
@@ -20,20 +32,8 @@ import {
   LabelContent,
   compressImage,
 } from "@/src/shared";
-import {
-  useGetTeams,
-  CreateGameLogQueryModel,
-  UpdateGameLogQueryModel,
-  useGetStadiums,
-  useGetUser,
-} from "@/src/entities";
-import {
-  CreateGameLogForm,
-  UpdateGameLogForm,
-  transformFormToApiBody,
-} from "@/src/features";
-import GameLogTeamModal from "./GameLogTeamModal";
 import GameLogStadiumModal from "./GameLogStadiumModal";
+import GameLogTeamModal from "./GameLogTeamModal";
 
 const GameLogForm = ({
   isPendingGameLog,
@@ -186,7 +186,7 @@ const GameLogForm = ({
       note: "",
       gameLogImage: null,
     });
-  }, [user, stadiums, defaultValues]);
+  }, [user, stadiums, defaultValues, reset]);
 
   useEffect(() => {
     if (!defaultValues) return;
@@ -283,7 +283,7 @@ const GameLogForm = ({
               control={control}
               name="stadiumId"
               rules={{ required: true }}
-              render={({ field: { value, onChange } }) => (
+              render={({ field: { value } }) => (
                 <button
                   className={cn(
                     "flex h-[48px] w-full items-center rounded-[20px] border border-white/10 bg-[#ffffff]/4 p-[14px] text-start text-[14px]",
