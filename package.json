@@ -39,6 +39,7 @@
     "zustand": "^5.0.10"
   },
   "devDependencies": {
+    "@eslint/eslintrc": "^3.3.4",
     "@feature-sliced/eslint-config": "^0.1.1",
     "@svgr/webpack": "^8.1.0",
     "@tailwindcss/postcss": "^4",
