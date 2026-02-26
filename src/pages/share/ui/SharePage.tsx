@@ -27,26 +27,18 @@ const SharePage = () => {
   };
 
   return (
-    <div className="flex h-screen flex-col">
-      <Header
-        className="mb-[12px] shrink-0"
-        title={{ text: "나눔", position: "left" }}
+    <div className="flex h-full flex-col pt-[24px]">
+      <AppTab
+        className="mx-[40px] mb-[20px]"
+        currentTab={currentTab}
+        tabItems={[
+          { label: "진행 중", value: "ongoing" },
+          { label: "마감됨", value: "expired" },
+        ]}
+        handleChangeTab={handleChangeTab}
       />
-      <div className="flex min-h-0 flex-1 flex-col pt-[8px]">
-        <div className="mb-[12px] px-[16px]">
-          <AppTab
-            className="mx-0"
-            currentTab={currentTab}
-            tabItems={[
-              { label: "진행 중", value: "ongoing" },
-              { label: "마감됨", value: "expired" },
-            ]}
-            handleChangeTab={handleChangeTab}
-          />
-        </div>
-        {currentTab === "ongoing" && <ShareOngoingTabItem />}
-        {currentTab === "expired" && <ShareExpiredTabItem />}
-      </div>
+      {currentTab === "ongoing" && <ShareOngoingTabItem />}
+      {currentTab === "expired" && <ShareExpiredTabItem />}
     </div>
   );
 };
