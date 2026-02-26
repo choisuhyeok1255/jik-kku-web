@@ -64,6 +64,115 @@ const GameLogForm = ({
   const [isAwayTeamModalOpen, setIsAwayTeamModalOpen] = useState(false);
   const [isStadiumModalOpen, setIsStadiumModalOpen] = useState(false);
 
+  const handleCreateGameLog = async (
+    formData: CreateGameLogForm | UpdateGameLogForm,
+  ) => {
+    if (!user?.id) {
+      toast.error("로그인 후 이용해 주세요!");
+      return;
+    }
+
+    const imageFile = formData.gameLogImage?.[0];
+    const hasImage = imageFile && imageFile instanceof File;
+
+    if (hasImage) {
+      const originalFile: UploadFileQueryModel = {
+        bucket: "game-log-images",
+        file: imageFile,
+        userId: user.id,
+      };
+      const thumbnailFile: UploadFileQueryModel = {
+        bucket: "game-log-images-thumbnail",
+        file: await compressImage(imageFile),
+        userId: user.id,
+      };
+      const originalFileResult = await uploadFile(originalFile);
+      const thumbnailFileResult = await uploadFile(thumbnailFile);
+
+      handleClickSubmit(
+        transformFormToApiBody({
+          userId: user.id,
+          formData,
+          gameLogImage: originalFileResult.path,
+          gameLogImageThumbnail: thumbnailFileResult.path,
+          isCertified: true,
+          isAdminCertified: false,
+        }),
+      );
+    } else {
+      handleClickSubmit(
+        transformFormToApiBody({
+          userId: user.id,
+          formData,
+          isCertified: false,
+          isAdminCertified: false,
+        }),
+      );
+    }
+  };
+
+  const handleEditGameLog = async (
+    formData: CreateGameLogForm | UpdateGameLogForm,
+  ) => {
+    const userId = user?.id;
+    if (!userId) {
+      toast.error("로그인 후 이용해 주세요!");
+      return;
+    }
+
+    // NOTE: 사진 그대로 유지
+    if (formData.gameLogImage && typeof formData.gameLogImage === "string") {
+      handleClickSubmit(transformFormToApiBody({ userId, formData }));
+    }
+
+    // NOTE: 사진 삭제
+    if (formData.gameLogImage === null) {
+      handleClickSubmit(
+        transformFormToApiBody({
+          userId,
+          formData,
+          gameLogImage: null,
+          gameLogImageThumbnail: null,
+          isCertified: false,
+          isAdminCertified: false,
+        }),
+      );
+    }
+
+    // NOTE: 사진 변경
+    if (
+      formData.gameLogImage &&
+      formData.gameLogImage?.[0] instanceof File &&
+      typeof formData.gameLogImage !== "string"
+    ) {
+      const imageFile = formData.gameLogImage[0];
+
+      const originalFile: UploadFileQueryModel = {
+        bucket: "game-log-images",
+        file: imageFile,
+        userId,
+      };
+      const thumbnailFile: UploadFileQueryModel = {
+        bucket: "game-log-images-thumbnail",
+        file: await compressImage(imageFile),
+        userId,
+      };
+      const originalFileResult = await uploadFile(originalFile);
+      const thumbnailFileResult = await uploadFile(thumbnailFile);
+
+      handleClickSubmit(
+        transformFormToApiBody({
+          userId,
+          formData,
+          gameLogImage: originalFileResult.path,
+          gameLogImageThumbnail: thumbnailFileResult.path,
+          isCertified: true,
+          isAdminCertified: false,
+        }),
+      );
+    }
+  };
+
   useEffect(() => {
     if (!user || defaultValues || !stadiums) return;
 
@@ -115,38 +224,10 @@ const GameLogForm = ({
       className="px-[16px] py-[20px]"
       onSubmit={handleSubmit(
         async (formData) => {
-          if (!user?.id) {
-            toast.error("로그인 후 이용해 주세요!");
-            return;
-          }
-
-          const imageFile = formData.gameLogImage?.[0];
-          const hasImage = imageFile && imageFile instanceof File;
-
-          if (hasImage) {
-            const originalFile: UploadFileQueryModel = {
-              bucket: "game-log-images",
-              file: imageFile,
-              userId: user.id,
-            };
-            const thumbnailFile: UploadFileQueryModel = {
-              bucket: "game-log-images-thumbnail",
-              file: await compressImage(imageFile),
-              userId: user.id,
-            };
-            const originalFileResult = await uploadFile(originalFile);
-            const thumbnailFileResult = await uploadFile(thumbnailFile);
-
-            handleClickSubmit(
-              transformFormToApiBody(
-                user.id,
-                formData,
-                originalFileResult.path,
-                thumbnailFileResult.path,
-              ),
-            );
+          if (defaultValues) {
+            handleEditGameLog(formData);
           } else {
-            handleClickSubmit(transformFormToApiBody(user.id, formData));
+            handleCreateGameLog(formData);
           }
         },
         () => {
