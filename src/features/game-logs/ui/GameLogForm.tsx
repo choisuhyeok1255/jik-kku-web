@@ -423,14 +423,14 @@ const GameLogForm = ({
                 className="w-full resize-none justify-start rounded-[20px] border border-white/10 bg-[#ffffff]/4 px-[12px] py-[8px]"
                 rows={2}
                 maxLength={200}
-                placeholder="오늘 경기는 어땠나요? 자유롭게 기록해보세요 ✨ (최대 200자)"
+                placeholder="오늘 경기는 어땠나요? 자유롭게 기록해보세요 ✨"
                 {...register("note", { maxLength: 200 })}
               />
             </LabelContent>
             <LabelContent label="사진">
               <Notification
                 className="mb-[4px]"
-                text="사진을 추가해주셔야 랭킹에 참여하실 수 있어요 ✨"
+                text="사진을 추가하면 랭킹에 바로 반영돼요. 경기와 무관한 사진은 추후 인증이 취소될 수 있어요 ✨"
               />
               <Controller
                 control={control}
