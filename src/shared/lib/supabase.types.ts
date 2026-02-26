@@ -49,7 +49,8 @@ export type Database = {
           home_team_id: number | null
           home_team_score: number | null
           id: number
-          is_certify: boolean
+          is_admin_certified: boolean
+          is_certified: boolean
           match_date: string | null
           note: string | null
           stadium_id: number | null
@@ -64,7 +65,8 @@ export type Database = {
           home_team_id?: number | null
           home_team_score?: number | null
           id?: number
-          is_certify?: boolean
+          is_admin_certified?: boolean
+          is_certified?: boolean
           match_date?: string | null
           note?: string | null
           stadium_id?: number | null
@@ -79,7 +81,8 @@ export type Database = {
           home_team_id?: number | null
           home_team_score?: number | null
           id?: number
-          is_certify?: boolean
+          is_admin_certified?: boolean
+          is_certified?: boolean
           match_date?: string | null
           note?: string | null
           stadium_id?: number | null
