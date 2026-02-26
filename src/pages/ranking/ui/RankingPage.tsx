@@ -10,16 +10,18 @@ const RankingPage = () => {
 
   if (isLoading) {
     return (
-      <div className="py-[40px] text-center text-white/60">
-        랭킹을 불러오는 중...
+      <div className="flex min-h-screen items-center justify-center">
+        <span className="text-center text-white/60">랭킹을 불러오는 중...</span>
       </div>
     );
   }
 
   if (error) {
     return (
-      <div className="py-[40px] text-center text-red-400">
-        랭킹을 불러오지 못했어요.
+      <div className="flex min-h-screen items-center justify-center">
+        <span className="text-center text-red-400">
+          랭킹을 불러오지 못했어요.
+        </span>
       </div>
     );
   }
