@@ -1,7 +1,11 @@
 "use client";
 
 import Image from "next/image";
-import { useCertifyGameLog, useGetNotCertifyGameLogs } from "@/src/entities";
+import {
+  useCertifyGameLog,
+  useGetNotCertifyGameLogs,
+  useRejectGameLog,
+} from "@/src/entities";
 import { useEffect, useState } from "react";
 import { useGetSignedUrl } from "@/src/shared";
 
@@ -48,21 +52,30 @@ const GameLogImage = ({
 
   if (!imageUrl) return null;
 
-  return <Image src={imageUrl} alt="game log image" width={100} height={100} />;
+  return (
+    <Image
+      className="h-[100px] w-[100px] object-cover"
+      src={imageUrl}
+      alt="game log image"
+      width={100}
+      height={100}
+    />
+  );
 };
 
 const CertifyPage = () => {
   const { data: gameLogs } = useGetNotCertifyGameLogs();
   const { mutate: certifyGameLogMutate } = useCertifyGameLog();
+  const { mutate: rejectGameLogMutate } = useRejectGameLog();
 
   return (
-    <div>
-      <div className="flex w-full flex-col gap-2">
-        직관 인증 페이지
+    <div className="flex h-screen flex-col">
+      <div className="flex min-h-0 flex-1 flex-col gap-2 overflow-y-auto p-4">
+        <div className="shrink-0">직관 인증 페이지</div>
         {gameLogs?.map((gameLog) => (
           <div
             key={gameLog.id}
-            className="flex w-[300px] items-center justify-between rounded-md border-2 border-gray-300 p-4"
+            className="flex items-center justify-between rounded-md border-2 border-gray-300 p-4"
           >
             <GameLogImage
               gameLogImage={gameLog.game_log_image ?? undefined}
@@ -70,15 +83,26 @@ const CertifyPage = () => {
                 gameLog.game_log_image_thumbnail ?? undefined
               }
             />
-            <div>{gameLog.match_date}</div>
-            <button
-              type="button"
-              onClick={() =>
-                certifyGameLogMutate({ query: { gameLogId: gameLog.id } })
-              }
-            >
-              인증
-            </button>
+            <div className="flex gap-[40px]">
+              <button
+                className="h-[40px] w-[100px] rounded-md border-2 border-gray-300"
+                type="button"
+                onClick={() =>
+                  certifyGameLogMutate({ query: { gameLogId: gameLog.id } })
+                }
+              >
+                인증
+              </button>
+              <button
+                className="h-[40px] w-[100px] rounded-md border-2 border-gray-300"
+                type="button"
+                onClick={() =>
+                  rejectGameLogMutate({ query: { gameLogId: gameLog.id } })
+                }
+              >
+                반려
+              </button>
+            </div>
           </div>
         ))}
       </div>
