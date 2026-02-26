@@ -8,6 +8,7 @@ import {
 } from "@/src/entities";
 
 import GameLogsItem from "./GameLogsItem";
+import EmptyGameLog from "./EmptyGameLog";
 
 const GameLogsTabItem = () => {
   const router = useRouter();
@@ -84,6 +85,10 @@ const GameLogsTabItem = () => {
         <span className="text-white/60">로딩 중...</span>
       </div>
     );
+  }
+
+  if (gameLogs?.length === 0) {
+    return <EmptyGameLog />;
   }
 
   return (

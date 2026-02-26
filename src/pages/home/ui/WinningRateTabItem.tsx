@@ -3,24 +3,13 @@ import { NotLogin } from "@/src/shared";
 import Character1 from "@/public/1.svg";
 import Character2 from "@/public/2.svg";
 import Character3 from "@/public/3.svg";
+import EmptyGameLog from "./EmptyGameLog";
 
 const WinningRateTabItem = () => {
   const { user, isLoading: isAuthLoading } = useAuthStore();
   const { data: gameLogs, isLoading: isGameLogsLoading } = useGetGameLogs({
     query: { userId: user?.id || "" },
   });
-
-  if (isAuthLoading || isGameLogsLoading) {
-    return (
-      <div className="flex h-screen flex-col items-center justify-center">
-        <span>로딩 중...</span>
-      </div>
-    );
-  }
-
-  if (!user) {
-    return <NotLogin />;
-  }
 
   const withScore =
     gameLogs?.filter(
@@ -93,6 +82,22 @@ const WinningRateTabItem = () => {
       <Character3 className="absolute left-1/2 w-[200%] -translate-x-1/2" />
     );
   })();
+
+  if (isAuthLoading || isGameLogsLoading) {
+    return (
+      <div className="flex h-screen flex-col items-center justify-center">
+        <span>로딩 중...</span>
+      </div>
+    );
+  }
+
+  if (!user) {
+    return <NotLogin />;
+  }
+
+  if (gameLogs?.length === 0) {
+    return <EmptyGameLog />;
+  }
 
   return (
     <div className="relative flex flex-1 flex-col gap-[60px] overflow-hidden">
