@@ -403,6 +403,7 @@ const GameLogForm = ({
                   min={0}
                   max={50}
                   type="number"
+                  placeholder="0"
                   {...register("homeTeamScore", { required: true })}
                 />
               </LabelContent>
@@ -412,6 +413,7 @@ const GameLogForm = ({
                   min={0}
                   max={50}
                   type="number"
+                  placeholder="0"
                   {...register("awayTeamScore", { required: true })}
                 />
               </LabelContent>
