@@ -86,7 +86,7 @@ const WinningRateTabItem = () => {
   if (isAuthLoading || isGameLogsLoading) {
     return (
       <div className="flex h-screen flex-col items-center justify-center">
-        <span>로딩 중...</span>
+        <span className="text-center text-white/60">로딩 중...</span>
       </div>
     );
   }
