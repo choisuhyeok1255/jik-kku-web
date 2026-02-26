@@ -48,7 +48,7 @@ export const useGetGameLogs = (req: GetGameLogsQueryModel) => {
       const { data, error } = await supabase
         .from("game_logs")
         .select(
-          "id, home_team_id, away_team_id, home_team_score, away_team_score, match_date, note, game_log_image, game_log_image_thumbnail, is_certify, stadium_id",
+          "id, home_team_id, away_team_id, home_team_score, away_team_score, match_date, note, game_log_image, game_log_image_thumbnail, is_certified, stadium_id",
         )
         .eq("user_id", req.query.userId)
         .order("match_date", { ascending: false })
@@ -75,7 +75,7 @@ export const useGetGameLogsInfinite = (req: GetGameLogsInfiniteQueryModel) => {
       const { data, error } = await supabase
         .from("game_logs")
         .select(
-          "id, home_team_id, away_team_id, home_team_score, away_team_score, match_date, note, game_log_image, game_log_image_thumbnail, is_certify, stadium_id",
+          "id, home_team_id, away_team_id, home_team_score, away_team_score, match_date, note, game_log_image, game_log_image_thumbnail, is_certified, is_admin_certified, stadium_id",
         )
         .eq("user_id", req.query.userId)
         .order("match_date", { ascending: false })
@@ -101,7 +101,8 @@ export const useGetNotCertifyGameLogs = () => {
       const { data, error } = await supabase
         .from("game_logs")
         .select("id, match_date, game_log_image, game_log_image_thumbnail")
-        .eq("is_certify", false)
+        .eq("is_admin_certified", false)
+        .eq("is_certified", true)
         .not("game_log_image", "is", null)
         .order("match_date", { ascending: false }); // match_date 최신순 정렬
 
@@ -122,10 +123,10 @@ export const useGetCertifyGameLogs = (req: GetCertifyGameLogsQueryModel) => {
       const { data, error } = await supabase
         .from("game_logs")
         .select(
-          "id, home_team_id, away_team_id, home_team_score, away_team_score, weather, match_date, companion, mvp, note, is_certify",
+          "id, home_team_id, away_team_id, home_team_score, away_team_score, weather, match_date, companion, mvp, note, is_certified",
         )
         .eq("user_id", req.query.userId)
-        .eq("is_certify", true)
+        .eq("is_certified", true)
         .order("match_date", { ascending: false }); // match_date 최신순 정렬
 
       if (error) throw error;
@@ -221,7 +222,26 @@ export const useCertifyGameLog = () => {
     mutationFn: async (req: CertifyGameLogQueryModel) => {
       await supabase
         .from("game_logs")
-        .update({ is_certify: true })
+        .update({ is_admin_certified: true })
+        .eq("id", req.query.gameLogId);
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: gameLogKeys.all });
+      queryClient.invalidateQueries({
+        queryKey: gameLogKeys.listsInfinite(),
+      });
+    },
+  });
+};
+
+export const useRejectGameLog = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async (req: CertifyGameLogQueryModel) => {
+      await supabase
+        .from("game_logs")
+        .update({ is_certified: false, is_admin_certified: false })
         .eq("id", req.query.gameLogId);
     },
     onSuccess: () => {
