@@ -1,11 +1,9 @@
 "use client";
 
 import Link from "next/link";
-import { useMemo } from "react";
 import { usePathname, useSearchParams } from "next/navigation";
+import { useMemo } from "react";
 
-import { useAuthStore, useGetGameLogs } from "@/src/entities";
-import { cn } from "@/src/shared";
 import AddWhiteIcon from "@/public/add-white.svg";
 import HomeActiveIcon from "@/public/home-active.svg";
 import HomeUnActiveIcon from "@/public/home-un-active.svg";
@@ -15,6 +13,8 @@ import PersonActiveIcon from "@/public/person-active.svg";
 import PersonUnActiveIcon from "@/public/person-un-active.svg";
 import RankActiveIcon from "@/public/ranking-active.svg";
 import RankUnActiveIcon from "@/public/ranking-un-active.svg";
+import { useAuthStore, useGetGameLogs } from "@/src/entities";
+import { cn } from "@/src/shared";
 
 const HIDDEN_PATHS: string[] = [
   "/game-logs/create",

@@ -1,7 +1,7 @@
 "use client";
 
-import { Header, Notification } from "@/src/shared";
 import { useAuthStore, useGetUserWinStatsRanking } from "@/src/entities";
+import { Header, Notification } from "@/src/shared";
 import { cn } from "@/src/shared";
 
 const RankingPage = () => {

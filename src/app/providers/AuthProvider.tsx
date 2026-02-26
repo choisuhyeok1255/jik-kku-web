@@ -1,8 +1,8 @@
 "use client";
 
 import { useEffect } from "react";
-import { supabase } from "@/src/shared";
 import { useAuthStore } from "@/src/entities";
+import { supabase } from "@/src/shared";
 
 const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const { setUser, setIsLoading } = useAuthStore();

@@ -1,8 +1,8 @@
 "use client";
 
+import Image from "next/image";
 import { useState } from "react";
 import { useDropzone } from "react-dropzone";
-import Image from "next/image";
 import { cn } from "@/src/shared/lib/tailwind";
 
 const FileDropzone = ({

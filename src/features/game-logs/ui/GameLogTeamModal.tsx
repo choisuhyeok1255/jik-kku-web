@@ -2,8 +2,8 @@
 
 import { useState } from "react";
 
-import { AppTab, Modal } from "@/src/shared";
 import { TeamCard, useGetTeams } from "@/src/entities";
+import { AppTab, Modal } from "@/src/shared";
 
 const GameLogTeamModal = ({
   initSelectedTeamId,

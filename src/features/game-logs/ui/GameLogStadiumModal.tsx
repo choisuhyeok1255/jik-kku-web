@@ -2,8 +2,8 @@
 
 import { useMemo, useState } from "react";
 
-import { cn, Modal } from "@/src/shared";
 import { useGetTeamsWithStadium } from "@/src/entities";
+import { cn, Modal } from "@/src/shared";
 
 const StadiumCard = ({
   shortTeamName,

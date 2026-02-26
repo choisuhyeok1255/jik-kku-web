@@ -1,8 +1,8 @@
-import { useAuthStore, useGetGameLogs } from "@/src/entities";
-import { NotLogin } from "@/src/shared";
 import Character1 from "@/public/1.svg";
 import Character2 from "@/public/2.svg";
 import Character3 from "@/public/3.svg";
+import { useAuthStore, useGetGameLogs } from "@/src/entities";
+import { NotLogin } from "@/src/shared";
 import EmptyGameLog from "./EmptyGameLog";
 
 const WinningRateTabItem = () => {

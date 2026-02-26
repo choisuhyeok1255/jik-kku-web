@@ -1,7 +1,7 @@
 import { describe, it, expect } from "vitest";
 import type { GameLogServerModel } from "@/src/entities";
-import { transformFormToApiBody, transformApiToGameLogForm } from "./parser";
 import type { CreateGameLogForm } from "../model/types/form";
+import { transformFormToApiBody, transformApiToGameLogForm } from "./parser";
 
 describe("transformFormToApiBody", () => {
   it("모든 필드가 있을 때 올바르게 변환해야 함", () => {

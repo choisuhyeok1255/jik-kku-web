@@ -1,5 +1,5 @@
-import { create } from "zustand";
 import type { User } from "@supabase/supabase-js";
+import { create } from "zustand";
 
 interface AuthStore {
   user: User | null;

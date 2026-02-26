@@ -1,5 +1,5 @@
-import { supabase } from "@/src/shared";
 import { useQuery } from "@tanstack/react-query";
+import { supabase } from "@/src/shared";
 
 import { StadiumServerModel } from "../model/types/api";
 

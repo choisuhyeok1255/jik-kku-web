@@ -1,5 +1,5 @@
-import { supabase } from "@/src/shared";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { supabase } from "@/src/shared";
 import {
   GetUsersByIdsQueryModel,
   UpdateNicknameQueryModel,

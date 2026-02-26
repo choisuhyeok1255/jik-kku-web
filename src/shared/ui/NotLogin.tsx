@@ -1,7 +1,7 @@
 "use client";
 
-import { supabase } from "@/src/shared";
 import { toast } from "sonner";
+import { supabase } from "@/src/shared";
 import { cn } from "../lib/tailwind";
 
 interface NotLoginProps {

@@ -1,5 +1,5 @@
-import { useEffect, useRef } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
+import { useEffect, useRef } from "react";
 
 import {
   GAME_LOGS_PAGE_SIZE,
@@ -7,9 +7,9 @@ import {
   useGetGameLogsInfinite,
 } from "@/src/entities";
 
-import GameLogsItem from "./GameLogsItem";
-import EmptyGameLog from "./EmptyGameLog";
 import { NotLogin } from "@/src/shared";
+import EmptyGameLog from "./EmptyGameLog";
+import GameLogsItem from "./GameLogsItem";
 
 const GameLogsTabItem = () => {
   const router = useRouter();

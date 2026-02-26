@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { useParams } from "next/navigation";
 
+import { toast } from "sonner";
 import {
   useGetShareDetail,
   useUpdateShareAttendees,
@@ -11,7 +12,6 @@ import {
   useAuthStore,
 } from "@/src/entities";
 import { Header } from "@/src/shared";
-import { toast } from "sonner";
 
 import { isShareExpired } from "../lib/isShareExpired";
 

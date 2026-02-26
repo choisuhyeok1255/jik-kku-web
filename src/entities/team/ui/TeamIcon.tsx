@@ -1,7 +1,7 @@
 "use client";
 
-import { cn } from "@/src/shared";
 import HelmetIcon from "@/public/helmet-fill.svg";
+import { cn } from "@/src/shared";
 
 const COLOR_MAP: Record<
   number,
