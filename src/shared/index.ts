@@ -16,5 +16,6 @@ export { default as FileDropzone } from "./ui/FileDropzone";
 export * from "./ui/shadcn/confetti";
 export * from "./ui/shadcn/dialog";
 export { default as AppTab } from "./ui/Tab";
+export { default as MatchResultTag } from "./ui/MatchResultTag";
 export { default as Modal } from "./ui/Modal";
 export { default as NotLogin } from "./ui/NotLogin";
