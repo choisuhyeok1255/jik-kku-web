@@ -2,16 +2,16 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { cn } from "../lib/tailwind";
+
 import HomeActiveIcon from "@/public/home-active.svg";
 import HomeUnActiveIcon from "@/public/home-un-active.svg";
 import RankActiveIcon from "@/public/ranking-active.svg";
 import RankUnActiveIcon from "@/public/ranking-un-active.svg";
-import AddWhiteIcon from "@/public/add-white.svg";
 import NoticeBoardActiveIcon from "@/public/notice-board-active.svg";
 import NoticeBoardUnActiveIcon from "@/public/notice-board-un-active.svg";
 import PersonActiveIcon from "@/public/person-active.svg";
 import PersonUnActiveIcon from "@/public/person-un-active.svg";
+import { cn } from "../lib/tailwind";
 
 const homeItem = {
   label: "홈",
@@ -24,18 +24,6 @@ const rankItem = {
   href: "/ranking",
   activeIcon: RankActiveIcon,
   unActiveIcon: RankUnActiveIcon,
-};
-const gameLogAddItem = {
-  label: "",
-  href: "/game-logs/create",
-  activeIcon: AddWhiteIcon,
-  unActiveIcon: AddWhiteIcon,
-};
-const shareAddItem = {
-  label: "",
-  href: "/share/create",
-  activeIcon: AddWhiteIcon,
-  unActiveIcon: AddWhiteIcon,
 };
 const shareItem = {
   label: "나눔",
@@ -50,45 +38,16 @@ const myPageItem = {
   unActiveIcon: PersonUnActiveIcon,
 };
 
-const gameLogNavigationItems = [
-  homeItem,
-  rankItem,
-  gameLogAddItem,
-  shareItem,
-  myPageItem,
-];
-const shareNavigationItems = [
-  homeItem,
-  rankItem,
-  shareAddItem,
-  shareItem,
-  myPageItem,
-];
-
 const BottomNavigation = () => {
   const pathname = usePathname();
 
-  const navigationItems = pathname?.startsWith("/share")
-    ? shareNavigationItems
-    : gameLogNavigationItems;
+  const navigationItems = [homeItem, rankItem, shareItem, myPageItem];
 
   return (
     <nav className="fixed bottom-[21px] left-1/2 z-50 flex w-[361px] -translate-x-1/2 items-center justify-between rounded-[999px] bg-[#1E1E1E] px-[10px] py-[12px] shadow-lg">
       {navigationItems.map((item, i) => {
         const isActive = pathname === item.href;
         const Icon = isActive ? item.activeIcon : item.unActiveIcon;
-
-        if (i === 2) {
-          return (
-            <Link
-              key={item.href}
-              href={item.href}
-              className="flex h-[55px] w-[55px] items-center justify-center gap-[6px] rounded-[71px] bg-[#5724F0]"
-            >
-              <Icon />
-            </Link>
-          );
-        }
 
         return (
           <Link
