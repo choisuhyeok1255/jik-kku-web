@@ -9,6 +9,7 @@ import {
 
 import GameLogsItem from "./GameLogsItem";
 import EmptyGameLog from "./EmptyGameLog";
+import { NotLogin } from "@/src/shared";
 
 const GameLogsTabItem = () => {
   const router = useRouter();
@@ -85,6 +86,10 @@ const GameLogsTabItem = () => {
         <span className="text-white/60">로딩 중...</span>
       </div>
     );
+  }
+
+  if (!user) {
+    return <NotLogin />;
   }
 
   if (gameLogs?.length === 0) {
