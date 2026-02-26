@@ -4,46 +4,73 @@ Goal:
 
 - Split the current work into as many small, feature-focused commits as reasonably possible.
 - Write all commit messages in Korean.
-- Execute the git workflow end-to-end: stage -> commit -> push.
+- Execute the git workflow end-to-end: stage -> commit -> validate -> push.
+- Only push if lint and build both succeed.
 
 Process:
 
-1. Start by checking the repo state:
+1. Check repository state
    - Run: `git status`
-   - Identify changed files (staged/unstaged/untracked).
-   - If there are merge conflicts, STOP and tell me exactly how to resolve them first.
+   - Identify staged, unstaged, and untracked files.
+   - If there are merge conflicts:
+     - STOP immediately.
+     - Show me the conflict files.
+     - Do NOT commit.
+     - Do NOT push.
 
-2. Create a detailed commit plan:
-   - Group changes by feature/intent and keep commits small.
-   - Prefer MORE commits over fewer commits.
-   - Separate:
-     - formatting/lint-only changes (chore)
-     - pure refactors (refactor)
-     - dependency/lockfile related changes (chore)
-     - docs (docs)
-     - tests (test)
-   - Do NOT mix unrelated changes in one commit.
+2. Create a detailed commit plan
+   - Group changes by feature/intent.
+   - Prefer MORE small commits over fewer large commits.
+   - Separate the following into different commits when applicable:
+     - formatting/lint-only changes → chore
+     - pure refactors → refactor
+     - dependency/lockfile changes → chore
+     - docs → docs
+     - tests → test
+   - Do NOT mix unrelated changes in a single commit.
 
-3. For each planned commit:
-   - Stage precisely what belongs to that commit.
+3. Create commits
+   For each commit group:
+   - Stage precisely only the relevant changes.
    - Prefer `git add -p` for granular staging.
-   - If `git add -p` is not feasible, use explicit file paths.
-   - Then create the commit with a Korean message.
-   - Use Conventional Commits prefixes where appropriate:
-     feat, fix, refactor, chore, docs, test
+   - If not feasible, use explicit file paths.
+   - Create the commit.
+   - Commit messages must:
+     - Be written in Korean.
+     - Be short but specific.
+     - Prefer Conventional Commits prefixes:
+       feat, fix, refactor, chore, docs, test
+     - Optional scope example:
+       feat(로그인): 로그인 유효성 검사 로직 추가
 
-4. After all commits are created:
-   - Run tests/lint/build if project scripts are obvious (e.g. `pnpm lint`, `pnpm test`, `pnpm build`).
-   - If running scripts might be expensive or unclear, skip and tell me what you skipped.
+4. Quality validation (MANDATORY before push)
+   - If `pnpm lint` exists, run:
+     `pnpm lint`
+   - If lint fails:
+     - STOP immediately.
+     - Show the errors clearly.
+     - Do NOT push.
 
-5. Push:
+   - Run:
+     `pnpm run build`
+   - If build fails:
+     - STOP immediately.
+     - Show the full error summary.
+     - Do NOT push.
+
+   - Only if BOTH lint and build succeed:
+     - Continue to push.
+
+5. Push
    - Push to the current branch by default.
-   - If upstream is not set, set it and push.
-   - If the target remote/branch is ambiguous, ask me only then.
+   - If upstream is not set:
+     - Set upstream and push.
+   - If the target branch is unclear:
+     - Ask me before pushing.
 
-Rules:
+Safety Rules:
 
-- Commit messages must be Korean, short but specific.
-- If a commit message could be clearer, include a short scope (optional) in Korean, e.g. `feat(로그인): ...`
-- Never create a single “big” commit unless I explicitly request it.
-- If you are about to include sensitive files (e.g., .env), STOP and warn me.
+- Never squash everything into one commit unless I explicitly request it.
+- Never include sensitive files (e.g., .env). If detected, STOP and warn me.
+- Prefer clarity and separation over convenience.
+- If any step is uncertain, ask before pushing.
