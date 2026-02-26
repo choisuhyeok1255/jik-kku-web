@@ -1,14 +1,23 @@
 import { CreateGameLogQueryModel, GameLogServerModel } from "@/src/entities";
 import { CreateGameLogForm, UpdateGameLogForm } from "../model/types/form";
 
-export const transformFormToApiBody = (
-  userId: string,
+export const transformFormToApiBody = ({
+  userId,
+  formData,
+  gameLogImage,
+  gameLogImageThumbnail,
+  isCertified,
+  isAdminCertified,
+}: {
+  userId: string;
   formData:
     | Omit<CreateGameLogForm, "gameLogImage">
-    | Omit<UpdateGameLogForm, "gameLogImage">,
-  gameLogImage?: string,
-  gameLogImageThumbnail?: string,
-): CreateGameLogQueryModel["body"] => {
+    | Omit<UpdateGameLogForm, "gameLogImage">;
+  isCertified?: boolean;
+  isAdminCertified?: boolean;
+  gameLogImage?: string | null;
+  gameLogImageThumbnail?: string | null;
+}): CreateGameLogQueryModel["body"] => {
   return {
     user_id: userId,
     home_team_id: formData.homeTeamId,
@@ -18,9 +27,12 @@ export const transformFormToApiBody = (
     match_date: formData.matchDate,
     note: formData.note,
     stadium_id: formData.stadiumId,
-    is_certify: false,
-    ...(gameLogImage && { game_log_image: gameLogImage }),
-    ...(gameLogImageThumbnail && {
+    ...(isCertified !== undefined && { is_certified: isCertified }),
+    ...(isAdminCertified !== undefined && {
+      is_admin_certified: isAdminCertified,
+    }),
+    ...(gameLogImage !== undefined && { game_log_image: gameLogImage }),
+    ...(gameLogImageThumbnail !== undefined && {
       game_log_image_thumbnail: gameLogImageThumbnail,
     }),
   };
