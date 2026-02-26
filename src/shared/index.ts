@@ -4,7 +4,6 @@ export * from "./lib/image-compression";
 export * from "./lib/supabase";
 export * from "./lib/supabase.types";
 export * from "./lib/tailwind";
-export { default as BottomNavigation } from "./ui/BottomNavigation";
 export * from "./ui/shadcn/button";
 export { default as Header } from "./ui/Header";
 export { default as LabelContent } from "./ui/LabelContent";

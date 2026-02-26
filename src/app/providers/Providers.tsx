@@ -1,7 +1,7 @@
 import React from "react";
 
-import QueryProvider from "./QueryProvider";
 import AuthProvider from "./AuthProvider";
+import QueryProvider from "./QueryProvider";
 
 const Providers = ({ children }: { children: React.ReactNode }) => {
   return (

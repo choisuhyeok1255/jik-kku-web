@@ -2,7 +2,7 @@
 
 import { useRouter, useSearchParams } from "next/navigation";
 
-import { Header, AppTab } from "@/src/shared";
+import { AppTab } from "@/src/shared";
 
 import ShareExpiredTabItem from "./ShareExpiredTabItem";
 import ShareOngoingTabItem from "./ShareOngoingTabItem";

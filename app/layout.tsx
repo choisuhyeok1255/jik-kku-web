@@ -1,8 +1,9 @@
 import type { Metadata } from "next";
 import localFont from "next/font/local";
+import { Suspense } from "react";
 import { Toaster } from "sonner";
 
-import { Providers, ConditionalBottomNavigation } from "@/src/app";
+import { BottomNavigation, Providers } from "@/src/app";
 import { TeamSettingGuard } from "@/src/features";
 import "./globals.css";
 
@@ -49,7 +50,9 @@ const RootLayout = ({
             <div className="flex justify-center">
               <div className="relative h-screen w-full max-w-[440px] min-w-[360px] bg-[#181818]">
                 {children}
-                <ConditionalBottomNavigation />
+                <Suspense fallback={null}>
+                  <BottomNavigation />
+                </Suspense>
               </div>
             </div>
             <Toaster richColors position="top-center" />

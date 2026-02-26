@@ -4,8 +4,8 @@ import { useRouter, useSearchParams } from "next/navigation";
 
 import { AppTab } from "@/src/shared";
 
-import WinningRateTabItem from "./WinningRateTabItem";
 import GameLogsTabItem from "./GameLogsTabItem";
+import WinningRateTabItem from "./WinningRateTabItem";
 
 const HomePage = () => {
   const router = useRouter();
