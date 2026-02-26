@@ -22,7 +22,8 @@ const GameLogsItem = ({
     match_date: string;
     game_log_image_thumbnail: string;
     note: string;
-    is_certify: boolean;
+    is_certified: boolean;
+    is_admin_certified: boolean;
     stadium_id: number | null;
   };
   enterDelay?: number;
@@ -112,7 +113,7 @@ const GameLogsItem = ({
               <div className="flex items-center gap-[4px]">
                 <div>{gameLog.match_date}</div>
                 <div>
-                  {gameLog.is_certify && (
+                  {gameLog.is_certified && (
                     <div className="flex items-center gap-[4px]">
                       <CertifiedIcon />
                       <div className="text-[12px] text-[#5724F0]">

@@ -102,7 +102,8 @@ const GameLogsTabItem = () => {
             match_date: gameLog.match_date || "",
             game_log_image_thumbnail: gameLog.game_log_image_thumbnail || "",
             note: gameLog.note || "",
-            is_certify: gameLog.is_certify || false,
+            is_certified: gameLog.is_certified || false,
+            is_admin_certified: gameLog.is_admin_certified || false,
             stadium_id: gameLog.stadium_id ?? null,
           }}
         />
