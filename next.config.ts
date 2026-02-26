@@ -29,8 +29,9 @@ const nextConfig: NextConfig = {
   // ✅ Webpack(빌드에서 쓰일 수 있음)용 SVGR 설정
   webpack: (config) => {
     // Next 기본 svg 처리(rule)와 충돌 방지: 기존 asset rule에서 svg 제외
-    const fileLoaderRule = config.module.rules.find((rule: any) =>
-      rule?.test?.test?.(".svg")
+    const fileLoaderRule = config.module.rules.find(
+      (rule: { test?: { test?: (s: string) => boolean } }) =>
+        rule?.test?.test?.(".svg"),
     );
     if (fileLoaderRule) fileLoaderRule.exclude = /\.svg$/i;
 
