@@ -9,16 +9,12 @@ import { supabase } from "@/src/shared";
 import {
   CertifyGameLogQueryModel,
   CreateGameLogQueryModel,
-  GameLogServerModel,
   GetGameLogsInfiniteQueryModel,
   GetGameLogsQueryModel,
-  GetNotCertifyGameLogsQueryModel,
   GetCertifyGameLogsQueryModel,
   UpdateGameLogQueryModel,
   GetGameLogDetailQueryModel,
   DeleteGameLogQueryModel,
-  GetNotCertifyGameLogsServerModel,
-  GetCertifyGameLogsServerModel,
 } from "../model/types/api";
 
 export const GAME_LOGS_PAGE_SIZE = 10;
