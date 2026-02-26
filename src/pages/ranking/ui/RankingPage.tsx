@@ -26,8 +26,12 @@ const RankingPage = () => {
 
   if (ranking && ranking.length === 0) {
     return (
-      <div className="py-[40px] text-center text-white/60">
-        아직 직관 기록이 없어요.
+      <div className="flex min-h-screen items-center justify-center">
+        <span className="text-center text-white/60">
+          아직 랭킹이 비어있어요.
+          <br />
+          직관을 등록하고 1등에 도전해봐요! ✨
+        </span>
       </div>
     );
   }
@@ -43,7 +47,6 @@ const RankingPage = () => {
         <div className="mt-[24px] flex flex-col gap-[16px]">
           {ranking?.map((user, index) => (
             <div
-              // key={user.user_id ?? index}
               key={index}
               className={cn(
                 "flex h-[68px] items-center gap-[16px] rounded-[20px] border p-[20px]",
