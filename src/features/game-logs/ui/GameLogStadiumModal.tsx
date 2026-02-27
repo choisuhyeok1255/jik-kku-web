@@ -28,10 +28,9 @@ const StadiumCard = ({
   return (
     <button
       className={cn(
-        "flex flex-col items-start gap-[8px] rounded-[20px] border border-[#FFFFFF]/10 bg-[#FFFFFF]/4 p-[12px]",
+        "flex h-[100px] flex-col items-start gap-[8px] rounded-[20px] border border-[#FFFFFF]/10 bg-[#FFFFFF]/4 p-[12px]",
         isSelected && "border-[#5724F0] bg-[#5724F0]/4",
       )}
-      style={{ height: "78px" }}
       type="button"
       onClick={handleClickStadium}
     >
