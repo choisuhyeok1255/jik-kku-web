@@ -182,11 +182,12 @@ const GameLogForm = ({
       homeTeamScore: null,
       awayTeamScore: null,
       matchDate: dayjs().format("YYYY-MM-DD"),
-      stadiumId: stadiums.find((stadium) => stadium.id === user.team_id)?.id,
+      stadiumId:
+        teams?.find((team) => team.id === user.team_id)?.stadium_id ?? null,
       note: "",
       gameLogImage: null,
     });
-  }, [user, stadiums, defaultValues, reset]);
+  }, [user, stadiums, teams, defaultValues, reset]);
 
   useEffect(() => {
     if (!defaultValues) return;
@@ -402,9 +403,22 @@ const GameLogForm = ({
                   className="h-[48px] w-full [appearance:textfield] justify-start rounded-[20px] border border-white/10 bg-[#ffffff]/4 px-[12px] py-[8px] [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none"
                   min={0}
                   max={50}
+                  step={1}
                   type="number"
                   placeholder="0"
-                  {...register("homeTeamScore", { required: true })}
+                  onKeyDown={(e) =>
+                    [".", ",", "e", "E", "+", "-"].includes(e.key) &&
+                    e.preventDefault()
+                  }
+                  {...register("homeTeamScore", {
+                    required: true,
+                    setValueAs: (v) => {
+                      const n = Math.floor(Number(v));
+                      return Number.isNaN(n)
+                        ? undefined
+                        : Math.min(50, Math.max(0, n));
+                    },
+                  })}
                 />
               </LabelContent>
               <LabelContent className="flex-1" label="상대팀 점수" isRequired>
@@ -412,9 +426,22 @@ const GameLogForm = ({
                   className="h-[48px] w-full [appearance:textfield] justify-start rounded-[20px] border border-white/10 bg-[#ffffff]/4 px-[12px] py-[8px] [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none"
                   min={0}
                   max={50}
+                  step={1}
                   type="number"
                   placeholder="0"
-                  {...register("awayTeamScore", { required: true })}
+                  onKeyDown={(e) =>
+                    [".", ",", "e", "E", "+", "-"].includes(e.key) &&
+                    e.preventDefault()
+                  }
+                  {...register("awayTeamScore", {
+                    required: true,
+                    setValueAs: (v) => {
+                      const n = Math.floor(Number(v));
+                      return Number.isNaN(n)
+                        ? undefined
+                        : Math.min(50, Math.max(0, n));
+                    },
+                  })}
                 />
               </LabelContent>
             </div>
