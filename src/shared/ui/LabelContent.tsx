@@ -15,7 +15,7 @@ const LabelContent = ({
     <div className={cn(className)}>
       <div className="mb-[4px]">
         {label}
-        {isRequired && <span className="text-red-500">*</span>}
+        {isRequired && <span className="ml-[4px] text-red-500">*</span>}
       </div>
       {children}
     </div>
