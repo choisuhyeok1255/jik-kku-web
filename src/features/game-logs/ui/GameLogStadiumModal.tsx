@@ -2,6 +2,7 @@
 
 import { useMemo, useState } from "react";
 
+import CheckIcon from "@/public/check.svg";
 import { useGetTeamsWithStadium } from "@/src/entities";
 import { cn, Modal } from "@/src/shared";
 
@@ -34,8 +35,18 @@ const StadiumCard = ({
       type="button"
       onClick={handleClickStadium}
     >
-      <div className="rounded-[999px] bg-white/10 px-[8px] py-[2px] text-left text-[12px] font-bold">
-        {shortTeamName}
+      <div className="flex w-full items-center justify-between">
+        <div className="rounded-[999px] bg-white/10 px-[8px] py-[2px] text-left text-[12px] font-bold">
+          {shortTeamName}
+        </div>
+        {isSelected && (
+          <div className="flex items-center gap-[4px]">
+            <CheckIcon />
+            <div className="text-left text-[14px] font-bold text-[#9875FF]">
+              선택됨
+            </div>
+          </div>
+        )}
       </div>
       <div className="text-left text-[14px] font-bold text-white">
         {stadiumName}
