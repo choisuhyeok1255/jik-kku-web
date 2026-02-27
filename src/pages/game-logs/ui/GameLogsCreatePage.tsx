@@ -4,10 +4,7 @@ import { useRouter } from "next/navigation";
 
 import { toast } from "sonner";
 import { GameLogForm, useCreateGameLog } from "@/src/features";
-import {
-  CreateGameLogQueryModel,
-  useGameLogCreateStore,
-} from "@/src/entities";
+import { CreateGameLogQueryModel, useGameLogCreateStore } from "@/src/entities";
 import { Header } from "@/src/shared";
 
 const GameLogCreatePage = () => {
@@ -37,7 +34,7 @@ const GameLogCreatePage = () => {
   };
 
   return (
-    <div className="flex h-screen flex-col">
+    <div className="flex h-dvh flex-col">
       <Header
         title={{ text: "직관 등록", position: "center" }}
         prevPage={{ href: "/" }}

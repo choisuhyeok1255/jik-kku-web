@@ -5,7 +5,7 @@ export default function Page() {
   return (
     <Suspense
       fallback={
-        <div className="flex h-screen items-center justify-center">
+        <div className="flex h-dvh items-center justify-center">
           <span className="text-white/60">로딩 중...</span>
         </div>
       }

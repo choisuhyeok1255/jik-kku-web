@@ -122,7 +122,7 @@ const MyPage = () => {
 
   if (isLoadingUser) {
     return (
-      <div className="flex h-screen flex-col items-center justify-center">
+      <div className="flex h-dvh flex-col items-center justify-center">
         <span>로딩 중...</span>
       </div>
     );
@@ -133,12 +133,12 @@ const MyPage = () => {
   }
 
   return (
-    <div className="flex h-screen flex-col">
+    <div className="flex h-dvh flex-col">
       <Header
         className="mb-[12px] shrink-0"
         title={{ text: "마이페이지", position: "left" }}
       />
-      <div className="flex min-h-0 flex-1 flex-col gap-[12px] overflow-y-auto px-[16px] pb-[100px]">
+      <div className="flex min-h-0 flex-1 flex-col gap-[12px] overflow-y-auto px-[16px] pb-[150px]">
         <MyPageCardButton onClick={() => router.push("/myPage/nickname")}>
           <div className="flex h-[40px] min-w-0 items-center gap-3">
             <CardIcon className="shrink-0 bg-white/10">👤</CardIcon>

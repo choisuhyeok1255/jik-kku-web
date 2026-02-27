@@ -67,7 +67,7 @@ const ShareEditPage = () => {
 
   if (isLoading || !share) {
     return (
-      <div className="flex h-screen flex-col">
+      <div className="flex h-dvh flex-col">
         <Header
           title={{ text: "나눔 수정", position: "center" }}
           prevPage={{ href: `/share/${shareId}` }}
@@ -81,7 +81,7 @@ const ShareEditPage = () => {
 
   if (user?.id !== share.user_id) {
     return (
-      <div className="flex h-screen flex-col">
+      <div className="flex h-dvh flex-col">
         <Header
           title={{ text: "나눔 수정", position: "center" }}
           prevPage={{ href: `/share/${shareId}` }}
@@ -97,7 +97,7 @@ const ShareEditPage = () => {
   }
 
   return (
-    <div className="flex h-screen flex-col">
+    <div className="flex h-dvh flex-col">
       <Header
         title={{ text: "나눔 수정", position: "center" }}
         prevPage={{ href: `/share/${shareId}` }}

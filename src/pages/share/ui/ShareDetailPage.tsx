@@ -88,7 +88,7 @@ const ShareDetailPage = () => {
 
   if (isLoading) {
     return (
-      <div className="flex h-screen flex-col">
+      <div className="flex h-dvh flex-col">
         <Header
           title={{ text: "나눔 상세", position: "center" }}
           prevPage={{ href: "/share" }}
@@ -102,7 +102,7 @@ const ShareDetailPage = () => {
 
   if (!share) {
     return (
-      <div className="flex h-screen flex-col">
+      <div className="flex h-dvh flex-col">
         <Header
           title={{ text: "나눔 상세", position: "center" }}
           prevPage={{ href: "/share" }}
@@ -115,7 +115,7 @@ const ShareDetailPage = () => {
   }
 
   return (
-    <div className="flex h-screen flex-col">
+    <div className="flex h-dvh flex-col">
       <Header
         title={{ text: "나눔 상세", position: "center" }}
         prevPage={{ href: "/share" }}

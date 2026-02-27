@@ -44,7 +44,7 @@ const NotLogin = ({
     <div
       className={cn(
         "flex flex-col items-center justify-center gap-[24px] px-[24px]",
-        fullHeight && "min-h-screen",
+        fullHeight && "min-h-dvh",
         className,
       )}
     >

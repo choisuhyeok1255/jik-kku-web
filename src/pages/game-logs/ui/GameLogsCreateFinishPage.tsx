@@ -61,7 +61,7 @@ const GameLogsCreateFinishPage = () => {
 
   //   if (!canAccessFinishPage) {
   //     return (
-  //       <div className="flex h-screen flex-col items-center justify-center">
+  //       <div className="flex h-dvh flex-col items-center justify-center">
   //         <span>잘못된 접근입니다.</span>
   //         <Link href="/">홈으로 이동</Link>
   //       </div>
@@ -69,7 +69,7 @@ const GameLogsCreateFinishPage = () => {
   //   }
 
   return (
-    <div className="relative h-screen w-full overflow-hidden">
+    <div className="relative h-dvh w-full overflow-hidden">
       <Confetti
         ref={confettiRef}
         className="pointer-events-none absolute top-0 left-0 z-50 h-full w-full"

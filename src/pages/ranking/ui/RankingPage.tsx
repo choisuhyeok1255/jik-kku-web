@@ -10,7 +10,7 @@ const RankingPage = () => {
 
   if (isLoading) {
     return (
-      <div className="flex min-h-screen items-center justify-center">
+      <div className="flex min-h-dvh items-center justify-center">
         <span className="text-center text-white/60">랭킹을 불러오는 중...</span>
       </div>
     );
@@ -18,7 +18,7 @@ const RankingPage = () => {
 
   if (error) {
     return (
-      <div className="flex min-h-screen items-center justify-center">
+      <div className="flex min-h-dvh items-center justify-center">
         <span className="text-center text-red-400">
           랭킹을 불러오지 못했어요.
         </span>
@@ -28,7 +28,7 @@ const RankingPage = () => {
 
   if (ranking && ranking.length === 0) {
     return (
-      <div className="flex min-h-screen items-center justify-center">
+      <div className="flex min-h-dvh items-center justify-center">
         <span className="text-center text-white/60">
           아직 랭킹이 비어있어요.
           <br />
@@ -39,7 +39,7 @@ const RankingPage = () => {
   }
 
   return (
-    <div className="flex h-screen flex-col">
+    <div className="flex h-dvh flex-col">
       <Header
         className="mb-[12px] shrink-0"
         title={{ text: "직관 랭킹", position: "left" }}

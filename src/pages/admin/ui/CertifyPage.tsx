@@ -69,7 +69,7 @@ const CertifyPage = () => {
   const { mutate: rejectGameLogMutate } = useRejectGameLog();
 
   return (
-    <div className="flex h-screen flex-col">
+    <div className="flex h-dvh flex-col">
       <div className="flex min-h-0 flex-1 flex-col gap-2 overflow-y-auto p-4">
         <div className="shrink-0">직관 인증 페이지</div>
         {gameLogs?.map((gameLog) => (

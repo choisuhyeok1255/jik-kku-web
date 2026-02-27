@@ -36,7 +36,7 @@ const ShareCreatePage = () => {
   };
 
   return (
-    <div className="flex h-screen flex-col">
+    <div className="flex h-dvh flex-col">
       <Header
         className="mb-[12px] shrink-0"
         title={{ text: "나눔 등록", position: "center" }}

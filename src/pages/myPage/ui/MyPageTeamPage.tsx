@@ -45,7 +45,7 @@ const MyPageTeamPage = () => {
   };
 
   return (
-    <div key={user?.id ?? "loading"} className="flex h-screen flex-col">
+    <div key={user?.id ?? "loading"} className="flex h-dvh flex-col">
       <Header
         className="mb-[12px] shrink-0"
         title={{

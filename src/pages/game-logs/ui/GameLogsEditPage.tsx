@@ -8,10 +8,7 @@ import {
   transformApiToGameLogForm,
   useEditGameLog,
 } from "@/src/features";
-import {
-  useGetGameLogDetail,
-  UpdateGameLogQueryModel,
-} from "@/src/entities";
+import { useGetGameLogDetail, UpdateGameLogQueryModel } from "@/src/entities";
 import { Header } from "@/src/shared";
 
 const GameLogEditPage = () => {
@@ -45,14 +42,14 @@ const GameLogEditPage = () => {
 
   if (isLoading || !gameLog) {
     return (
-      <div className="flex h-screen items-center justify-center">
+      <div className="flex h-dvh items-center justify-center">
         <span>로딩 중...</span>
       </div>
     );
   }
 
   return (
-    <div className="flex h-screen flex-col">
+    <div className="flex h-dvh flex-col">
       <Header
         title={{ text: "직관 수정", position: "center" }}
         prevPage={{

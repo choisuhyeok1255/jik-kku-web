@@ -39,7 +39,7 @@ const MyPageNinknamePage = () => {
   };
 
   return (
-    <div key={user?.id ?? "loading"} className="flex h-screen flex-col">
+    <div key={user?.id ?? "loading"} className="flex h-dvh flex-col">
       <Header
         className="mb-[20px] shrink-0"
         title={{ text: "닉네임 수정", position: "center" }}

@@ -41,14 +41,14 @@ const RootLayout = ({
   children: React.ReactNode;
 }>) => {
   return (
-    <html lang="ko" className="h-screen overflow-hidden">
+    <html lang="ko" className="h-dvh overflow-hidden">
       <body
-        className={`${laundryGothic.variable} ${laundryGothic.className} h-screen overflow-hidden bg-[#232323]`}
+        className={`${laundryGothic.variable} ${laundryGothic.className} h-dvh overflow-hidden bg-[#232323]`}
       >
         <Providers>
           <TeamSettingGuard>
             <div className="flex justify-center">
-              <div className="relative h-screen w-full max-w-[440px] min-w-[360px] bg-[#181818]">
+              <div className="relative h-dvh w-full max-w-[440px] min-w-[360px] bg-[#181818]">
                 {children}
                 <Suspense fallback={null}>
                   <BottomNavigation />
