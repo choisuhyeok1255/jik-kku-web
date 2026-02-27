@@ -61,7 +61,7 @@ const MyPageTeamPage = () => {
               key={team.id}
               isSelected={selectedTeamId === team.id}
               teamId={team.id}
-              teamName={team.team_name}
+              teamName={team.team_name ?? ""}
               teamType="myTeam"
               selectText="응원팀"
               onClick={() => handleClickTeam(team.id)}

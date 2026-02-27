@@ -11,7 +11,7 @@ export const useGetTeams = () => {
       return data as TeamServerModel[];
     },
     select: (data) =>
-      data.sort((a, b) => a.team_name.localeCompare(b.team_name)),
+      data.sort((a, b) => a.team_name?.localeCompare(b.team_name ?? "") ?? 0),
     staleTime: Infinity,
     gcTime: Infinity,
   });

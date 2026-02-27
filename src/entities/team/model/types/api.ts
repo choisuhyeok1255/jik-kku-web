@@ -1,4 +1,3 @@
-export interface TeamServerModel {
-  id: number;
-  team_name: string;
-}
+import { Database } from "@/src/shared";
+
+export type TeamServerModel = Database["public"]["Tables"]["teams"]["Row"];
