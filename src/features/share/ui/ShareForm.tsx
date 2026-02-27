@@ -122,6 +122,11 @@ const ShareForm = ({
               <div className="flex flex-col gap-[8px]">
                 <input
                   type="number"
+                  step={1}
+                  onKeyDown={(e) =>
+                    [".", ",", "e", "E", "+", "-"].includes(e.key) &&
+                    e.preventDefault()
+                  }
                   min={
                     minAttendees !== undefined ? Math.max(minAttendees, 1) : 1
                   }
