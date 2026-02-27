@@ -12,8 +12,7 @@ const GameLogCreatePage = () => {
 
   const { handleCanAccessFinishPage } = useGameLogCreateStore();
 
-  const { mutate: createGameLog, isPending: isPostingGameLog } =
-    useCreateGameLog();
+  const { mutate: createGameLog } = useCreateGameLog();
 
   const handleClickSubmit = (body: CreateGameLogQueryModel["body"]) => {
     createGameLog(
@@ -40,10 +39,7 @@ const GameLogCreatePage = () => {
         prevPage={{ href: "/" }}
       />
       <div className="flex-1 overflow-y-auto">
-        <GameLogForm
-          isPendingGameLog={isPostingGameLog}
-          handleClickSubmit={handleClickSubmit}
-        />
+        <GameLogForm handleClickSubmit={handleClickSubmit} />
       </div>
     </div>
   );

@@ -17,8 +17,7 @@ const GameLogEditPage = () => {
   const { data: gameLog, isLoading } = useGetGameLogDetail({
     query: { gameLogId: Number(id) },
   });
-  const { mutate: editGameLog, isPending: isUpdatingGameLog } =
-    useEditGameLog();
+  const { mutate: editGameLog } = useEditGameLog();
 
   const handleClickSubmit = (body: UpdateGameLogQueryModel["body"]) => {
     editGameLog(
@@ -59,7 +58,6 @@ const GameLogEditPage = () => {
       />
       <div className="flex-1 overflow-y-auto">
         <GameLogForm
-          isPendingGameLog={isUpdatingGameLog}
           defaultValues={defaultValues}
           handleClickSubmit={handleClickSubmit}
         />

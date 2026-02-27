@@ -30,18 +30,17 @@ import {
   PopoverContent,
   FileDropzone,
   LabelContent,
+  Spinner,
   compressImage,
 } from "@/src/shared";
 import GameLogStadiumModal from "./GameLogStadiumModal";
 import GameLogTeamModal from "./GameLogTeamModal";
 
 const GameLogForm = ({
-  isPendingGameLog,
   defaultValues,
   handleClickSubmit,
 }: {
   defaultValues?: CreateGameLogForm | UpdateGameLogForm;
-  isPendingGameLog: boolean;
   handleClickSubmit: (
     body: CreateGameLogQueryModel["body"] | UpdateGameLogQueryModel["body"],
   ) => void;
@@ -49,11 +48,11 @@ const GameLogForm = ({
   const { data: user } = useGetUser();
   const { data: teams } = useGetTeams();
   const { data: stadiums } = useGetStadiums();
-  const { mutateAsync: uploadFile, isPending: isUploadingFile } =
-    useUploadFile();
+  const { mutateAsync: uploadFile } = useUploadFile();
   const { mutateAsync: getSignedUrl } = useGetSignedUrl();
 
   const [initImageUrl, setInitImageUrl] = useState<string | null>(null);
+  const [isSending, setIsSending] = useState(false);
 
   const { control, setValue, register, reset, watch, handleSubmit } = useForm<
     CreateGameLogForm | UpdateGameLogForm
@@ -225,14 +224,21 @@ const GameLogForm = ({
       className="px-[16px] py-[20px]"
       onSubmit={handleSubmit(
         async (formData) => {
+          setIsSending(true);
+
           if (defaultValues) {
             handleEditGameLog(formData);
           } else {
             handleCreateGameLog(formData);
           }
         },
-        () => {
-          toast.error("필수 입력 해주세요!");
+        (error) => {
+          const errors = Object.values(error);
+          const errorMessage =
+            errors.length === 1 ? errors[0]?.message : "필수 입력 해주세요!";
+
+          toast.error(errorMessage);
+          setIsSending(false);
         },
       )}
     >
@@ -256,7 +262,7 @@ const GameLogForm = ({
                 <Controller
                   control={control}
                   name="matchDate"
-                  rules={{ required: true }}
+                  rules={{ required: "날짜를 선택해주세요!" }}
                   render={({ field: { value, onChange } }) => (
                     <Calendar
                       classNames={{ root: "bg-white" }}
@@ -283,7 +289,7 @@ const GameLogForm = ({
             <Controller
               control={control}
               name="stadiumId"
-              rules={{ required: true }}
+              rules={{ required: "경기장을 선택해주세요!" }}
               render={({ field: { value } }) => (
                 <button
                   className={cn(
@@ -318,7 +324,7 @@ const GameLogForm = ({
                 <Controller
                   control={control}
                   name="homeTeamId"
-                  rules={{ required: true }}
+                  rules={{ required: "응원팀을 선택해주세요!" }}
                   render={({ field: { value } }) => (
                     <button
                       className={cn(
@@ -359,7 +365,7 @@ const GameLogForm = ({
                 <Controller
                   control={control}
                   name="awayTeamId"
-                  rules={{ required: true }}
+                  rules={{ required: "상대팀을 선택해주세요!" }}
                   render={({ field: { value } }) => (
                     <button
                       className={cn(
@@ -399,50 +405,60 @@ const GameLogForm = ({
             </div>
             <div className="flex gap-[16px]">
               <LabelContent className="flex-1" label="응원팀 점수" isRequired>
-                <input
-                  className="h-[48px] w-full [appearance:textfield] justify-start rounded-[20px] border border-white/10 bg-[#ffffff]/4 px-[12px] py-[8px] [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none"
-                  min={0}
-                  max={50}
-                  step={1}
-                  type="number"
-                  placeholder="0"
-                  onKeyDown={(e) =>
-                    [".", ",", "e", "E", "+", "-"].includes(e.key) &&
-                    e.preventDefault()
-                  }
-                  {...register("homeTeamScore", {
-                    required: true,
-                    setValueAs: (v) => {
-                      const n = Math.floor(Number(v));
-                      return Number.isNaN(n)
-                        ? undefined
-                        : Math.min(50, Math.max(0, n));
-                    },
-                  })}
-                />
+                <div className="flex h-[48px] w-full items-center rounded-[20px] border border-white/10 bg-[#ffffff]/4 px-[14px]">
+                  <input
+                    className="min-w-0 flex-1 [appearance:textfield] bg-transparent [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none"
+                    min={0}
+                    max={50}
+                    step={1}
+                    type="number"
+                    placeholder="0"
+                    onKeyDown={(e) =>
+                      [".", ",", "e", "E", "+", "-"].includes(e.key) &&
+                      e.preventDefault()
+                    }
+                    {...register("homeTeamScore", {
+                      required: "응원팀 점수를 입력해주세요!",
+                      setValueAs: (v) => {
+                        const n = Math.floor(Number(v));
+                        return Number.isNaN(n)
+                          ? undefined
+                          : Math.min(50, Math.max(0, n));
+                      },
+                    })}
+                  />
+                  <span className="shrink-0 pl-[4px] text-[14px] text-white/60">
+                    점
+                  </span>
+                </div>
               </LabelContent>
               <LabelContent className="flex-1" label="상대팀 점수" isRequired>
-                <input
-                  className="h-[48px] w-full [appearance:textfield] justify-start rounded-[20px] border border-white/10 bg-[#ffffff]/4 px-[12px] py-[8px] [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none"
-                  min={0}
-                  max={50}
-                  step={1}
-                  type="number"
-                  placeholder="0"
-                  onKeyDown={(e) =>
-                    [".", ",", "e", "E", "+", "-"].includes(e.key) &&
-                    e.preventDefault()
-                  }
-                  {...register("awayTeamScore", {
-                    required: true,
-                    setValueAs: (v) => {
-                      const n = Math.floor(Number(v));
-                      return Number.isNaN(n)
-                        ? undefined
-                        : Math.min(50, Math.max(0, n));
-                    },
-                  })}
-                />
+                <div className="flex h-[48px] w-full items-center rounded-[20px] border border-white/10 bg-[#ffffff]/4 px-[14px]">
+                  <input
+                    className="min-w-0 flex-1 [appearance:textfield] bg-transparent [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none"
+                    min={0}
+                    max={50}
+                    step={1}
+                    type="number"
+                    placeholder="0"
+                    onKeyDown={(e) =>
+                      [".", ",", "e", "E", "+", "-"].includes(e.key) &&
+                      e.preventDefault()
+                    }
+                    {...register("awayTeamScore", {
+                      required: "상대팀 점수를 입력해주세요!",
+                      setValueAs: (v) => {
+                        const n = Math.floor(Number(v));
+                        return Number.isNaN(n)
+                          ? undefined
+                          : Math.min(50, Math.max(0, n));
+                      },
+                    })}
+                  />
+                  <span className="shrink-0 pl-[4px] text-[14px] text-white/60">
+                    점
+                  </span>
+                </div>
               </LabelContent>
             </div>
             <LabelContent label="메모">
@@ -477,10 +493,16 @@ const GameLogForm = ({
         </div>
         <div className="flex justify-center gap-8">
           <button
-            className="h-[56px] w-full rounded-[20px] bg-[#5724F0] text-[16px] disabled:opacity-50"
-            disabled={isPendingGameLog || isUploadingFile}
+            className="flex h-[56px] w-full items-center justify-center rounded-[20px] bg-[#5724F0] text-[16px] disabled:opacity-50"
+            disabled={isSending}
           >
-            {defaultValues ? "수정완료" : "직관 등록하기"}
+            {isSending ? (
+              <Spinner className="size-5 text-white" />
+            ) : defaultValues ? (
+              "수정완료"
+            ) : (
+              "직관 등록하기"
+            )}
           </button>
         </div>
       </div>
