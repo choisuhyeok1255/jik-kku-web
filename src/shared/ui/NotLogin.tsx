@@ -7,14 +7,11 @@ import { cn } from "../lib/tailwind";
 interface NotLoginProps {
   /** 안내 문구 (기본: "로그인이 필요한 서비스예요") */
   message?: string;
-  /** 전체 화면 높이 사용 여부 (기본: true) */
-  fullHeight?: boolean;
   className?: string;
 }
 
 const NotLogin = ({
   message = "로그인이 필요한 서비스예요",
-  fullHeight = true,
   className,
 }: NotLoginProps) => {
   const handleLogin = async () => {
@@ -43,8 +40,7 @@ const NotLogin = ({
   return (
     <div
       className={cn(
-        "flex flex-col items-center justify-center gap-[24px] px-[24px]",
-        fullHeight && "min-h-dvh",
+        "flex min-h-dvh flex-col items-center justify-center gap-[24px]",
         className,
       )}
     >
