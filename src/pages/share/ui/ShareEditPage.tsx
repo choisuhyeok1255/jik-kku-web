@@ -7,9 +7,10 @@ import { useMemo } from "react";
 import { toast } from "sonner";
 import { ShareForm, transformApiToShareForm } from "@/src/features";
 import {
+  useAuthStore,
+  useDeleteShare,
   useGetShareDetail,
   useUpdateShare,
-  useAuthStore,
 } from "@/src/entities";
 import { Header } from "@/src/shared";
 
@@ -23,6 +24,35 @@ const ShareEditPage = () => {
     query: { shareId },
   });
   const { mutate: updateShare } = useUpdateShare();
+  const { mutate: deleteShare } = useDeleteShare();
+
+  const handleDelete = () => {
+    if (!id || Number.isNaN(shareId)) return;
+    if (!share) return;
+
+    const hasAttendees =
+      Array.isArray(share.attendee_user_ids) &&
+      share.attendee_user_ids.length > 0;
+    if (hasAttendees) {
+      toast.error("참석자가 있어 삭제할 수 없습니다.");
+      return;
+    }
+
+    if (!window.confirm("정말로 이 나눔을 삭제하시겠습니까?")) return;
+
+    deleteShare(
+      { query: { shareId } },
+      {
+        onSuccess: () => {
+          router.push("/share");
+          toast.success("나눔이 삭제되었습니다.");
+        },
+        onError: () => {
+          toast.error("나눔 삭제에 실패했습니다.");
+        },
+      },
+    );
+  };
 
   const handleClickSubmit = (body: {
     title: string;
@@ -70,10 +100,32 @@ const ShareEditPage = () => {
       <Header
         title={{ text: "나눔 수정", position: "center" }}
         prevPage={{ href: `/share/${shareId}` }}
+        rightAction={
+          !isLoading && share && user?.id === share.user_id ? (
+            <button
+              type="button"
+              className="flex h-[48px] w-[48px] items-center justify-center text-[14px] font-bold text-red-500"
+              onClick={(e) => {
+                e.stopPropagation();
+                handleDelete();
+              }}
+            >
+              삭제
+            </button>
+          ) : undefined
+        }
       />
       {isLoading && (
         <div className="flex flex-1 items-center justify-center">
           <span className="text-white/60">로딩 중...</span>
+        </div>
+      )}
+      {!isLoading && !share && (
+        <div className="flex flex-1 flex-col items-center justify-center gap-4">
+          <span className="text-white/60">나눔을 찾을 수 없습니다.</span>
+          <Link href="/share" className="text-[#5724F0] underline">
+            나눔 목록으로 돌아가기
+          </Link>
         </div>
       )}
       {!isLoading && share && user?.id !== share.user_id && (
