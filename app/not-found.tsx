@@ -1,0 +1,18 @@
+import Link from "next/link";
+
+export default function NotFound() {
+  return (
+    <div className="flex min-h-dvh flex-col items-center justify-center gap-[24px] px-[24px]">
+      <p className="text-[80px] font-bold leading-none text-white/20">404</p>
+      <p className="text-center text-[16px] text-white/70">
+        페이지를 찾을 수 없어요
+      </p>
+      <Link
+        href="/"
+        className="flex h-[56px] w-full max-w-[280px] items-center justify-center rounded-[20px] bg-[#5724F0] text-[16px] font-medium text-white transition-opacity hover:opacity-90"
+      >
+        홈으로 돌아가기
+      </Link>
+    </div>
+  );
+}
