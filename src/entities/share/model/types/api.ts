@@ -19,3 +19,7 @@ export interface UpdateShareQueryModel {
   query: { shareId: number };
   body: Database["public"]["Tables"]["share"]["Update"];
 }
+
+export interface DeleteShareQueryModel {
+  query: { shareId: number };
+}

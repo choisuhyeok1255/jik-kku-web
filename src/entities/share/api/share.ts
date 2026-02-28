@@ -3,6 +3,7 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/src/shared";
 import {
   CreateShareQueryModel,
+  DeleteShareQueryModel,
   GetShareDetailQueryModel,
   ShareServerModel,
   UpdateShareAttendeesQueryModel,
@@ -100,6 +101,24 @@ export const usePostShare = () => {
   return useMutation({
     mutationFn: async (req: CreateShareQueryModel) => {
       const { error } = await supabase.from("share").insert(req.body);
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: shareKeys.all });
+    },
+  });
+};
+
+export const useDeleteShare = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async (req: DeleteShareQueryModel) => {
+      const { error } = await supabase
+        .from("share")
+        .delete()
+        .eq("id", req.query.shareId);
+
       if (error) throw error;
     },
     onSuccess: () => {
