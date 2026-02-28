@@ -45,19 +45,11 @@ const Header = ({ className, title, prevPage }: HeaderProps) => {
   const handlePrevPageClick = (e: React.MouseEvent<HTMLButtonElement>) => {
     e.preventDefault();
 
-    // document.referrer가 있고 현재 origin과 같으면 같은 앱 내 이동으로 간주
-    const referrer = document.referrer;
-    const currentOrigin = window.location.origin;
-
-    if (
-      !prevPage?.forceUseHref &&
-      referrer &&
-      referrer.startsWith(currentOrigin)
-    ) {
-      // 같은 앱 내에서 이동한 경우 router.back() 사용
+    // history.length > 1이면 앱 내 이동으로 간주 (클라이언트 네비게이션 시 document.referrer는 신뢰 불가)
+    if (!prevPage?.forceUseHref && window.history.length > 1) {
       router.back();
     } else {
-      // 외부에서 접근했거나 히스토리가 없는 경우 href로 이동
+      // 새 탭, 직접 URL 접근 등 히스토리가 없는 경우 href로 이동
       router.push(prevPage!.href);
     }
   };
