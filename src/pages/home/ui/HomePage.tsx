@@ -2,7 +2,8 @@
 
 import { useRouter, useSearchParams } from "next/navigation";
 
-import { AppTab } from "@/src/shared";
+import { useAuthStore } from "@/src/entities";
+import { AppTab, NotLogin } from "@/src/shared";
 
 import GameLogsTabItem from "./GameLogsTabItem";
 import WinningRateTabItem from "./WinningRateTabItem";
@@ -13,6 +14,8 @@ const HomePage = () => {
   const tabParam = searchParams?.get("tab");
   const currentTab: "game" | "gameLogs" =
     tabParam === "gameLogs" ? "gameLogs" : "game";
+
+  const { user } = useAuthStore();
 
   const handleChangeTab = (tab: string) => {
     const newTab = tab as "game" | "gameLogs";
@@ -25,6 +28,10 @@ const HomePage = () => {
     const queryString = params.toString();
     router.replace(queryString ? `/?${queryString}` : "/");
   };
+
+  if (!user) {
+    return <NotLogin />;
+  }
 
   return (
     <div className="flex h-full flex-col pt-[24px]">

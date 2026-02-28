@@ -2,7 +2,6 @@ import Character1 from "@/public/1.svg";
 import Character2 from "@/public/2.svg";
 import Character3 from "@/public/3.svg";
 import { useAuthStore, useGetGameLogs } from "@/src/entities";
-import { NotLogin } from "@/src/shared";
 import EmptyGameLog from "./EmptyGameLog";
 
 const WinningRateTabItem = () => {
@@ -89,10 +88,6 @@ const WinningRateTabItem = () => {
         <span className="text-center text-white/60">로딩 중...</span>
       </div>
     );
-  }
-
-  if (!user) {
-    return <NotLogin />;
   }
 
   if (gameLogs?.length === 0) {

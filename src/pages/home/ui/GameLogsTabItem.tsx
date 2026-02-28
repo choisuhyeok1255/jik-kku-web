@@ -7,7 +7,6 @@ import {
   useGetGameLogsInfinite,
 } from "@/src/entities";
 
-import { NotLogin } from "@/src/shared";
 import EmptyGameLog from "./EmptyGameLog";
 import GameLogsItem from "./GameLogsItem";
 
@@ -86,10 +85,6 @@ const GameLogsTabItem = () => {
         <span className="text-white/60">로딩 중...</span>
       </div>
     );
-  }
-
-  if (!user) {
-    return <NotLogin />;
   }
 
   if (gameLogs?.length === 0) {
