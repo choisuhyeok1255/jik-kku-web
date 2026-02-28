@@ -56,6 +56,9 @@ importers:
       react:
         specifier: 19.2.3
         version: 19.2.3
+      react-canvas-confetti:
+        specifier: ^2.0.7
+        version: 2.0.7(react@19.2.3)
       react-day-picker:
         specifier: ^9.13.1
         version: 9.13.1(react@19.2.3)
@@ -3748,6 +3751,11 @@ packages:
         optional: true
       '@types/react-dom':
         optional: true
+
+  react-canvas-confetti@2.0.7:
+    resolution: {integrity: sha512-DIj44O35TPAwJkUSIZqWdVsgAMHtVf8h7YNmnr3jF3bn5mG+d7Rh9gEcRmdJfYgRzh6K+MAGujwUoIqQyLnMJw==}
+    peerDependencies:
+      react: '*'
 
   react-day-picker@9.13.1:
     resolution: {integrity: sha512-9nx2lBBJ0VZw5jJekId3DishwnJLiqY1Me1JvCrIyqbWwcflBTVaEkiK+w1bre5oMNWYo722eu+8UAMXWMqktw==}
@@ -8224,6 +8232,12 @@ snapshots:
     optionalDependencies:
       '@types/react': 19.2.8
       '@types/react-dom': 19.2.3(@types/react@19.2.8)
+
+  react-canvas-confetti@2.0.7(react@19.2.3):
+    dependencies:
+      '@types/canvas-confetti': 1.9.0
+      canvas-confetti: 1.9.4
+      react: 19.2.3
 
   react-day-picker@9.13.1(react@19.2.3):
     dependencies:
