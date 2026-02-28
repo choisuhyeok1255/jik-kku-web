@@ -65,50 +65,34 @@ const ShareEditPage = () => {
     return ids.length;
   })();
 
-  if (isLoading || !share) {
-    return (
-      <div className="flex h-dvh flex-col">
-        <Header
-          title={{ text: "나눔 수정", position: "center" }}
-          prevPage={{ href: `/share/${shareId}` }}
-        />
-        <div className="flex flex-1 items-center justify-center">
-          <span className="text-white/60">로딩 중...</span>
-        </div>
-      </div>
-    );
-  }
-
-  if (user?.id !== share.user_id) {
-    return (
-      <div className="flex h-dvh flex-col">
-        <Header
-          title={{ text: "나눔 수정", position: "center" }}
-          prevPage={{ href: `/share/${shareId}` }}
-        />
-        <div className="flex flex-1 flex-col items-center justify-center gap-4">
-          <span className="text-white/60">수정 권한이 없습니다.</span>
-          <Link href={`/share/${shareId}`} className="text-[#5724F0] underline">
-            상세 페이지로 돌아가기
-          </Link>
-        </div>
-      </div>
-    );
-  }
-
   return (
     <div className="flex h-dvh flex-col">
       <Header
         title={{ text: "나눔 수정", position: "center" }}
         prevPage={{ href: `/share/${shareId}` }}
       />
-      <div className="flex min-h-0 flex-1 flex-col">
-        <ShareForm
-          defaultValues={defaultValues}
-          minAttendees={applicantCount}
-          handleClickSubmit={handleClickSubmit}
-        />
-      </div>
+      {isLoading && (
+        <div className="flex flex-1 items-center justify-center">
+          <span className="text-white/60">로딩 중...</span>
+        </div>
+      )}
+      {!isLoading && share && user?.id !== share.user_id && (
+        <div className="flex flex-1 flex-col items-center justify-center gap-4">
+          <span className="text-white/60">수정 권한이 없습니다.</span>
+          <Link href={`/share/${shareId}`} className="text-[#5724F0] underline">
+            상세 페이지로 돌아가기
+          </Link>
+        </div>
+      )}
+      {!isLoading && share && user?.id === share.user_id && (
+        <div className="flex min-h-0 flex-1 flex-col">
+          <ShareForm
+            defaultValues={defaultValues}
+            minAttendees={applicantCount}
+            handleClickSubmit={handleClickSubmit}
+          />
+        </div>
+      )}
     </div>
   );
 };
