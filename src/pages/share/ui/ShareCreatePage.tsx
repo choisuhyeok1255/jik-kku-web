@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 import { ShareForm } from "@/src/features";
 import { usePostShare, useAuthStore } from "@/src/entities";
-import { Header } from "@/src/shared";
+import { Header, NotLogin } from "@/src/shared";
 
 const ShareCreatePage = () => {
   const router = useRouter();
@@ -34,6 +34,10 @@ const ShareCreatePage = () => {
       },
     );
   };
+
+  if (!user) {
+    return <NotLogin />;
+  }
 
   return (
     <div className="flex h-dvh flex-col">
