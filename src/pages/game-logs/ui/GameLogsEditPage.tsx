@@ -8,7 +8,11 @@ import {
   transformApiToGameLogForm,
   useEditGameLog,
 } from "@/src/features";
-import { useGetGameLogDetail, UpdateGameLogQueryModel } from "@/src/entities";
+import {
+  useDeleteGameLog,
+  useGetGameLogDetail,
+  UpdateGameLogQueryModel,
+} from "@/src/entities";
 import { Header } from "@/src/shared";
 
 const GameLogEditPage = () => {
@@ -18,6 +22,25 @@ const GameLogEditPage = () => {
     query: { gameLogId: Number(id) },
   });
   const { mutate: editGameLog } = useEditGameLog();
+  const { mutate: deleteGameLog } = useDeleteGameLog();
+
+  const handleDelete = () => {
+    if (!id) return;
+    if (!window.confirm("정말로 이 직관 기록을 삭제하시겠습니까?")) return;
+
+    deleteGameLog(
+      { query: { gameLogId: Number(id) } },
+      {
+        onSuccess: () => {
+          router.push("/?tab=gameLogs");
+          toast.success("직관 기록이 삭제되었습니다.");
+        },
+        onError: () => {
+          toast.error("직관 기록 삭제에 실패했습니다.");
+        },
+      },
+    );
+  };
 
   const handleClickSubmit = (body: UpdateGameLogQueryModel["body"]) => {
     editGameLog(
@@ -50,11 +73,23 @@ const GameLogEditPage = () => {
   return (
     <div className="flex h-dvh flex-col">
       <Header
-        title={{ text: "직관 수정", position: "center" }}
+        title={{ text: "수정", position: "center" }}
         prevPage={{
           href: `/?tab=gameLogs&scrollTo=${id}`,
           forceUseHref: true,
         }}
+        rightAction={
+          <button
+            type="button"
+            className="flex h-[48px] w-[48px] items-center justify-center text-[14px] font-bold text-red-500"
+            onClick={(e) => {
+              e.stopPropagation();
+              handleDelete();
+            }}
+          >
+            삭제
+          </button>
+        }
       />
       <div className="flex-1 overflow-y-auto">
         <GameLogForm
