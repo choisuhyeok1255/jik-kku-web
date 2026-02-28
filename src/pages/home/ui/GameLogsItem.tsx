@@ -163,7 +163,7 @@ const GameLogsItem = ({
                     src={imageUrl}
                     alt="직관 사진"
                     fill
-                    className="object-cover"
+                    className="object-contain"
                     onLoad={() => setIsImageLoading(false)}
                     onError={() => setIsImageLoading(false)}
                   />
