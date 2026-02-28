@@ -89,7 +89,7 @@ const BottomNavigation = () => {
     <div className="fixed bottom-[21px] left-1/2 z-50 -translate-x-1/2">
       {user && addButton?.href && (
         <Link
-          className="absolute right-0 bottom-full mb-[24px] flex h-[55px] w-[55px] items-center justify-center gap-[6px] rounded-[71px] bg-[#5724F0] shadow-[0px_4px_8px_0px_#00000033]"
+          className="absolute right-0 bottom-full mb-[12px] flex h-[50px] w-[50px] items-center justify-center gap-[6px] rounded-[71px] bg-[#5724F0] shadow-[0px_4px_8px_0px_#00000033]"
           href={addButton.href}
         >
           <AddWhiteIcon />
