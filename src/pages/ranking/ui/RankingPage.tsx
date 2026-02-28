@@ -1,5 +1,8 @@
 "use client";
 
+import Medal1Icon from "@/public/medal-1.svg";
+import Medal2Icon from "@/public/medal-2.svg";
+import Medal3Icon from "@/public/medal-3.svg";
 import { useAuthStore, useGetUserWinStatsRanking } from "@/src/entities";
 import { Header, Notification } from "@/src/shared";
 import { cn } from "@/src/shared";
@@ -47,9 +50,9 @@ const RankingPage = () => {
       <div className="flex min-h-0 flex-1 flex-col overflow-y-auto px-[16px] pb-[100px]">
         <Notification text="인증된 직관 기록만 집계되어 승률이 계산됩니다 ✨" />
         <div className="mt-[24px] flex flex-col gap-[16px]">
-          {ranking?.map((user, index) => (
+          {ranking?.map((user, i) => (
             <div
-              key={index}
+              key={i}
               className={cn(
                 "flex h-[68px] items-center gap-[16px] rounded-[20px] border p-[20px]",
                 user.user_id === currentUser?.id
@@ -57,16 +60,15 @@ const RankingPage = () => {
                   : "border-white/10 bg-[#FFFFFF]/4",
               )}
             >
-              <div
-                className={cn(
-                  "flex h-[28px] w-[28px] shrink-0 items-center justify-center rounded-full text-[16px] font-bold",
-                  index === 0 && "bg-[#FFD700] text-black",
-                  index === 1 && "bg-[#C0C0C0] text-black",
-                  index === 2 && "bg-[#CD7F32] text-white",
-                  index >= 3 && "bg-white/10 text-white",
+              <div className="flex h-[28px] w-[28px] shrink-0 items-center justify-center">
+                {i === 0 && <Medal1Icon className="h-[28px] w-[28px]" />}
+                {i === 1 && <Medal2Icon className="h-[28px] w-[28px]" />}
+                {i === 2 && <Medal3Icon className="h-[28px] w-[28px]" />}
+                {i >= 3 && (
+                  <div className="flex h-[28px] w-[28px] items-center justify-center rounded-full bg-white/10 text-[14px] font-bold text-[#FFFFFF]">
+                    {i + 1}
+                  </div>
                 )}
-              >
-                {index + 1}
               </div>
               <div className="min-w-0 flex-1">
                 <div className="truncate text-[16px] font-bold text-white">
