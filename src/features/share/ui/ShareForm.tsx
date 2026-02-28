@@ -130,7 +130,7 @@ const ShareForm = ({
                   min={
                     minAttendees !== undefined ? Math.max(minAttendees, 1) : 1
                   }
-                  max={99}
+                  max={20}
                   placeholder="몇 명까지 나눔할지 입력"
                   className="h-[48px] w-full [appearance:textfield] rounded-[20px] border border-white/10 bg-[#ffffff]/4 px-[12px] py-[8px] text-white placeholder:text-white/60 [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none"
                   {...register("maxAttendees", {
@@ -159,11 +159,6 @@ const ShareForm = ({
                     },
                   })}
                 />
-                {formState.errors.maxAttendees && (
-                  <span className="text-[14px] text-red-500">
-                    {formState.errors.maxAttendees.message}
-                  </span>
-                )}
               </div>
             </LabelContent>
             <LabelContent label="경기장" isRequired>
@@ -171,10 +166,7 @@ const ShareForm = ({
                 control={control}
                 name="stadiumId"
                 rules={{ required: "경기장을 선택해 주세요" }}
-                render={({
-                  field: { value },
-                  fieldState: { error },
-                }) => (
+                render={({ field: { value }, fieldState: { error } }) => (
                   <div className="flex flex-col gap-[8px]">
                     <button
                       className={cn(
