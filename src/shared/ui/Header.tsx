@@ -9,9 +9,10 @@ interface HeaderProps {
   className?: string;
   title: { text: string; position: "left" | "center" | "right" };
   prevPage?: { href: string; forceUseHref?: boolean };
+  rightAction?: React.ReactNode;
 }
 
-const Header = ({ className, title, prevPage }: HeaderProps) => {
+const Header = ({ className, title, prevPage, rightAction }: HeaderProps) => {
   const router = useRouter();
 
   const getTitleClassName = () => {
@@ -70,9 +71,19 @@ const Header = ({ className, title, prevPage }: HeaderProps) => {
       <h2 className={cn("text-[20px] font-bold", getTitleClassName())}>
         {title.text}
       </h2>
-      {/* center일 때 prevPage가 있으면 spacer 추가 */}
-      {prevPage && title.position === "center" && (
-        <div className="w-[48px] flex-0" />
+      {/* center+prevPage일 때: rightAction 있으면 flex-1로 삭제를 오른쪽으로, 없으면 spacer */}
+      {prevPage && title.position === "center" ? (
+        rightAction ? (
+          <div className="flex flex-1 shrink-0 items-center justify-end">
+            {rightAction}
+          </div>
+        ) : (
+          <div className="w-[48px] shrink-0" />
+        )
+      ) : (
+        rightAction && (
+          <div className="flex shrink-0 items-center">{rightAction}</div>
+        )
       )}
     </header>
   );
