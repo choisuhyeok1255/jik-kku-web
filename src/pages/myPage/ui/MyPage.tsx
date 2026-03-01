@@ -49,10 +49,10 @@ const MyPage = () => {
   const router = useRouter();
   const queryClient = useQueryClient();
 
-  const { data: teams } = useGetTeams();
+  const { data: teams, isLoading: isLoadingTeams } = useGetTeams();
   const { data: user, isLoading: isLoadingUser } = useGetUser();
 
-  if (isLoadingUser) {
+  if (isLoadingUser || isLoadingTeams) {
     return (
       <div className="flex h-dvh flex-col items-center justify-center">
         <span>로딩 중...</span>
