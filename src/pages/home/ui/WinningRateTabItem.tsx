@@ -1,15 +1,25 @@
 import Character1 from "@/public/1.svg";
 import Character2 from "@/public/2.svg";
 import Character3 from "@/public/3.svg";
-import { useAuthStore, useGetGameLogs } from "@/src/entities";
 import EmptyGameLog from "./EmptyGameLog";
 
-const WinningRateTabItem = () => {
-  const { user, isLoading: isAuthLoading } = useAuthStore();
-  const { data: gameLogs, isLoading: isGameLogsLoading } = useGetGameLogs({
-    query: { userId: user?.id || "" },
-  });
-
+const WinningRateTabItem = ({
+  gameLogs,
+}: {
+  gameLogs: {
+    id: number;
+    home_team_id: number | null;
+    away_team_id: number | null;
+    home_team_score: number | null;
+    away_team_score: number | null;
+    match_date: string | null;
+    note: string | null;
+    game_log_image: string | null;
+    game_log_image_thumbnail: string | null;
+    is_certified: boolean;
+    stadium_id: number | null;
+  }[];
+}) => {
   const withScore =
     gameLogs?.filter(
       (g) =>
@@ -82,15 +92,7 @@ const WinningRateTabItem = () => {
     );
   })();
 
-  if (isAuthLoading || isGameLogsLoading) {
-    return (
-      <div className="flex h-dvh flex-col items-center justify-center">
-        <span className="text-center text-white/60">로딩 중...</span>
-      </div>
-    );
-  }
-
-  if (gameLogs?.length === 0) {
+  if (gameLogs.length === 0) {
     return <EmptyGameLog />;
   }
 

@@ -2,7 +2,11 @@
 
 import { useRouter, useSearchParams } from "next/navigation";
 
-import { useAuthStore } from "@/src/entities";
+import {
+  useAuthStore,
+  useGetGameLogs,
+  useGetGameLogsInfinite,
+} from "@/src/entities";
 import { AppTab, NotLogin } from "@/src/shared";
 
 import GameLogsTabItem from "./GameLogsTabItem";
@@ -15,7 +19,19 @@ const HomePage = () => {
   const currentTab: "game" | "gameLogs" =
     tabParam === "gameLogs" ? "gameLogs" : "game";
 
-  const { user } = useAuthStore();
+  const { user, isLoading: isAuthLoading } = useAuthStore();
+  const { data: gameLogs, isLoading: isGameLogsLoading } = useGetGameLogs({
+    query: { userId: user?.id || "" },
+  });
+  const {
+    data: gameLogsInfinite,
+    isLoading: isGameLogsInfiniteLoading,
+    isFetchingNextPage,
+    hasNextPage,
+    fetchNextPage,
+  } = useGetGameLogsInfinite({
+    query: { userId: user?.id || "" },
+  });
 
   const handleChangeTab = (tab: string) => {
     const newTab = tab as "game" | "gameLogs";
@@ -28,6 +44,14 @@ const HomePage = () => {
     const queryString = params.toString();
     router.replace(queryString ? `/?${queryString}` : "/");
   };
+
+  if (isAuthLoading || isGameLogsLoading || isGameLogsInfiniteLoading) {
+    return (
+      <div className="flex min-h-dvh flex-1 items-center justify-center">
+        <span className="text-white/60">로딩 중...</span>
+      </div>
+    );
+  }
 
   if (!user) {
     return <NotLogin />;
@@ -44,8 +68,17 @@ const HomePage = () => {
         ]}
         handleChangeTab={handleChangeTab}
       />
-      {currentTab === "game" && <WinningRateTabItem />}
-      {currentTab === "gameLogs" && <GameLogsTabItem />}
+      {currentTab === "game" && (
+        <WinningRateTabItem gameLogs={gameLogs || []} />
+      )}
+      {currentTab === "gameLogs" && (
+        <GameLogsTabItem
+          gameLogs={gameLogsInfinite || { pages: [], pageParams: [] }}
+          isFetchingNextPage={isFetchingNextPage}
+          hasNextPage={hasNextPage}
+          fetchNextPage={fetchNextPage}
+        />
+      )}
     </div>
   );
 };

@@ -1,45 +1,49 @@
+import { InfiniteData } from "@tanstack/react-query";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useEffect, useRef } from "react";
 
-import {
-  GAME_LOGS_PAGE_SIZE,
-  useAuthStore,
-  useGetGameLogsInfinite,
-} from "@/src/entities";
+import { GAME_LOGS_PAGE_SIZE } from "@/src/entities";
 
 import EmptyGameLog from "./EmptyGameLog";
 import GameLogsItem from "./GameLogsItem";
 
-const GameLogsTabItem = () => {
+const GameLogsTabItem = ({
+  gameLogs,
+  isFetchingNextPage,
+  hasNextPage,
+  fetchNextPage,
+}: {
+  gameLogs: InfiniteData<
+    {
+      id: number;
+      home_team_id: number | null;
+      away_team_id: number | null;
+      home_team_score: number | null;
+      away_team_score: number | null;
+      match_date: string | null;
+      note: string | null;
+      game_log_image: string | null;
+      game_log_image_thumbnail: string | null;
+      is_certified: boolean;
+      is_admin_certified: boolean;
+      stadium_id: number | null;
+    }[],
+    unknown
+  >;
+  isFetchingNextPage: boolean;
+  hasNextPage: boolean;
+  fetchNextPage: () => void;
+}) => {
   const router = useRouter();
   const searchParams = useSearchParams();
   const scrollToId = searchParams?.get("scrollTo");
   const hasScrolledRef = useRef(false);
   const sentinelRef = useRef<HTMLDivElement>(null);
 
-  const { user, isLoading: isAuthLoading } = useAuthStore();
-
-  const {
-    data,
-    isLoading: isGameLogsLoading,
-    isFetchingNextPage,
-    hasNextPage,
-    fetchNextPage,
-  } = useGetGameLogsInfinite({
-    query: { userId: user?.id || "" },
-  });
-
-  const gameLogs = data?.pages.flatMap((page) => page) ?? [];
+  const flatGameLogs = gameLogs?.pages.flatMap((page) => page) ?? [];
 
   useEffect(() => {
-    if (
-      !scrollToId ||
-      isAuthLoading ||
-      isGameLogsLoading ||
-      !gameLogs.length ||
-      hasScrolledRef.current
-    )
-      return;
+    if (!scrollToId || !flatGameLogs.length || hasScrolledRef.current) return;
 
     const el = document.getElementById(`game-log-${scrollToId}`);
     if (el) {
@@ -51,14 +55,7 @@ const GameLogsTabItem = () => {
       const queryString = params.toString();
       router.replace(queryString ? `/?${queryString}` : "/", { scroll: false });
     }
-  }, [
-    scrollToId,
-    isAuthLoading,
-    isGameLogsLoading,
-    gameLogs.length,
-    searchParams,
-    router,
-  ]);
+  }, [scrollToId, flatGameLogs.length, searchParams, router]);
 
   useEffect(() => {
     if (!hasNextPage || isFetchingNextPage) return;
@@ -79,21 +76,13 @@ const GameLogsTabItem = () => {
     return () => observer.disconnect();
   }, [hasNextPage, isFetchingNextPage, fetchNextPage]);
 
-  if (isAuthLoading || isGameLogsLoading) {
-    return (
-      <div className="flex flex-1 items-center justify-center">
-        <span className="text-white/60">로딩 중...</span>
-      </div>
-    );
-  }
-
-  if (gameLogs?.length === 0) {
+  if (flatGameLogs.length === 0) {
     return <EmptyGameLog />;
   }
 
   return (
     <div className="flex flex-1 flex-col gap-[16px] overflow-y-auto px-[16px] pb-[116px]">
-      {gameLogs.map((gameLog, index) => (
+      {flatGameLogs.map((gameLog, index) => (
         <GameLogsItem
           key={gameLog.id}
           enterDelay={index * 80}
