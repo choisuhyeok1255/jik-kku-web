@@ -19,6 +19,8 @@ export * from "./ui/shadcn/dialog";
 export * from "./ui/shadcn/skeleton";
 export * from "./ui/shadcn/spinner";
 export { default as AppTab } from "./ui/Tab";
+export { default as AvatarIcon } from "./ui/AvatarIcon";
+export { AVATAR_ICONS } from "./lib/avatarIcons";
 export { default as MatchResultTag } from "./ui/MatchResultTag";
 export { default as Modal } from "./ui/Modal";
 export { default as NotLogin } from "./ui/NotLogin";
