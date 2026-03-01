@@ -3,21 +3,23 @@
 import Medal1Icon from "@/public/medal-1.svg";
 import Medal2Icon from "@/public/medal-2.svg";
 import Medal3Icon from "@/public/medal-3.svg";
-import { useAuthStore, useGetUserWinStatsRanking } from "@/src/entities";
+import {
+  useAuthStore,
+  useGetUserWinStatsRanking,
+  UserWinStatsRow,
+} from "@/src/entities";
 import { Header, Notification } from "@/src/shared";
 import { cn } from "@/src/shared";
 
-const RankingPage = () => {
+const RankingPage = ({
+  initialRanking,
+}: {
+  initialRanking: UserWinStatsRow[];
+}) => {
   const { user: currentUser } = useAuthStore();
-  const { data: ranking, isLoading, error } = useGetUserWinStatsRanking();
-
-  if (isLoading) {
-    return (
-      <div className="flex min-h-dvh items-center justify-center">
-        <span className="text-center text-white/60">랭킹을 불러오는 중...</span>
-      </div>
-    );
-  }
+  const { data: ranking, error } = useGetUserWinStatsRanking({
+    initialData: initialRanking,
+  });
 
   if (error) {
     return (
@@ -49,6 +51,9 @@ const RankingPage = () => {
       />
       <div className="flex min-h-0 flex-1 flex-col overflow-y-auto px-[16px] pb-[100px]">
         <Notification text="인증된 직관 기록만 집계되어 승률이 계산됩니다 ✨" />
+        <p className="mt-[8px] text-[12px] text-white/50">
+          데이터는 1분마다 갱신됩니다.
+        </p>
         <div className="mt-[24px] flex flex-col gap-[16px]">
           {ranking?.map((user, i) => (
             <div
