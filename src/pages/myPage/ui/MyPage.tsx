@@ -56,10 +56,26 @@ const MyPage = () => {
   const router = useRouter();
   const queryClient = useQueryClient();
 
-  const { data: teams, isLoading: isLoadingTeams } = useGetTeams();
   const { data: user, isLoading: isLoadingUser } = useGetUser();
+  const { data: teams, isLoading: isLoadingTeams } = useGetTeams({
+    enabled: !!user,
+  });
 
-  if (isLoadingUser || isLoadingTeams) {
+  if (isLoadingUser) {
+    return (
+      <div className="flex h-dvh flex-col">
+        <div className="flex flex-1 items-center justify-center">
+          <span className="text-white/60">로딩 중...</span>
+        </div>
+      </div>
+    );
+  }
+
+  if (!user) {
+    return <NotLogin />;
+  }
+
+  if (isLoadingTeams) {
     return (
       <div className="flex h-dvh flex-col">
         <Header
@@ -89,10 +105,6 @@ const MyPage = () => {
         </div>
       </div>
     );
-  }
-
-  if (!user) {
-    return <NotLogin />;
   }
 
   return (
