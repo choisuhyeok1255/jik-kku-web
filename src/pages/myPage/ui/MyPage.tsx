@@ -100,7 +100,7 @@ const MyPage = () => {
           </div>
         </MyPageCardButton>
 
-        <div
+        <button
           onClick={async () => {
             await supabase.auth.signOut();
             queryClient.clear();
@@ -112,7 +112,7 @@ const MyPage = () => {
               로그아웃
             </span>
           </div>
-        </div>
+        </button>
       </div>
     </div>
   );
