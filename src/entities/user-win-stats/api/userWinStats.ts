@@ -8,19 +8,26 @@ export const userWinStatsKeys = {
   ranking: () => [...userWinStatsKeys.all, "ranking"] as const,
 } as const;
 
+export const getUserWinStatsRanking = async () => {
+  const { data, error } = await supabase
+    .from("user_win_stats")
+    .select("*")
+    .order("win_rate", { ascending: false });
+
+  if (error) throw error;
+  return (data ?? []) as UserWinStatsRow[];
+};
+
 /** 직관 승률 랭킹 조회 (승률 높은 순) */
-export const useGetUserWinStatsRanking = () => {
+export const useGetUserWinStatsRanking = ({
+  initialData,
+}: {
+  initialData?: UserWinStatsRow[];
+}) => {
   return useQuery({
     queryKey: userWinStatsKeys.ranking(),
-    queryFn: async () => {
-      const { data, error } = await supabase
-        .from("user_win_stats")
-        .select("*")
-        .order("win_rate", { ascending: false });
-
-      if (error) throw error;
-      return (data ?? []) as UserWinStatsRow[];
-    },
+    queryFn: getUserWinStatsRanking,
     staleTime: 1000 * 60, // 1분
+    initialData,
   });
 };
