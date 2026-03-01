@@ -2,7 +2,7 @@ import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/src/shared";
 import { TeamServerModel } from "../model/types/api";
 
-export const useGetTeams = () => {
+export const useGetTeams = (options?: { enabled?: boolean }) => {
   return useQuery({
     queryKey: ["teams"],
     queryFn: async () => {
@@ -14,5 +14,6 @@ export const useGetTeams = () => {
       data.sort((a, b) => a.team_name?.localeCompare(b.team_name ?? "") ?? 0),
     staleTime: Infinity,
     gcTime: Infinity,
+    enabled: options?.enabled ?? true,
   });
 };
