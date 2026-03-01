@@ -47,7 +47,7 @@ const MyPageInquiryPage = () => {
         {inquiries.length === 0 ? (
           <div className="flex flex-1 flex-col items-center justify-center gap-[8px]">
             <span className="text-center text-white/60">
-              아직 문의 내역이 없습니다.
+              문의 내역이 없습니다.
             </span>
             <span className="text-center text-[14px] text-white/40">
               새 문의를 작성해 주세요.
