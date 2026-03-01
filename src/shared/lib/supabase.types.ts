@@ -112,6 +112,36 @@ export type Database = {
           },
         ]
       }
+      inquiries: {
+        Row: {
+          admin_answer_at: string | null
+          answer: string | null
+          content: string
+          created_at: string
+          id: number
+          title: string
+          user_id: string
+        }
+        Insert: {
+          admin_answer_at?: string | null
+          answer?: string | null
+          content: string
+          created_at?: string
+          id?: number
+          title: string
+          user_id: string
+        }
+        Update: {
+          admin_answer_at?: string | null
+          answer?: string | null
+          content?: string
+          created_at?: string
+          id?: number
+          title?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       share: {
         Row: {
           attendee_user_ids: Json

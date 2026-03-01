@@ -1,4 +1,5 @@
 export * from "./game-log";
+export * from "./inquiry";
 export * from "./share";
 export * from "./team";
 export * from "./user";
