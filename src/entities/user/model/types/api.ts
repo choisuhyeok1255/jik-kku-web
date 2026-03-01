@@ -10,7 +10,10 @@ export type UserNicknameModel = Pick<
 >;
 
 export interface UpdateNicknameQueryModel {
-  body: { nickname: Database["public"]["Tables"]["users"]["Row"]["nickname"] };
+  body: {
+    nickname?: Database["public"]["Tables"]["users"]["Row"]["nickname"];
+    avatar?: Database["public"]["Tables"]["users"]["Row"]["avatar"];
+  };
 }
 
 export type UserServerModel = Database["public"]["Tables"]["users"]["Row"];

@@ -1,5 +1,6 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/src/shared";
+import { userWinStatsKeys } from "@/src/entities/user-win-stats";
 import {
   GetUsersByIdsQueryModel,
   UpdateNicknameQueryModel,
@@ -67,6 +68,7 @@ export const useUpdateNickname = () => {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["user"] });
+      queryClient.invalidateQueries({ queryKey: userWinStatsKeys.ranking() });
     },
   });
 };
