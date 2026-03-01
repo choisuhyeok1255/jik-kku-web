@@ -8,7 +8,7 @@ import {
   useGetUserWinStatsRanking,
   UserWinStatsRow,
 } from "@/src/entities";
-import { Header, Notification } from "@/src/shared";
+import { AvatarIcon, Header, Notification } from "@/src/shared";
 import { cn } from "@/src/shared";
 
 const RankingPage = ({
@@ -59,21 +59,24 @@ const RankingPage = ({
             <div
               key={i}
               className={cn(
-                "flex h-[68px] items-center gap-[16px] rounded-[20px] border p-[20px]",
+                "flex h-[68px] items-center gap-[8px] rounded-[20px] border p-[20px]",
                 user.user_id === currentUser?.id
                   ? "border-[#5724F0] bg-[#5724F0]/4"
                   : "border-white/10 bg-[#FFFFFF]/4",
               )}
             >
-              <div className="flex h-[28px] w-[28px] shrink-0 items-center justify-center">
-                {i === 0 && <Medal1Icon className="h-[28px] w-[28px]" />}
-                {i === 1 && <Medal2Icon className="h-[28px] w-[28px]" />}
-                {i === 2 && <Medal3Icon className="h-[28px] w-[28px]" />}
-                {i >= 3 && (
-                  <div className="flex h-[28px] w-[28px] items-center justify-center rounded-full bg-white/10 text-[14px] font-bold text-[#FFFFFF]">
-                    {i + 1}
-                  </div>
-                )}
+              <div className="flex shrink-0 items-center gap-[12px]">
+                <div className="flex h-[28px] w-[28px] shrink-0 items-center justify-center">
+                  {i === 0 && <Medal1Icon className="h-[28px] w-[28px]" />}
+                  {i === 1 && <Medal2Icon className="h-[28px] w-[28px]" />}
+                  {i === 2 && <Medal3Icon className="h-[28px] w-[28px]" />}
+                  {i >= 3 && (
+                    <div className="flex h-[28px] w-[28px] items-center justify-center rounded-full bg-white/10 text-[14px] font-bold text-[#FFFFFF]">
+                      {i + 1}
+                    </div>
+                  )}
+                </div>
+                {user.avatar && <AvatarIcon iconName={user.avatar} size={28} />}
               </div>
               <div className="min-w-0 flex-1">
                 <div className="truncate text-[16px] font-bold text-white">
