@@ -5,6 +5,16 @@ import { HomePage } from "@/src/pages/home";
 export const metadata: Metadata = {
   title: "승요",
   description: "야구 직관 기록과 나눔을 위한 승리요정 프로젝트",
+  alternates: { canonical: "/" },
+  openGraph: {
+    title: "승요",
+    description: "야구 직관 기록과 나눔을 위한 승리요정 프로젝트",
+    url: "/",
+    siteName: "승요",
+    type: "website",
+    locale: "ko_KR",
+  },
+  twitter: { card: "summary", title: "승요", description: "야구 직관 기록과 나눔을 위한 승리요정 프로젝트" },
 };
 
 export default function Page() {

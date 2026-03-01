@@ -1,1 +1,19 @@
-export { ShareEditPage as default } from "@/src/pages/share";
+import type { Metadata } from "next";
+
+import { ShareEditPage } from "@/src/pages/share";
+
+export const metadata: Metadata = {
+  title: "나눔 수정 | 승요",
+  description: "나눔 글을 수정합니다.",
+  openGraph: {
+    title: "나눔 수정 | 승요",
+    description: "나눔 글을 수정합니다.",
+    url: "/share",
+    siteName: "승요",
+    type: "website",
+    locale: "ko_KR",
+  },
+  twitter: { card: "summary", title: "나눔 수정 | 승요", description: "나눔 글을 수정합니다." },
+};
+
+export { ShareEditPage as default };

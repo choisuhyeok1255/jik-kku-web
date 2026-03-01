@@ -137,7 +137,8 @@ export const usePostGameLog = () => {
 
   return useMutation({
     mutationFn: async (req: CreateGameLogQueryModel) => {
-      await supabase.from("game_logs").insert(req.body);
+      const { error } = await supabase.from("game_logs").insert(req.body);
+      if (error) throw error;
     },
     onSuccess: (_, req) => {
       if (!req.body.user_id) return;
@@ -157,7 +158,11 @@ export const useDeleteGameLog = () => {
 
   return useMutation({
     mutationFn: async (req: DeleteGameLogQueryModel) => {
-      await supabase.from("game_logs").delete().eq("id", req.query.gameLogId);
+      const { error } = await supabase
+        .from("game_logs")
+        .delete()
+        .eq("id", req.query.gameLogId);
+      if (error) throw error;
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: gameLogKeys.all });
@@ -172,12 +177,13 @@ export const useGetGameLogDetail = (req: GetGameLogDetailQueryModel) => {
   return useQuery({
     queryKey: gameLogKeys.detail(req),
     queryFn: async () => {
-      const { data } = await supabase
+      const { data, error } = await supabase
         .from("game_logs")
         .select("*")
         .eq("id", req.query.gameLogId)
         .single();
 
+      if (error) throw error;
       return data;
     },
   });
@@ -188,10 +194,11 @@ export const useUpdateGameLog = () => {
 
   return useMutation({
     mutationFn: async (req: UpdateGameLogQueryModel) => {
-      await supabase
+      const { error } = await supabase
         .from("game_logs")
         .update(req.body)
         .eq("id", req.query.gameLogId);
+      if (error) throw error;
     },
     onSuccess: (_, gameLog) => {
       if (!gameLog.body.user_id) return;
@@ -216,10 +223,11 @@ export const useCertifyGameLog = () => {
 
   return useMutation({
     mutationFn: async (req: CertifyGameLogQueryModel) => {
-      await supabase
+      const { error } = await supabase
         .from("game_logs")
         .update({ is_admin_certified: true })
         .eq("id", req.query.gameLogId);
+      if (error) throw error;
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: gameLogKeys.all });
@@ -235,10 +243,11 @@ export const useRejectGameLog = () => {
 
   return useMutation({
     mutationFn: async (req: CertifyGameLogQueryModel) => {
-      await supabase
+      const { error } = await supabase
         .from("game_logs")
         .update({ is_certified: false, is_admin_certified: false })
         .eq("id", req.query.gameLogId);
+      if (error) throw error;
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: gameLogKeys.all });

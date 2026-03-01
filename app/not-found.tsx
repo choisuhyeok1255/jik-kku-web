@@ -1,4 +1,19 @@
+import type { Metadata } from "next";
 import Link from "next/link";
+
+export const metadata: Metadata = {
+  title: "페이지를 찾을 수 없음 | 승요",
+  description: "요청한 페이지를 찾을 수 없습니다.",
+  openGraph: {
+    title: "페이지를 찾을 수 없음 | 승요",
+    description: "요청한 페이지를 찾을 수 없습니다.",
+    url: "/",
+    siteName: "승요",
+    type: "website",
+    locale: "ko_KR",
+  },
+  twitter: { card: "summary", title: "페이지를 찾을 수 없음 | 승요", description: "요청한 페이지를 찾을 수 없습니다." },
+};
 
 export default function NotFound() {
   return (

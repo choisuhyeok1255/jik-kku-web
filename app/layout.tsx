@@ -1,10 +1,11 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import localFont from "next/font/local";
 import { Suspense } from "react";
 import { Toaster } from "sonner";
 
 import { BottomNavigation, Providers } from "@/src/app";
 import { TeamSettingGuard } from "@/src/features";
+import { SITE_URL } from "@/src/shared/lib/site-url";
 import "./globals.css";
 
 const laundryGothic = localFont({
@@ -24,14 +25,29 @@ const laundryGothic = localFont({
   display: "swap",
 });
 
+export const viewport: Viewport = {
+  width: "device-width",
+  initialScale: 1,
+  maximumScale: 1,
+  userScalable: false,
+};
+
 export const metadata: Metadata = {
+  metadataBase: new URL(SITE_URL),
   title: "승요",
   description: "승리요정 프로젝트",
-  viewport: {
-    width: "device-width",
-    initialScale: 1,
-    maximumScale: 1,
-    userScalable: false,
+  openGraph: {
+    title: "승요",
+    description: "야구 직관 기록과 나눔을 위한 승리요정 프로젝트",
+    url: "/",
+    siteName: "승요",
+    type: "website",
+    locale: "ko_KR",
+  },
+  twitter: {
+    card: "summary",
+    title: "승요",
+    description: "야구 직관 기록과 나눔을 위한 승리요정 프로젝트",
   },
 };
 
@@ -40,11 +56,36 @@ const RootLayout = ({
 }: Readonly<{
   children: React.ReactNode;
 }>) => {
+  const jsonLd = {
+    "@context": "https://schema.org",
+    "@graph": [
+      {
+        "@type": "Organization",
+        "@id": `${SITE_URL}/#organization`,
+        name: "승요",
+        description: "야구 직관 기록과 나눔을 위한 승리요정 프로젝트",
+        url: SITE_URL,
+      },
+      {
+        "@type": "WebSite",
+        "@id": `${SITE_URL}/#website`,
+        url: SITE_URL,
+        name: "승요",
+        description: "야구 직관 기록과 나눔을 위한 승리요정 프로젝트",
+        publisher: { "@id": `${SITE_URL}/#organization` },
+      },
+    ],
+  };
+
   return (
     <html lang="ko" className="h-dvh overflow-hidden">
       <body
         className={`${laundryGothic.variable} ${laundryGothic.className} h-dvh overflow-hidden bg-[#232323]`}
       >
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+        />
         <Providers>
           <TeamSettingGuard>
             <div className="flex justify-center">

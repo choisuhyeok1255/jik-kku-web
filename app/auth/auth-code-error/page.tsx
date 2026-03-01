@@ -1,4 +1,19 @@
+import type { Metadata } from "next";
 import Link from "next/link";
+
+export const metadata: Metadata = {
+  title: "로그인 오류 | 승요",
+  description: "인증 코드 처리에 실패했습니다. 다시 로그인을 시도해 주세요.",
+  openGraph: {
+    title: "로그인 오류 | 승요",
+    description: "인증 코드 처리에 실패했습니다. 다시 로그인을 시도해 주세요.",
+    url: "/auth/auth-code-error",
+    siteName: "승요",
+    type: "website",
+    locale: "ko_KR",
+  },
+  twitter: { card: "summary", title: "로그인 오류 | 승요", description: "인증 코드 처리에 실패했습니다. 다시 로그인을 시도해 주세요." },
+};
 
 export default function AuthCodeErrorPage() {
   return (

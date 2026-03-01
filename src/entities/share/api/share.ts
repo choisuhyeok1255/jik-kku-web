@@ -19,6 +19,17 @@ export const shareKeys = {
     [...shareKeys.details(), req.query.shareId] as const,
 } as const;
 
+export const getShareDetail = async (shareId: number) => {
+  const { data, error } = await supabase
+    .from("share")
+    .select("id, title, content, created_at")
+    .eq("id", shareId)
+    .single();
+
+  if (error) throw error;
+  return data as ShareServerModel | null;
+};
+
 export const getShares = async () => {
   const { data, error } = await supabase
     .from("share")
