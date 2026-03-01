@@ -1,6 +1,7 @@
 "use client";
 
 import { useRouter } from "next/navigation";
+import { useEffect, useState } from "react";
 
 import { ShareServerModel, useGetShares } from "@/src/entities";
 import { AppTab } from "@/src/shared";
@@ -16,7 +17,7 @@ const SharePage = ({
   initialTab: "ongoing" | "expired";
 }) => {
   const router = useRouter();
-  const currentTab = initialTab;
+  const [currentTab, setCurrentTab] = useState(initialTab);
 
   const { data: shares = [] } = useGetShares({
     initialData: initialShares,
@@ -25,7 +26,12 @@ const SharePage = ({
   const handleChangeTab = (tab: string) => {
     const newTab = tab as "ongoing" | "expired";
     router.replace(newTab === "expired" ? "/share?tab=expired" : "/share");
+    setCurrentTab(newTab);
   };
+
+  useEffect(() => {
+    setCurrentTab(initialTab);
+  }, [initialTab]);
 
   return (
     <div className="flex h-full flex-col pt-[24px]">

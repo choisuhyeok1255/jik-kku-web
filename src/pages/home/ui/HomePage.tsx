@@ -1,6 +1,7 @@
 "use client";
 
 import { useRouter, useSearchParams } from "next/navigation";
+import { useEffect, useState } from "react";
 
 import {
   useAuthStore,
@@ -16,8 +17,10 @@ const HomePage = () => {
   const router = useRouter();
   const searchParams = useSearchParams();
   const tabParam = searchParams?.get("tab");
-  const currentTab: "game" | "gameLogs" =
+  const initialTab: "game" | "gameLogs" =
     tabParam === "gameLogs" ? "gameLogs" : "game";
+
+  const [currentTab, setCurrentTab] = useState(initialTab);
 
   const { user, isLoading: isAuthLoading } = useAuthStore();
   const { data: gameLogs, isLoading: isGameLogsLoading } = useGetGameLogs({
@@ -35,15 +38,13 @@ const HomePage = () => {
 
   const handleChangeTab = (tab: string) => {
     const newTab = tab as "game" | "gameLogs";
-    const params = new URLSearchParams(searchParams?.toString() ?? "");
-    if (newTab === "game") {
-      params.delete("tab");
-    } else {
-      params.set("tab", newTab);
-    }
-    const queryString = params.toString();
-    router.replace(queryString ? `/?${queryString}` : "/");
+    setCurrentTab(newTab);
+    router.replace(newTab === "gameLogs" ? "/?tab=gameLogs" : "/");
   };
+
+  useEffect(() => {
+    setCurrentTab(initialTab);
+  }, [initialTab]);
 
   if (isAuthLoading || isGameLogsLoading || isGameLogsInfiniteLoading) {
     return (
