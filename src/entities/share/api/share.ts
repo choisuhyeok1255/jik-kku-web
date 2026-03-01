@@ -19,18 +19,27 @@ export const shareKeys = {
     [...shareKeys.details(), req.query.shareId] as const,
 } as const;
 
-export const useGetShares = () => {
+export const getShares = async () => {
+  const { data, error } = await supabase
+    .from("share")
+    .select(
+      "id, user_id, title, content, deadline, stadium_id, max_attendees, attendee_user_ids, created_at",
+    )
+    .order("created_at", { ascending: false });
+
+  if (error) throw error;
+  return (data ?? []) as ShareServerModel[];
+};
+
+export const useGetShares = ({
+  initialData,
+}: {
+  initialData?: ShareServerModel[];
+}) => {
   return useQuery({
     queryKey: shareKeys.list(),
-    queryFn: async () => {
-      const { data, error } = await supabase
-        .from("share")
-        .select("id, user_id, title, content, deadline, stadium_id, max_attendees, attendee_user_ids, created_at")
-        .order("created_at", { ascending: false });
-
-      if (error) throw error;
-      return (data ?? []) as ShareServerModel[];
-    },
+    queryFn: getShares,
+    initialData: initialData,
   });
 };
 
