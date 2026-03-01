@@ -1,5 +1,12 @@
+import type { Metadata } from "next";
+
 import { RankingPage } from "@/src/pages/ranking";
 import { getUserWinStatsRanking } from "@/src/entities";
+
+export const metadata: Metadata = {
+  title: "직관 랭킹 | 승요",
+  description: "야구 직관 승률 랭킹. 인증된 직관 기록만 집계됩니다.",
+};
 
 export const revalidate = 60; // 60초마다 재생성
 
