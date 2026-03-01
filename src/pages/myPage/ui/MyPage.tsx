@@ -75,7 +75,8 @@ const MyPage = () => {
               <Skeleton className="h-[30px] w-[96px] bg-white/10" />
             </div>
           </div>
-          <div className="flex h-[48px] items-center justify-center">
+          <div className="flex h-[48px] items-center justify-center gap-[24px]">
+            <Skeleton className="h-[16px] w-[64px] bg-white/10" />
             <Skeleton className="h-[16px] w-[64px] bg-white/10" />
           </div>
         </div>
@@ -123,19 +124,29 @@ const MyPage = () => {
           </div>
         </MyPageCardButton>
 
-        <button
-          onClick={async () => {
-            await supabase.auth.signOut();
-            queryClient.clear();
-            router.push("/");
-          }}
-        >
-          <div className="flex h-[48px] min-w-0 items-center justify-center gap-3">
+        <div className="flex items-center justify-center gap-[32px]">
+          <button
+            type="button"
+            onClick={() => router.push("/myPage/inquiry")}
+            className="flex h-[48px] min-w-0 items-center justify-center"
+          >
+            <span className="min-w-0 truncate text-[14px] font-bold text-[#ffffff]/60">
+              문의하기
+            </span>
+          </button>
+          <button
+            onClick={async () => {
+              await supabase.auth.signOut();
+              queryClient.clear();
+              router.push("/");
+            }}
+            className="flex h-[48px] min-w-0 items-center justify-center"
+          >
             <span className="min-w-0 truncate text-[14px] font-bold text-[#ffffff]/60">
               로그아웃
             </span>
-          </div>
-        </button>
+          </button>
+        </div>
       </div>
     </div>
   );
