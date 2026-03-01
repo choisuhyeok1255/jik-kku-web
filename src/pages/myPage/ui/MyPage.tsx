@@ -4,7 +4,7 @@ import { useQueryClient } from "@tanstack/react-query";
 import { useRouter } from "next/navigation";
 import type { ReactNode } from "react";
 import { useGetTeams, useGetUser, TeamIcon } from "@/src/entities";
-import { Header, NotLogin, cn, supabase } from "@/src/shared";
+import { Header, NotLogin, Skeleton, cn, supabase } from "@/src/shared";
 
 const CARD_BASE =
   "rounded-[20px] border border-white/10 bg-white/[0.04] p-[20px]";
@@ -54,8 +54,31 @@ const MyPage = () => {
 
   if (isLoadingUser || isLoadingTeams) {
     return (
-      <div className="flex h-dvh flex-col items-center justify-center">
-        <span>로딩 중...</span>
+      <div className="flex h-dvh flex-col">
+        <Header
+          className="mb-[12px] shrink-0"
+          title={{ text: "마이페이지", position: "left" }}
+        />
+        <div className="flex min-h-0 flex-1 flex-col gap-[12px] overflow-y-auto px-[16px] pb-[150px]">
+          <div className={CARD_BASE}>
+            <div className="flex h-[40px] items-center gap-[12px]">
+              <Skeleton className="h-[32px] w-[32px] shrink-0 rounded-full bg-white/10" />
+              <Skeleton className="h-[20px] w-[128px] bg-white/10" />
+            </div>
+          </div>
+          <div className={CARD_BASE}>
+            <div className="flex flex-col gap-[16px]">
+              <div className="flex items-center gap-[12px]">
+                <Skeleton className="h-[28px] w-[28px] shrink-0 rounded-full bg-white/10" />
+                <Skeleton className="h-[16px] w-[64px] bg-white/10" />
+              </div>
+              <Skeleton className="h-[30px] w-[96px] bg-white/10" />
+            </div>
+          </div>
+          <div className="flex h-[48px] items-center justify-center">
+            <Skeleton className="h-[16px] w-[64px] bg-white/10" />
+          </div>
+        </div>
       </div>
     );
   }
