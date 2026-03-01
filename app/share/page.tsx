@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { Suspense } from "react";
 
 import { SharePage } from "@/src/pages/share";
 import { getShares } from "@/src/entities";
@@ -12,5 +13,15 @@ export const metadata: Metadata = {
 export default async function Page() {
   const initialShares = await getShares();
 
-  return <SharePage initialShares={initialShares} />;
+  return (
+    <Suspense
+      fallback={
+        <div className="flex h-dvh items-center justify-center">
+          <span className="text-white/60">로딩 중...</span>
+        </div>
+      }
+    >
+      <SharePage initialShares={initialShares} />
+    </Suspense>
+  );
 }
