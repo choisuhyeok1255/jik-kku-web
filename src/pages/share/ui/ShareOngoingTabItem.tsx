@@ -2,26 +2,15 @@
 
 import { useMemo } from "react";
 
-import { useGetShares } from "@/src/entities";
-
+import { ShareServerModel } from "@/src/entities";
 import { isShareExpired } from "../lib/isShareExpired";
 import ShareItem from "./ShareItem";
 
-const ShareOngoingTabItem = () => {
-  const { data: shares = [], isLoading } = useGetShares();
-
+const ShareOngoingTabItem = ({ shares }: { shares: ShareServerModel[] }) => {
   const ongoingShares = useMemo(
     () => shares.filter((share) => !isShareExpired(share.deadline)),
     [shares],
   );
-
-  if (isLoading) {
-    return (
-      <div className="flex flex-1 items-center justify-center">
-        <span className="text-white/60">로딩 중...</span>
-      </div>
-    );
-  }
 
   if (ongoingShares.length === 0) {
     return (

@@ -2,6 +2,7 @@
 
 import { useRouter, useSearchParams } from "next/navigation";
 
+import { useGetShares } from "@/src/entities";
 import { AppTab } from "@/src/shared";
 
 import ShareExpiredTabItem from "./ShareExpiredTabItem";
@@ -13,6 +14,8 @@ const SharePage = () => {
   const tabParam = searchParams?.get("tab");
   const currentTab: "ongoing" | "expired" =
     tabParam === "expired" ? "expired" : "ongoing";
+
+  const { data: shares = [], isLoading } = useGetShares();
 
   const handleChangeTab = (tab: string) => {
     const newTab = tab as "ongoing" | "expired";
@@ -26,6 +29,14 @@ const SharePage = () => {
     router.replace(queryString ? `/share?${queryString}` : "/share");
   };
 
+  if (isLoading) {
+    return (
+      <div className="flex min-h-dvh flex-1 items-center justify-center">
+        <span className="text-white/60">로딩 중...</span>
+      </div>
+    );
+  }
+
   return (
     <div className="flex h-full flex-col pt-[24px]">
       <AppTab
@@ -37,8 +48,8 @@ const SharePage = () => {
         ]}
         handleChangeTab={handleChangeTab}
       />
-      {currentTab === "ongoing" && <ShareOngoingTabItem />}
-      {currentTab === "expired" && <ShareExpiredTabItem />}
+      {currentTab === "ongoing" && <ShareOngoingTabItem shares={shares} />}
+      {currentTab === "expired" && <ShareExpiredTabItem shares={shares} />}
     </div>
   );
 };
