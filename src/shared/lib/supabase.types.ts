@@ -241,18 +241,21 @@ export type Database = {
       }
       users: {
         Row: {
+          avatar: string | null
           created_at: string
           id: string
           nickname: string
           team_id: number | null
         }
         Insert: {
+          avatar?: string | null
           created_at?: string
           id: string
           nickname: string
           team_id?: number | null
         }
         Update: {
+          avatar?: string | null
           created_at?: string
           id?: string
           nickname?: string
@@ -272,6 +275,7 @@ export type Database = {
     Views: {
       user_win_stats: {
         Row: {
+          avatar: string | null
           draws: number | null
           losses: number | null
           nickname: string | null
