@@ -1,6 +1,6 @@
 "use client";
 
-import { useRouter, useSearchParams } from "next/navigation";
+import { useRouter } from "next/navigation";
 
 import { ShareServerModel, useGetShares } from "@/src/entities";
 import { AppTab } from "@/src/shared";
@@ -10,14 +10,13 @@ import ShareOngoingTabItem from "./ShareOngoingTabItem";
 
 const SharePage = ({
   initialShares,
+  initialTab,
 }: {
   initialShares: ShareServerModel[];
+  initialTab: "ongoing" | "expired";
 }) => {
   const router = useRouter();
-  const searchParams = useSearchParams();
-  const tabParam = searchParams?.get("tab");
-  const currentTab: "ongoing" | "expired" =
-    tabParam === "expired" ? "expired" : "ongoing";
+  const currentTab = initialTab;
 
   const { data: shares = [] } = useGetShares({
     initialData: initialShares,
@@ -25,14 +24,7 @@ const SharePage = ({
 
   const handleChangeTab = (tab: string) => {
     const newTab = tab as "ongoing" | "expired";
-    const params = new URLSearchParams(searchParams?.toString() ?? "");
-    if (newTab === "ongoing") {
-      params.delete("tab");
-    } else {
-      params.set("tab", newTab);
-    }
-    const queryString = params.toString();
-    router.replace(queryString ? `/share?${queryString}` : "/share");
+    router.replace(newTab === "expired" ? "/share?tab=expired" : "/share");
   };
 
   return (
