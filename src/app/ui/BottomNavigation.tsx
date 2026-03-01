@@ -24,6 +24,7 @@ const HIDDEN_PATHS: string[] = [
   "/admin",
   "/myPage/nickname",
   "/myPage/team",
+  "/myPage/inquiry/create",
 ];
 
 const homeItem = {
@@ -75,6 +76,9 @@ const BottomNavigation = () => {
     ) {
       return { href: "/game-logs/create" };
     }
+    if (pathname === "/myPage/inquiry") {
+      return { href: "/myPage/inquiry/create" };
+    }
     return null;
   }, [pathname, isGameLogsTab, user, gameLogs]);
 
@@ -97,7 +101,11 @@ const BottomNavigation = () => {
       )}
       <nav className="flex w-[361px] items-center justify-between rounded-[999px] bg-[#1E1E1E] px-[10px] py-[12px] shadow-lg">
         {navigationItems.map((item) => {
-          const isActive = pathname === item.href;
+          // 홈("/")은 모든 경로가 startsWith("/")이므로 정확히 일치만 체크
+          const isActive =
+            item.href === "/"
+              ? pathname === "/"
+              : pathname.startsWith(item.href);
           const Icon = isActive ? item.activeIcon : item.unActiveIcon;
 
           return (
