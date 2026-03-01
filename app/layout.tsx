@@ -1,3 +1,4 @@
+import { GoogleTagManager } from "@next/third-parties/google";
 import type { Metadata, Viewport } from "next";
 import localFont from "next/font/local";
 import { Suspense } from "react";
@@ -77,8 +78,11 @@ const RootLayout = ({
     ],
   };
 
+  const gtmId = process.env.NEXT_PUBLIC_GTM_ID ?? "GTM-5NNJTCN9";
+
   return (
     <html lang="ko" className="h-dvh overflow-hidden">
+      <GoogleTagManager gtmId={gtmId} />
       <body
         className={`${laundryGothic.variable} ${laundryGothic.className} h-dvh overflow-hidden bg-[#232323]`}
       >
