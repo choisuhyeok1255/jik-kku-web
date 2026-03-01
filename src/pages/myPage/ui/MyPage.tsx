@@ -4,7 +4,14 @@ import { useQueryClient } from "@tanstack/react-query";
 import { useRouter } from "next/navigation";
 import type { ReactNode } from "react";
 import { useGetTeams, useGetUser, TeamIcon } from "@/src/entities";
-import { Header, NotLogin, Skeleton, cn, supabase } from "@/src/shared";
+import {
+  AvatarIcon,
+  Header,
+  NotLogin,
+  Skeleton,
+  cn,
+  supabase,
+} from "@/src/shared";
 
 const CARD_BASE =
   "rounded-[20px] border border-white/10 bg-white/[0.04] p-[20px]";
@@ -97,7 +104,11 @@ const MyPage = () => {
       <div className="flex min-h-0 flex-1 flex-col gap-[12px] overflow-y-auto px-[16px] pb-[150px]">
         <MyPageCardButton onClick={() => router.push("/myPage/nickname")}>
           <div className="flex h-[40px] min-w-0 items-center gap-3">
-            <CardIcon className="shrink-0 bg-white/10">👤</CardIcon>
+            {user?.avatar ? (
+              <AvatarIcon iconName={user.avatar} size={28} />
+            ) : (
+              <CardIcon className="shrink-0 bg-white/10">👤</CardIcon>
+            )}
             <span className="min-w-0 truncate text-[20px] font-bold text-[#ffffff]">
               {user?.nickname ?? ""}
             </span>
