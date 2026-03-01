@@ -1,0 +1,32 @@
+---
+description: Tailwind CSS에서 숫자 유틸리티 대신 px 값 사용
+globs: **/*.{ts,tsx}
+alwaysApply: false
+---
+
+# Tailwind px 값 규칙
+
+Tailwind CSS 사용 시 **숫자 유틸리티 클래스** 대신 **px 값**을 사용한다.
+
+## 적용 대상
+
+- `h-*`, `w-*`, `min-h-*`, `min-w-*`, `max-h-*`, `max-w-*`
+- `gap-*`, `p-*`, `m-*`, `px-*`, `py-*`, `mx-*`, `my-*` 등
+- `rounded-*`, `text-*`, `space-*` 등 크기/간격 관련 숫자 클래스
+
+## 변환 예시
+
+| ❌ 사용 금지 | ✅ 사용 |
+|-------------|---------|
+| `h-8` | `h-[32px]` |
+| `w-32` | `w-[128px]` |
+| `gap-3` | `gap-[12px]` |
+| `p-4` | `p-[16px]` |
+| `rounded-full` | 유지 (의미적 클래스) |
+| `text-sm` | `text-[14px]` (필요 시) |
+
+## 예외
+
+- `rounded-full`, `rounded-md` 등 의미가 명확한 클래스는 유지 가능
+- `flex`, `grid`, `hidden` 등 레이아웃/상태 클래스는 숫자 아님
+- 기존 shadcn 등 외부 컴포넌트의 클래스는 수정하지 않음
