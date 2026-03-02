@@ -23,19 +23,6 @@ export const metadata: Metadata = {
   },
 };
 
-export default async function Page({
-  searchParams,
-}: {
-  searchParams: Promise<{ tab?: string }>;
-}) {
-  const params = await searchParams;
-  const tabParam = params?.tab;
-  const tab =
-    tabParam === "ios"
-      ? "ios"
-      : tabParam === "desktop"
-        ? "desktop"
-        : "android";
-
-  return <MyPageAppDownloadPage tab={tab} />;
+export default function Page() {
+  return <MyPageAppDownloadPage />;
 }

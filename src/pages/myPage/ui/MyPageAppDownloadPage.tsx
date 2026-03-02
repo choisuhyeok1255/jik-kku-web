@@ -1,8 +1,12 @@
-import Link from "next/link";
+"use client";
+
+import { useState } from "react";
 
 import { Header } from "@/src/shared";
 
 import CopyUrlButton from "./CopyUrlButton";
+
+type Tab = "android" | "ios" | "desktop";
 
 const ANDROID_STEPS = [
   "Chrome 브라우저에서 아래에서 복사한 주소로 접속합니다.",
@@ -25,11 +29,18 @@ const DESKTOP_STEPS = [
   "설치가 완료되면 Windows 시작 메뉴 또는 macOS 앱 폴더에 추가됩니다.",
 ];
 
-const MyPageAppDownloadPage = ({
-  tab,
-}: {
-  tab: "android" | "ios" | "desktop";
-}) => {
+const MyPageAppDownloadPage = () => {
+  const [tab, setTab] = useState<Tab>("android");
+
+  const handleChangeTab = (newTab: Tab) => {
+    setTab(newTab);
+  };
+
+  const tabButtonClass = (isActive: boolean) =>
+    `flex h-[36px] flex-1 items-center justify-center rounded-[999px] text-[14px] leading-[20px] font-bold transition-all ${
+      isActive ? "bg-white/10 text-white" : "text-white/40"
+    }`;
+
   return (
     <div className="flex h-dvh flex-col">
       <Header
@@ -44,33 +55,27 @@ const MyPageAppDownloadPage = ({
         </p>
 
         <div className="mb-[24px] inline-flex h-[44px] w-full items-center justify-center rounded-[999px] bg-white/4 p-1">
-          <Link
-            href="/myPage/appDownload"
-            replace
-            className={`flex h-[36px] flex-1 items-center justify-center rounded-[999px] text-[14px] leading-[20px] font-bold transition-all ${
-              tab === "android" ? "bg-white/10 text-white" : "text-white/40"
-            }`}
+          <button
+            type="button"
+            onClick={() => handleChangeTab("android")}
+            className={tabButtonClass(tab === "android")}
           >
             안드로이드
-          </Link>
-          <Link
-            href="/myPage/appDownload?tab=ios"
-            replace
-            className={`flex h-[36px] flex-1 items-center justify-center rounded-[999px] text-[14px] leading-[20px] font-bold transition-all ${
-              tab === "ios" ? "bg-white/10 text-white" : "text-white/40"
-            }`}
+          </button>
+          <button
+            type="button"
+            onClick={() => handleChangeTab("ios")}
+            className={tabButtonClass(tab === "ios")}
           >
             iOS
-          </Link>
-          <Link
-            href="/myPage/appDownload?tab=desktop"
-            replace
-            className={`flex h-[36px] flex-1 items-center justify-center rounded-[999px] text-[14px] leading-[20px] font-bold transition-all ${
-              tab === "desktop" ? "bg-white/10 text-white" : "text-white/40"
-            }`}
+          </button>
+          <button
+            type="button"
+            onClick={() => handleChangeTab("desktop")}
+            className={tabButtonClass(tab === "desktop")}
           >
             데스크탑
-          </Link>
+          </button>
         </div>
 
         {tab === "android" && (
