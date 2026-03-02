@@ -1,5 +1,6 @@
 "use client";
 
+import { useRouter, useSearchParams } from "next/navigation";
 import Medal1Icon from "@/public/medal-1.svg";
 import Medal2Icon from "@/public/medal-2.svg";
 import Medal3Icon from "@/public/medal-3.svg";
@@ -7,19 +8,45 @@ import {
   useAuthStore,
   useGetUserWinStatsRanking,
   UserWinStatsRow,
+  type RankingSortBy,
 } from "@/src/entities";
-import { AvatarIcon, Header, Notification } from "@/src/shared";
+import { AppTab, AvatarIcon, Header, Notification } from "@/src/shared";
 import { cn } from "@/src/shared";
 
 const RankingPage = ({
-  initialRanking,
+  initialRankingByWinRate,
+  initialRankingByTotalGames,
 }: {
-  initialRanking: UserWinStatsRow[];
+  initialRankingByWinRate: UserWinStatsRow[];
+  initialRankingByTotalGames: UserWinStatsRow[];
 }) => {
+  const router = useRouter();
+  const searchParams = useSearchParams();
+  const sortBy: RankingSortBy =
+    searchParams?.get("tab") === "total_games" ? "total_games" : "win_rate";
+
   const { user: currentUser } = useAuthStore();
-  const { data: ranking, error } = useGetUserWinStatsRanking({
-    initialData: initialRanking,
-  });
+  const { data: rankingByWinRate, error: errorWinRate } =
+    useGetUserWinStatsRanking({
+      sortBy: "win_rate",
+      initialData: initialRankingByWinRate,
+    });
+  const { data: rankingByTotalGames, error: errorTotalGames } =
+    useGetUserWinStatsRanking({
+      sortBy: "total_games",
+      initialData: initialRankingByTotalGames,
+    });
+
+  const error = errorWinRate ?? errorTotalGames;
+  const ranking =
+    sortBy === "win_rate" ? rankingByWinRate : rankingByTotalGames;
+
+  const handleChangeTab = (tab: string) => {
+    const newTab = tab as RankingSortBy;
+    router.push(
+      newTab === "total_games" ? "/ranking?tab=total_games" : "/ranking",
+    );
+  };
 
   if (error) {
     return (
@@ -43,6 +70,11 @@ const RankingPage = ({
     );
   }
 
+  const notificationText =
+    sortBy === "win_rate"
+      ? "인증된 직관 기록만 집계되어 승률이 계산됩니다 ✨"
+      : "인증된 직관 기록만 집계되어 직관 경기수가 계산됩니다 ✨";
+
   return (
     <div className="flex h-dvh flex-col">
       <Header
@@ -50,7 +82,16 @@ const RankingPage = ({
         title={{ text: "직관 랭킹", position: "left" }}
       />
       <div className="flex min-h-0 flex-1 flex-col overflow-y-auto px-[16px] pb-[100px]">
-        <Notification text="인증된 직관 기록만 집계되어 승률이 계산됩니다 ✨" />
+        <AppTab
+          className="mb-[20px]"
+          currentTab={sortBy}
+          tabItems={[
+            { label: "승률순", value: "win_rate" },
+            { label: "직관 경기수 순", value: "total_games" },
+          ]}
+          handleChangeTab={handleChangeTab}
+        />
+        <Notification text={notificationText} />
         <p className="mt-[8px] text-[12px] text-white/50">
           데이터는 1분마다 갱신됩니다.
         </p>
@@ -84,7 +125,13 @@ const RankingPage = ({
                 </div>
               </div>
               <div className="shrink-0 text-[24px] font-bold text-[#FFFFFF]">
-                {user.win_rate != null ? `${user.win_rate}%` : "-"}
+                {sortBy === "total_games"
+                  ? user.total_games != null
+                    ? `${user.total_games}경기`
+                    : "-"
+                  : user.win_rate != null
+                    ? `${user.win_rate}%`
+                    : "-"}
               </div>
             </div>
           ))}

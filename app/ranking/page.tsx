@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { Suspense } from "react";
 
 import { RankingPage } from "@/src/pages/ranking";
 import { getUserWinStatsRanking } from "@/src/entities";
@@ -25,7 +26,23 @@ export const metadata: Metadata = {
 export const revalidate = 60; // 60초마다 재생성
 
 export default async function Page() {
-  const ranking = await getUserWinStatsRanking();
+  const [rankingByWinRate, rankingByTotalGames] = await Promise.all([
+    getUserWinStatsRanking("win_rate"),
+    getUserWinStatsRanking("total_games"),
+  ]);
 
-  return <RankingPage initialRanking={ranking} />;
+  return (
+    <Suspense
+      fallback={
+        <div className="flex h-dvh items-center justify-center">
+          로딩 중...
+        </div>
+      }
+    >
+      <RankingPage
+        initialRankingByWinRate={rankingByWinRate}
+        initialRankingByTotalGames={rankingByTotalGames}
+      />
+    </Suspense>
+  );
 }
