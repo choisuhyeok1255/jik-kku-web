@@ -39,7 +39,7 @@ const HomePage = () => {
   const handleChangeTab = (tab: string) => {
     const newTab = tab as "game" | "gameLogs";
     setCurrentTab(newTab);
-    router.replace(newTab === "gameLogs" ? "/?tab=gameLogs" : "/");
+    router.push(newTab === "gameLogs" ? "/?tab=gameLogs" : "/");
   };
 
   useEffect(() => {

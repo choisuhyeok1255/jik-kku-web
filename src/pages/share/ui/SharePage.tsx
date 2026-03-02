@@ -25,7 +25,7 @@ const SharePage = ({
 
   const handleChangeTab = (tab: string) => {
     const newTab = tab as "ongoing" | "expired";
-    router.replace(newTab === "expired" ? "/share?tab=expired" : "/share");
+    router.push(newTab === "expired" ? "/share?tab=expired" : "/share");
     setCurrentTab(newTab);
   };
 
