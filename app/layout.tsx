@@ -64,7 +64,8 @@ const RootLayout = ({
         "@type": "Organization",
         "@id": `${SITE_URL}/#organization`,
         name: "직꾸",
-        description: "직관 다이어리 꾸미기 - 야구 직관 기록과 나눔을 위한 서비스",
+        description:
+          "직관 다이어리 꾸미기 - 야구 직관 기록과 나눔을 위한 서비스",
         url: SITE_URL,
       },
       {
@@ -72,7 +73,8 @@ const RootLayout = ({
         "@id": `${SITE_URL}/#website`,
         url: SITE_URL,
         name: "직꾸",
-        description: "직관 다이어리 꾸미기 - 야구 직관 기록과 나눔을 위한 서비스",
+        description:
+          "직관 다이어리 꾸미기 - 야구 직관 기록과 나눔을 위한 서비스",
         publisher: { "@id": `${SITE_URL}/#organization` },
       },
     ],
