@@ -41,9 +41,9 @@ const GameLogForm = ({
   handleClickSubmit,
 }: {
   defaultValues?: CreateGameLogForm | UpdateGameLogForm;
-  handleClickSubmit: (
-    body: CreateGameLogQueryModel["body"] | UpdateGameLogQueryModel["body"],
-  ) => void;
+  handleClickSubmit:
+    | ((body: CreateGameLogQueryModel["body"]) => void)
+    | ((body: UpdateGameLogQueryModel["body"]) => void);
 }) => {
   const { data: user } = useGetUser();
   const { data: teams } = useGetTeams();
