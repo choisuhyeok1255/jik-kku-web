@@ -3,14 +3,27 @@ import { supabase } from "@/src/shared";
 
 import { StadiumServerModel } from "../model/types/api";
 
+export const getStadiums = async () => {
+  const { data } = await supabase.from("stadium").select("*");
+  return data as StadiumServerModel[];
+};
+
+export const getTeamsWithStadium = async () => {
+  const { data } = await supabase.from("teams").select(`
+    id,
+    short_team_name,
+    team_name,
+    team_logo,
+    stadium_id,
+    stadium:stadium_id (id,name)
+  `);
+  return data;
+};
+
 export const useGetStadiums = () => {
   return useQuery({
     queryKey: ["stadiums"],
-    queryFn: async () => {
-      const { data } = await supabase.from("stadium").select("*");
-
-      return data as StadiumServerModel[];
-    },
+    queryFn: getStadiums,
     select: (data) =>
       data
         .filter((item) => item.league_level === "first")
@@ -23,18 +36,7 @@ export const useGetStadiums = () => {
 export const useGetTeamsWithStadium = () => {
   return useQuery({
     queryKey: ["teamsWithStadium"],
-    queryFn: async () => {
-      const { data } = await supabase.from("teams").select(`
-      id,
-      short_team_name,
-      team_name,
-      team_logo,
-      stadium_id,
-      stadium:stadium_id (id,name)
-    `);
-
-      return data;
-    },
+    queryFn: getTeamsWithStadium,
     select: (data) =>
       data?.sort(
         (a, b) => a.stadium?.name?.localeCompare(b.stadium?.name ?? "") ?? 0,
