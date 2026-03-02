@@ -3,17 +3,17 @@ import type { Metadata } from "next";
 import { MyPageTeamPage } from "@/src/pages/myPage";
 
 export const metadata: Metadata = {
-  title: "팀 설정 | 승요",
+  title: "팀 설정 | 직꾸",
   description: "응원팀을 설정합니다.",
   openGraph: {
-    title: "팀 설정 | 승요",
+    title: "팀 설정 | 직꾸",
     description: "응원팀을 설정합니다.",
     url: "/myPage/team",
-    siteName: "승요",
+    siteName: "직꾸",
     type: "website",
     locale: "ko_KR",
   },
-  twitter: { card: "summary", title: "팀 설정 | 승요", description: "응원팀을 설정합니다." },
+  twitter: { card: "summary", title: "팀 설정 | 직꾸", description: "응원팀을 설정합니다." },
 };
 
 export { MyPageTeamPage as default };

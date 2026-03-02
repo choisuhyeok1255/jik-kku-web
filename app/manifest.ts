@@ -2,9 +2,9 @@ import type { MetadataRoute } from "next";
 
 export default function manifest(): MetadataRoute.Manifest {
   return {
-    name: "승요",
-    short_name: "승요",
-    description: "승리요정 프로젝트",
+    name: "직꾸",
+    short_name: "직꾸",
+    description: "직관 다이어리 꾸미기 - 야구 직관 기록과 나눔",
     start_url: "/",
     display: "standalone",
     background_color: "#181818",

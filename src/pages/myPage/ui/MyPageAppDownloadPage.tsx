@@ -124,7 +124,7 @@ const MyPageAppDownloadPage = () => {
           <div className="flex flex-col gap-[24px]">
             <p className="text-[14px] leading-[22px] text-white/80">
               설치 아이콘이 보이지 않으면 주소창 오른쪽 메뉴(⋮)를 클릭한 뒤
-              &quot;앱 설치&quot; 또는 &quot;승요 설치&quot;를 선택해 주세요.
+              &quot;앱 설치&quot; 또는 &quot;직꾸 설치&quot;를 선택해 주세요.
             </p>
             <ol className="flex flex-col gap-[16px]">
               {DESKTOP_STEPS.map((step, index) => (
