@@ -26,7 +26,7 @@ const DESKTOP_STEPS = [
   "Chrome 브라우저에서 아래에서 복사한 주소로 접속합니다.",
   "주소창 오른쪽에 표시되는 설치 아이콘(↓)을 클릭합니다.",
   '"설치"를 클릭합니다.',
-  "설치가 완료되면 Windows 시작 메뉴 또는 macOS 앱 폴더에 추가됩니다.",
+  "설치가 완료되면 Mac은 Chrome 앱 폴더에, Windows는 바탕화면에 추가됩니다.",
 ];
 
 const MyPageAppDownloadPage = () => {
@@ -122,10 +122,6 @@ const MyPageAppDownloadPage = () => {
 
         {tab === "desktop" && (
           <div className="flex flex-col gap-[24px]">
-            <p className="text-[14px] leading-[22px] text-white/80">
-              설치 아이콘이 보이지 않으면 주소창 오른쪽 메뉴(⋮)를 클릭한 뒤
-              &quot;앱 설치&quot; 또는 &quot;직꾸 설치&quot;를 선택해 주세요.
-            </p>
             <ol className="flex flex-col gap-[16px]">
               {DESKTOP_STEPS.map((step, index) => (
                 <li
