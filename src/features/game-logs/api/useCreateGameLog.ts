@@ -18,7 +18,7 @@ export const useCreateGameLog = () => {
       ...options,
       onSuccess: (...args) => {
         queryClient.invalidateQueries({
-          queryKey: userWinStatsKeys.ranking(),
+          queryKey: userWinStatsKeys.rankingAll(),
         });
         options?.onSuccess?.(...args);
       },

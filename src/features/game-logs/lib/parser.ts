@@ -18,6 +18,17 @@ export const transformFormToApiBody = ({
   gameLogImage?: string | null;
   gameLogImageThumbnail?: string | null;
 }): CreateGameLogQueryModel["body"] => {
+  if (
+    formData.homeTeamId == null ||
+    formData.awayTeamId == null ||
+    formData.homeTeamScore == null ||
+    formData.awayTeamScore == null ||
+    formData.matchDate == null ||
+    formData.stadiumId == null
+  ) {
+    throw new Error("Required fields are missing");
+  }
+
   return {
     user_id: userId,
     home_team_id: formData.homeTeamId,

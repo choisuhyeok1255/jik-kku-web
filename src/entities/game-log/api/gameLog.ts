@@ -149,6 +149,7 @@ export const usePostGameLog = () => {
       queryClient.invalidateQueries({
         queryKey: gameLogKeys.listsInfinite(),
       });
+      queryClient.invalidateQueries({ queryKey: ["user_win_stats"] });
     },
   });
 };
@@ -169,6 +170,7 @@ export const useDeleteGameLog = () => {
       queryClient.invalidateQueries({
         queryKey: gameLogKeys.listsInfinite(),
       });
+      queryClient.invalidateQueries({ queryKey: ["user_win_stats"] });
     },
   });
 };
@@ -214,6 +216,7 @@ export const useUpdateGameLog = () => {
           query: { gameLogId: gameLog.query.gameLogId },
         }),
       });
+      queryClient.invalidateQueries({ queryKey: ["user_win_stats"] });
     },
   });
 };
@@ -234,6 +237,7 @@ export const useCertifyGameLog = () => {
       queryClient.invalidateQueries({
         queryKey: gameLogKeys.listsInfinite(),
       });
+      queryClient.invalidateQueries({ queryKey: ["user_win_stats"] });
     },
   });
 };
@@ -254,6 +258,7 @@ export const useRejectGameLog = () => {
       queryClient.invalidateQueries({
         queryKey: gameLogKeys.listsInfinite(),
       });
+      queryClient.invalidateQueries({ queryKey: ["user_win_stats"] });
     },
   });
 };
