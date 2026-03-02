@@ -1,6 +1,7 @@
 "use client";
 
 import { useQueryClient } from "@tanstack/react-query";
+import Link from "next/link";
 import { useRouter } from "next/navigation";
 import type { ReactNode } from "react";
 import { useGetTeams, useGetUser, TeamIcon } from "@/src/entities";
@@ -147,16 +148,25 @@ const MyPage = () => {
           </div>
         </MyPageCardButton>
 
-        <div className="flex items-center justify-center gap-[32px]">
-          <button
-            type="button"
-            onClick={() => router.push("/myPage/inquiry")}
+        <div className="flex items-center justify-center gap-[8px]">
+          <Link
+            href="/myPage/inquiry"
             className="flex h-[48px] min-w-0 items-center justify-center"
           >
             <span className="min-w-0 truncate text-[14px] font-bold text-[#ffffff]/60">
               문의하기
             </span>
-          </button>
+          </Link>
+          <span className="text-[14px] text-[#ffffff]/40">|</span>
+          <Link
+            href="/myPage/appDownload"
+            className="flex h-[48px] min-w-0 items-center justify-center"
+          >
+            <span className="min-w-0 truncate text-[14px] font-bold text-[#ffffff]/60">
+              앱 다운로드
+            </span>
+          </Link>
+          <span className="text-[14px] text-[#ffffff]/40">|</span>
           <button
             onClick={async () => {
               await supabase.auth.signOut();
