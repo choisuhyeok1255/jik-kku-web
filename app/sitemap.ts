@@ -10,6 +10,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     { url: `${SITE_URL}/share`, lastModified: new Date(), changeFrequency: "daily", priority: 0.9 },
     { url: `${SITE_URL}/ranking`, lastModified: new Date(), changeFrequency: "hourly", priority: 0.9 },
     { url: `${SITE_URL}/myPage`, lastModified: new Date(), changeFrequency: "monthly", priority: 0.5 },
+    { url: `${SITE_URL}/myPage/appDownload`, lastModified: new Date(), changeFrequency: "monthly", priority: 0.5 },
   ];
 
   const shares = await getShares();
