@@ -41,51 +41,51 @@ export type Database = {
     Tables: {
       game_logs: {
         Row: {
-          away_team_id: number | null
-          away_team_score: number | null
+          away_team_id: number
+          away_team_score: number
           created_at: string
           game_log_image: string | null
           game_log_image_thumbnail: string | null
-          home_team_id: number | null
-          home_team_score: number | null
+          home_team_id: number
+          home_team_score: number
           id: number
           is_admin_certified: boolean
           is_certified: boolean
-          match_date: string | null
+          match_date: string
           note: string | null
-          stadium_id: number | null
+          stadium_id: number
           user_id: string
         }
         Insert: {
-          away_team_id?: number | null
-          away_team_score?: number | null
+          away_team_id: number
+          away_team_score: number
           created_at?: string
           game_log_image?: string | null
           game_log_image_thumbnail?: string | null
-          home_team_id?: number | null
-          home_team_score?: number | null
+          home_team_id: number
+          home_team_score: number
           id?: number
           is_admin_certified?: boolean
           is_certified?: boolean
-          match_date?: string | null
+          match_date: string
           note?: string | null
-          stadium_id?: number | null
+          stadium_id: number
           user_id?: string
         }
         Update: {
-          away_team_id?: number | null
-          away_team_score?: number | null
+          away_team_id?: number
+          away_team_score?: number
           created_at?: string
           game_log_image?: string | null
           game_log_image_thumbnail?: string | null
-          home_team_id?: number | null
-          home_team_score?: number | null
+          home_team_id?: number
+          home_team_score?: number
           id?: number
           is_admin_certified?: boolean
           is_certified?: boolean
-          match_date?: string | null
+          match_date?: string
           note?: string | null
-          stadium_id?: number | null
+          stadium_id?: number
           user_id?: string
         }
         Relationships: [
@@ -282,6 +282,14 @@ export type Database = {
           total_games: number | null
           user_id: string | null
           win_rate: number | null
+          wins: number | null
+        }
+        Relationships: []
+      }
+      user_win_stats_summary: {
+        Row: {
+          total: number | null
+          user_id: string | null
           wins: number | null
         }
         Relationships: []
