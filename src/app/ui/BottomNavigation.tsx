@@ -13,7 +13,7 @@ import PersonActiveIcon from "@/public/person-active.svg";
 import PersonUnActiveIcon from "@/public/person-un-active.svg";
 import RankActiveIcon from "@/public/ranking-active.svg";
 import RankUnActiveIcon from "@/public/ranking-un-active.svg";
-import { useAuthStore, useGetGameLogs } from "@/src/entities";
+import { useAuthStore, useGetUserWinStatsSummary } from "@/src/entities";
 import { cn } from "@/src/shared";
 
 const HIDDEN_PATHS: string[] = [
@@ -56,9 +56,7 @@ const BottomNavigation = () => {
   const pathname = usePathname();
   const searchParams = useSearchParams();
   const { user } = useAuthStore();
-  const { data: gameLogs } = useGetGameLogs({
-    query: { userId: user?.id || "" },
-  });
+  const { data: winStatsSummary } = useGetUserWinStatsSummary(user?.id || "");
 
   const tabParam = searchParams?.get("tab");
   const isGameLogsTab = tabParam === "gameLogs";
@@ -71,8 +69,8 @@ const BottomNavigation = () => {
       pathname === "/" &&
       isGameLogsTab &&
       user &&
-      gameLogs &&
-      gameLogs.length > 0
+      winStatsSummary &&
+      winStatsSummary.total > 0
     ) {
       return { href: "/game-logs/create" };
     }
@@ -80,7 +78,7 @@ const BottomNavigation = () => {
       return { href: "/myPage/inquiry/create" };
     }
     return null;
-  }, [pathname, isGameLogsTab, user, gameLogs]);
+  }, [pathname, isGameLogsTab, user, winStatsSummary]);
 
   if (!pathname) return null;
 

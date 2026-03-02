@@ -5,8 +5,8 @@ import { useEffect, useState } from "react";
 
 import {
   useAuthStore,
-  useGetGameLogs,
   useGetGameLogsInfinite,
+  useGetUserWinStatsSummary,
 } from "@/src/entities";
 import { AppTab, NotLogin } from "@/src/shared";
 
@@ -23,18 +23,15 @@ const HomePage = () => {
   const [currentTab, setCurrentTab] = useState(initialTab);
 
   const { user, isLoading: isAuthLoading } = useAuthStore();
-  const { data: gameLogs, isLoading: isGameLogsLoading } = useGetGameLogs({
-    query: { userId: user?.id || "" },
-  });
+  const { data: winStatsSummary, isLoading: isWinStatsLoading } =
+    useGetUserWinStatsSummary(user?.id || "");
   const {
     data: gameLogsInfinite,
     isLoading: isGameLogsInfiniteLoading,
     isFetchingNextPage,
     hasNextPage,
     fetchNextPage,
-  } = useGetGameLogsInfinite({
-    query: { userId: user?.id || "" },
-  });
+  } = useGetGameLogsInfinite({ query: { userId: user?.id || "" } });
 
   const handleChangeTab = (tab: string) => {
     const newTab = tab as "game" | "gameLogs";
@@ -46,7 +43,7 @@ const HomePage = () => {
     setCurrentTab(initialTab);
   }, [initialTab]);
 
-  if (isAuthLoading || isGameLogsLoading || isGameLogsInfiniteLoading) {
+  if (isAuthLoading || isWinStatsLoading || isGameLogsInfiniteLoading) {
     return (
       <div className="flex min-h-dvh flex-1 items-center justify-center">
         <span className="text-white/60">로딩 중...</span>
@@ -70,7 +67,10 @@ const HomePage = () => {
         handleChangeTab={handleChangeTab}
       />
       {currentTab === "game" && (
-        <WinningRateTabItem gameLogs={gameLogs || []} />
+        <WinningRateTabItem
+          wins={winStatsSummary?.wins ?? 0}
+          total={winStatsSummary?.total ?? 0}
+        />
       )}
       {currentTab === "gameLogs" && (
         <GameLogsTabItem

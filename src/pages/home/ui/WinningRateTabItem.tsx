@@ -4,32 +4,12 @@ import Character3 from "@/public/3.svg";
 import EmptyGameLog from "./EmptyGameLog";
 
 const WinningRateTabItem = ({
-  gameLogs,
+  wins,
+  total,
 }: {
-  gameLogs: {
-    id: number;
-    home_team_id: number | null;
-    away_team_id: number | null;
-    home_team_score: number | null;
-    away_team_score: number | null;
-    match_date: string | null;
-    note: string | null;
-    game_log_image: string | null;
-    game_log_image_thumbnail: string | null;
-    is_certified: boolean;
-    stadium_id: number | null;
-  }[];
+  wins: number;
+  total: number;
 }) => {
-  const withScore =
-    gameLogs?.filter(
-      (g) =>
-        typeof g.home_team_score === "number" &&
-        typeof g.away_team_score === "number",
-    ) ?? [];
-  const total = withScore.length;
-  const wins = withScore.filter(
-    (g) => (g.home_team_score ?? 0) > (g.away_team_score ?? 0),
-  ).length;
   const winRate = total > 0 ? Math.round((wins / total) * 100) : 0;
   const winRateText = (() => {
     if (winRate === 100) {
@@ -92,7 +72,7 @@ const WinningRateTabItem = ({
     );
   })();
 
-  if (gameLogs.length === 0) {
+  if (total === 0) {
     return <EmptyGameLog />;
   }
 
