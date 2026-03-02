@@ -42,15 +42,10 @@ export const getShares = async () => {
   return (data ?? []) as ShareServerModel[];
 };
 
-export const useGetShares = ({
-  initialData,
-}: {
-  initialData?: ShareServerModel[];
-}) => {
+export const useGetShares = () => {
   return useQuery({
     queryKey: shareKeys.list(),
     queryFn: getShares,
-    initialData: initialData,
   });
 };
 

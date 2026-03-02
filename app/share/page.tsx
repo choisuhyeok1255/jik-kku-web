@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
+import { Suspense } from "react";
 
 import { SharePage } from "@/src/pages/share";
-import { getShares } from "@/src/entities";
 
 export const metadata: Metadata = {
   title: "나눔 | 직꾸",
@@ -23,14 +23,16 @@ export const metadata: Metadata = {
   },
 };
 
-export default async function Page({
-  searchParams,
-}: {
-  searchParams: Promise<{ tab?: string }>;
-}) {
-  const params = await searchParams;
-  const initialShares = await getShares();
-  const initialTab = params?.tab === "expired" ? "expired" : "ongoing";
-
-  return <SharePage initialShares={initialShares} initialTab={initialTab} />;
+export default function Page() {
+  return (
+    <Suspense
+      fallback={
+        <div className="flex h-dvh items-center justify-center">
+          로딩 중...
+        </div>
+      }
+    >
+      <SharePage />
+    </Suspense>
+  );
 }

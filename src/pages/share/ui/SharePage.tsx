@@ -1,27 +1,23 @@
 "use client";
 
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { useEffect, useState } from "react";
 
-import { ShareServerModel, useGetShares } from "@/src/entities";
+import { useGetShares } from "@/src/entities";
 import { AppTab } from "@/src/shared";
 
 import ShareExpiredTabItem from "./ShareExpiredTabItem";
 import ShareOngoingTabItem from "./ShareOngoingTabItem";
 
-const SharePage = ({
-  initialShares,
-  initialTab,
-}: {
-  initialShares: ShareServerModel[];
-  initialTab: "ongoing" | "expired";
-}) => {
+const SharePage = () => {
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const tabParam = searchParams?.get("tab");
+  const initialTab = tabParam === "expired" ? "expired" : "ongoing";
+
   const [currentTab, setCurrentTab] = useState(initialTab);
 
-  const { data: shares = [] } = useGetShares({
-    initialData: initialShares,
-  });
+  const { data: shares = [], isLoading } = useGetShares();
 
   const handleChangeTab = (tab: string) => {
     const newTab = tab as "ongoing" | "expired";
@@ -44,8 +40,16 @@ const SharePage = ({
         ]}
         handleChangeTab={handleChangeTab}
       />
-      {currentTab === "ongoing" && <ShareOngoingTabItem shares={shares} />}
-      {currentTab === "expired" && <ShareExpiredTabItem shares={shares} />}
+      {isLoading ? (
+        <div className="flex flex-1 items-center justify-center">
+          <span className="text-white/60">로딩 중...</span>
+        </div>
+      ) : (
+        <>
+          {currentTab === "ongoing" && <ShareOngoingTabItem shares={shares} />}
+          {currentTab === "expired" && <ShareExpiredTabItem shares={shares} />}
+        </>
+      )}
     </div>
   );
 };
