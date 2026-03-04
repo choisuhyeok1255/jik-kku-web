@@ -27,6 +27,7 @@ const GameLogsTabItem = ({
       is_certified: boolean;
       is_admin_certified: boolean;
       stadium_id: number | null;
+      youtube_url: string | null;
     }[],
     unknown
   >;
@@ -99,6 +100,7 @@ const GameLogsTabItem = ({
             is_certified: gameLog.is_certified || false,
             is_admin_certified: gameLog.is_admin_certified || false,
             stadium_id: gameLog.stadium_id ?? null,
+            youtube_url: gameLog.youtube_url ?? null,
           }}
         />
       ))}

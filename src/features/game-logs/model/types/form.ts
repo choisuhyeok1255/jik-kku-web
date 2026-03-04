@@ -6,6 +6,7 @@ interface BaseGameLogForm {
   matchDate: string | null;
   note: string;
   stadiumId: number | null;
+  youtubeUrl: string | null;
 }
 
 export interface CreateGameLogForm extends BaseGameLogForm {

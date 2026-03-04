@@ -1,5 +1,6 @@
 "use client";
 
+import { Play } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import { useEffect, useState } from "react";
@@ -25,6 +26,7 @@ const GameLogsItem = ({
     is_certified: boolean;
     is_admin_certified: boolean;
     stadium_id: number | null;
+    youtube_url: string | null;
   };
   enterDelay?: number;
   /** false면 카드 등장 애니메이션 없음 (무한스크롤 로드 항목용) */
@@ -123,7 +125,18 @@ const GameLogsItem = ({
                   )}
                 </div>
               </div>
-              <div>{getStadiumName() ?? "-"}</div>
+              <div className="flex items-center gap-[4px]">
+                <div>{getStadiumName() ?? "-"}</div>
+                {gameLog.youtube_url && (
+                  <Link
+                    href={gameLog.youtube_url}
+                    target="_blank"
+                    onClick={(e) => e.stopPropagation()}
+                  >
+                    <Play size={16} />
+                  </Link>
+                )}
+              </div>
             </div>
             <MatchResultTag isVictory={getResult()} />
           </div>

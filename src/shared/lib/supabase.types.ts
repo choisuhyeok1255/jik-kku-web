@@ -55,6 +55,7 @@ export type Database = {
           note: string | null
           stadium_id: number
           user_id: string
+          youtube_url: string | null
         }
         Insert: {
           away_team_id: number
@@ -71,6 +72,7 @@ export type Database = {
           note?: string | null
           stadium_id: number
           user_id?: string
+          youtube_url?: string | null
         }
         Update: {
           away_team_id?: number
@@ -87,6 +89,7 @@ export type Database = {
           note?: string | null
           stadium_id?: number
           user_id?: string
+          youtube_url?: string | null
         }
         Relationships: [
           {

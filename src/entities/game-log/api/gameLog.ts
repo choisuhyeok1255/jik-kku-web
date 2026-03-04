@@ -71,7 +71,7 @@ export const useGetGameLogsInfinite = (req: GetGameLogsInfiniteQueryModel) => {
       const { data, error } = await supabase
         .from("game_logs")
         .select(
-          "id, home_team_id, away_team_id, home_team_score, away_team_score, match_date, note, game_log_image, game_log_image_thumbnail, is_certified, is_admin_certified, stadium_id",
+          "id, home_team_id, away_team_id, home_team_score, away_team_score, match_date, note, game_log_image, game_log_image_thumbnail, is_certified, is_admin_certified, stadium_id, youtube_url",
         )
         .eq("user_id", req.query.userId)
         .order("match_date", { ascending: false })

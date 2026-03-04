@@ -38,6 +38,7 @@ export const transformFormToApiBody = ({
     match_date: formData.matchDate,
     note: formData.note,
     stadium_id: formData.stadiumId,
+    youtube_url: formData.youtubeUrl,
     ...(isCertified !== undefined && { is_certified: isCertified }),
     ...(isAdminCertified !== undefined && {
       is_admin_certified: isAdminCertified,
@@ -61,5 +62,6 @@ export const transformApiToGameLogForm = (
     matchDate: gameLog.match_date,
     note: gameLog.note || "",
     gameLogImage: gameLog.game_log_image_thumbnail, // NOTE: 이미지 사용할땐 축소한 이미지로 사용
+    youtubeUrl: gameLog.youtube_url,
   };
 };
