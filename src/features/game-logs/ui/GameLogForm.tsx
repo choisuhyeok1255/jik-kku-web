@@ -33,6 +33,8 @@ import {
   Spinner,
   compressImage,
 } from "@/src/shared";
+import { findTeamIdByKboName } from "../lib/kboTeamMapping";
+import GameLogSearchModal from "./GameLogSearchModal";
 import GameLogStadiumModal from "./GameLogStadiumModal";
 import GameLogTeamModal from "./GameLogTeamModal";
 
@@ -62,6 +64,7 @@ const GameLogForm = ({
   const [isHomeTeamModalOpen, setIsHomeTeamModalOpen] = useState(false);
   const [isAwayTeamModalOpen, setIsAwayTeamModalOpen] = useState(false);
   const [isStadiumModalOpen, setIsStadiumModalOpen] = useState(false);
+  const [isAutoSearchOpen, setIsAutoSearchOpen] = useState(false);
 
   const handleCreateGameLog = async (
     formData: CreateGameLogForm | UpdateGameLogForm,
@@ -184,6 +187,7 @@ const GameLogForm = ({
       stadiumId:
         teams?.find((team) => team.id === user.team_id)?.stadium_id ?? null,
       note: "",
+      youtubeUrl: null,
       gameLogImage: null,
     });
   }, [user, stadiums, teams, defaultValues, reset]);
@@ -199,6 +203,7 @@ const GameLogForm = ({
       matchDate: defaultValues.matchDate,
       stadiumId: defaultValues.stadiumId,
       note: defaultValues.note,
+      youtubeUrl: defaultValues.youtubeUrl,
       gameLogImage: defaultValues.gameLogImage,
     });
   }, [defaultValues, reset]);
@@ -242,6 +247,52 @@ const GameLogForm = ({
         },
       )}
     >
+      {isAutoSearchOpen && watch("matchDate") && (
+        <GameLogSearchModal
+          date={watch("matchDate") ?? ""}
+          teams={teams ?? []}
+          stadiums={stadiums ?? []}
+          handleCloseModal={() => setIsAutoSearchOpen(false)}
+          onSelectEvent={(event) => {
+            if (!teams) return;
+            const homeTeamId = findTeamIdByKboName(event.strHomeTeam, teams);
+            const awayTeamId = findTeamIdByKboName(event.strAwayTeam, teams);
+            const homeTeam = teams.find((t) => t.id === homeTeamId);
+            const stadiumId = homeTeam?.stadium_id ?? null;
+
+            setValue("homeTeamId", homeTeamId, {
+              shouldDirty: !!homeTeamId,
+              shouldValidate: !!homeTeamId,
+            });
+            setValue("awayTeamId", awayTeamId, {
+              shouldDirty: !!awayTeamId,
+              shouldValidate: !!awayTeamId,
+            });
+            setValue(
+              "homeTeamScore",
+              (() => {
+                const n = Number(event.intHomeScore);
+                return Number.isNaN(n) ? null : n;
+              })(),
+              { shouldDirty: true, shouldValidate: true },
+            );
+            setValue(
+              "awayTeamScore",
+              (() => {
+                const n = Number(event.intAwayScore);
+                return Number.isNaN(n) ? null : n;
+              })(),
+              { shouldDirty: true, shouldValidate: true },
+            );
+            setValue("stadiumId", stadiumId, {
+              shouldDirty: !!stadiumId,
+              shouldValidate: !!stadiumId,
+            });
+            setValue("youtubeUrl", event.strVideo ?? null);
+            setIsAutoSearchOpen(false);
+          }}
+        />
+      )}
       <div className="flex flex-col gap-[40px]">
         <div className="flex flex-col gap-[16px]">
           <LabelContent label="날짜" isRequired>
@@ -278,6 +329,7 @@ const GameLogForm = ({
                       onSelect={(date) => {
                         onChange(dayjs(date).format("YYYY-MM-DD"));
                         setIsCalendarOpen(false);
+                        setIsAutoSearchOpen(true);
                       }}
                     />
                   )}
