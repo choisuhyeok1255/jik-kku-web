@@ -64,7 +64,7 @@ const RankingPage = ({
         <span className="text-center text-white/60">
           아직 랭킹이 비어있어요.
           <br />
-          직관을 등록하고 1등에 도전해봐요! ✨
+          직관을 등록하고 1등에 도전해봐요!
         </span>
       </div>
     );
@@ -72,8 +72,8 @@ const RankingPage = ({
 
   const notificationText =
     sortBy === "win_rate"
-      ? "인증된 직관 기록만 집계되어 승률이 계산됩니다 ✨"
-      : "인증된 직관 기록만 집계되어 직관 경기수가 계산됩니다 ✨";
+      ? "인증된 직관 기록만 집계되어 승률이 계산됩니다"
+      : "인증된 직관 기록만 집계되어 직관 경기수가 계산됩니다";
 
   return (
     <div className="flex h-dvh flex-col">
