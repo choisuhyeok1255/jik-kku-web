@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { toast } from "sonner";
 
 import CheckIcon from "@/public/check.svg";
 import { useGetKboEventsByDate } from "@/src/entities";
@@ -13,6 +14,7 @@ const GameLogSearchModal = ({
   date,
   teams,
   stadiums,
+  userTeamId,
   handleCloseModal,
   onSelectEvent,
 }: {
@@ -24,6 +26,7 @@ const GameLogSearchModal = ({
     stadium_id: number | null;
   }[];
   stadiums: { id: number; name: string | null }[];
+  userTeamId: number | null;
   handleCloseModal: () => void;
   onSelectEvent: (event: KboEventRow) => void;
 }) => {
@@ -35,18 +38,35 @@ const GameLogSearchModal = ({
     const awayTeamId = findTeamIdByKboName(event.strAwayTeam, teams);
     const homeTeam = teams.find((t) => t.id === homeTeamId);
     const stadiumId = homeTeam?.stadium_id ?? null;
-    const stadium = stadiumId
-      ? stadiums.find((s) => s.id === stadiumId)
-      : null;
+    const stadium = stadiumId ? stadiums.find((s) => s.id === stadiumId) : null;
 
     return {
       homeTeamName: homeTeam?.team_name ?? event.strHomeTeam,
-      awayTeamName: teams.find((t) => t.id === awayTeamId)?.team_name ?? event.strAwayTeam,
+      awayTeamName:
+        teams.find((t) => t.id === awayTeamId)?.team_name ?? event.strAwayTeam,
       stadiumName: stadium?.name ?? event.strVenue ?? "경기장 정보 없음",
     };
   };
 
   const handleSelectEvent = (event: KboEventRow) => {
+    if (!userTeamId) return;
+
+    const isDeselecting = selectedEvent?.idEvent === event.idEvent;
+    const homeTeamId = findTeamIdByKboName(event.strHomeTeam, teams);
+    const awayTeamId = findTeamIdByKboName(event.strAwayTeam, teams);
+    const hasUserTeam = homeTeamId === userTeamId || awayTeamId === userTeamId;
+
+    if (!hasUserTeam && !isDeselecting) {
+      toast.error("응원하는 팀이 포함되어 있지 않는 경기입니다.", {
+        duration: 1000,
+      });
+    } else {
+      if (!isDeselecting) {
+        toast.success("선택되었습니다.", {
+          duration: 1000,
+        });
+      }
+    }
     setSelectedEvent((prev) =>
       prev?.idEvent === event.idEvent ? null : event,
     );
@@ -65,15 +85,16 @@ const GameLogSearchModal = ({
         {date} KBO 경기
       </div>
       <div className="mb-[24px] text-[12px] text-white/60">
-        해당 날짜에 진행한 경기만 리스트에 나와요
+        검색으로 추가하면 경기 데이터는 수정할 수 없고, <br /> 하이라이트 영상
+        링크가 자동으로 추가돼요
       </div>
       <div className="mb-[32px] min-h-0 flex-1 overflow-y-auto">
         {isLoading ? (
-          <div className="flex min-h-[200px] items-center justify-center">
+          <div className="flex min-h-full items-center justify-center">
             <Spinner className="size-8 text-white" />
           </div>
         ) : !kboEvents?.length ? (
-          <div className="flex min-h-[200px] items-center justify-center text-[14px] text-white/60">
+          <div className="flex min-h-full items-center justify-center text-[14px] text-white/60">
             해당 날짜에 경기가 없어요
           </div>
         ) : (
@@ -100,7 +121,9 @@ const GameLogSearchModal = ({
                       <div className="text-[12px] text-white/80">
                         {event.strStatus === "FT"
                           ? `${event.intHomeScore} : ${event.intAwayScore}`
-                          : "경기 예정"}
+                          : event.strStatus === "POST"
+                            ? "경기 취소"
+                            : "오류"}
                       </div>
                       <div className="text-[12px] text-white/60">
                         {stadiumName}

@@ -1,6 +1,7 @@
 "use client";
 
 import dayjs from "dayjs";
+import { Search } from "lucide-react";
 import { useEffect, useState } from "react";
 import { Controller, useForm } from "react-hook-form";
 import { toast } from "sonner";
@@ -65,6 +66,7 @@ const GameLogForm = ({
   const [isAwayTeamModalOpen, setIsAwayTeamModalOpen] = useState(false);
   const [isStadiumModalOpen, setIsStadiumModalOpen] = useState(false);
   const [isAutoSearchOpen, setIsAutoSearchOpen] = useState(false);
+  const [isAutoSearchSelected, setIsAutoSearchSelected] = useState(false);
 
   const handleCreateGameLog = async (
     formData: CreateGameLogForm | UpdateGameLogForm,
@@ -252,13 +254,53 @@ const GameLogForm = ({
           date={watch("matchDate") ?? ""}
           teams={teams ?? []}
           stadiums={stadiums ?? []}
+          userTeamId={user?.team_id ?? null}
           handleCloseModal={() => setIsAutoSearchOpen(false)}
           onSelectEvent={(event) => {
             if (!teams) return;
-            const homeTeamId = findTeamIdByKboName(event.strHomeTeam, teams);
-            const awayTeamId = findTeamIdByKboName(event.strAwayTeam, teams);
-            const homeTeam = teams.find((t) => t.id === homeTeamId);
-            const stadiumId = homeTeam?.stadium_id ?? null;
+            const eventHomeTeamId = findTeamIdByKboName(
+              event.strHomeTeam,
+              teams,
+            );
+            const eventAwayTeamId = findTeamIdByKboName(
+              event.strAwayTeam,
+              teams,
+            );
+            const userTeamId = user?.team_id ?? null;
+
+            const hasUserTeam =
+              userTeamId !== null &&
+              (eventHomeTeamId === userTeamId ||
+                eventAwayTeamId === userTeamId);
+
+            let homeTeamId: number | null;
+            let awayTeamId: number | null;
+            let homeTeamScore: number | null;
+            let awayTeamScore: number | null;
+
+            if (hasUserTeam && userTeamId !== null) {
+              if (eventHomeTeamId === userTeamId) {
+                homeTeamId = eventHomeTeamId;
+                awayTeamId = eventAwayTeamId;
+                homeTeamScore = Number(event.intHomeScore);
+                awayTeamScore = Number(event.intAwayScore);
+              } else {
+                homeTeamId = eventAwayTeamId;
+                awayTeamId = eventHomeTeamId;
+                homeTeamScore = Number(event.intAwayScore);
+                awayTeamScore = Number(event.intHomeScore);
+              }
+            } else {
+              homeTeamId = eventHomeTeamId;
+              awayTeamId = eventAwayTeamId;
+              homeTeamScore = Number(event.intHomeScore);
+              awayTeamScore = Number(event.intAwayScore);
+            }
+
+            const parseScore = (n: number) => (Number.isNaN(n) ? null : n);
+
+            const eventHomeTeam = teams.find((t) => t.id === eventHomeTeamId);
+            const stadiumId = eventHomeTeam?.stadium_id ?? null;
 
             setValue("homeTeamId", homeTeamId, {
               shouldDirty: !!homeTeamId,
@@ -268,74 +310,87 @@ const GameLogForm = ({
               shouldDirty: !!awayTeamId,
               shouldValidate: !!awayTeamId,
             });
-            setValue(
-              "homeTeamScore",
-              (() => {
-                const n = Number(event.intHomeScore);
-                return Number.isNaN(n) ? null : n;
-              })(),
-              { shouldDirty: true, shouldValidate: true },
-            );
-            setValue(
-              "awayTeamScore",
-              (() => {
-                const n = Number(event.intAwayScore);
-                return Number.isNaN(n) ? null : n;
-              })(),
-              { shouldDirty: true, shouldValidate: true },
-            );
+            setValue("homeTeamScore", parseScore(homeTeamScore), {
+              shouldDirty: true,
+              shouldValidate: true,
+            });
+            setValue("awayTeamScore", parseScore(awayTeamScore), {
+              shouldDirty: true,
+              shouldValidate: true,
+            });
             setValue("stadiumId", stadiumId, {
               shouldDirty: !!stadiumId,
               shouldValidate: !!stadiumId,
             });
             setValue("youtubeUrl", event.strVideo ?? null);
+
             setIsAutoSearchOpen(false);
+            setIsAutoSearchSelected(true);
           }}
         />
       )}
       <div className="flex flex-col gap-[40px]">
         <div className="flex flex-col gap-[16px]">
           <LabelContent label="날짜" isRequired>
-            <Popover open={isCalendarOpen} onOpenChange={setIsCalendarOpen}>
-              <PopoverTrigger asChild>
-                <Button
-                  className="h-[48px] w-full justify-start rounded-[20px] border border-white/10 bg-[#ffffff]/4"
-                  variant="outline"
-                >
-                  {watch("matchDate") ? (
-                    watch("matchDate")
-                  ) : (
-                    <span className="text-[14px] text-white/60">날짜 선택</span>
-                  )}
-                </Button>
-              </PopoverTrigger>
-              <PopoverContent className="w-auto border border-white/10 bg-[#171717] p-0">
-                <Controller
-                  control={control}
-                  name="matchDate"
-                  rules={{ required: "날짜를 선택해주세요!" }}
-                  render={({ field: { value, onChange } }) => (
-                    <Calendar
-                      classNames={{ root: "bg-white" }}
-                      mode="single"
-                      selected={dayjs(value)?.toDate()}
-                      formatters={{
-                        formatCaption: (date) => {
-                          const year = date.getFullYear();
-                          const month = date.getMonth() + 1;
-                          return `${year}년 ${month}월`;
-                        },
-                      }}
-                      onSelect={(date) => {
-                        onChange(dayjs(date).format("YYYY-MM-DD"));
-                        setIsCalendarOpen(false);
-                        setIsAutoSearchOpen(true);
-                      }}
-                    />
-                  )}
-                />
-              </PopoverContent>
-            </Popover>
+            <div className="flex items-center gap-[8px]">
+              <Popover open={isCalendarOpen} onOpenChange={setIsCalendarOpen}>
+                <PopoverTrigger asChild>
+                  <Button
+                    className="h-[48px] min-w-0 flex-1 justify-start rounded-[20px] border border-white/10 bg-[#ffffff]/4"
+                    variant="outline"
+                  >
+                    {watch("matchDate") ? (
+                      watch("matchDate")
+                    ) : (
+                      <span className="text-[14px] text-white/60">
+                        날짜 선택
+                      </span>
+                    )}
+                  </Button>
+                </PopoverTrigger>
+                <PopoverContent className="w-auto border border-white/10 bg-[#171717] p-0">
+                  <Controller
+                    control={control}
+                    name="matchDate"
+                    rules={{ required: "날짜를 선택해주세요!" }}
+                    render={({ field: { value, onChange } }) => (
+                      <Calendar
+                        key={isCalendarOpen ? (value ?? "empty") : "closed"}
+                        classNames={{ root: "bg-white" }}
+                        defaultMonth={
+                          value && dayjs(value).isAfter("2023-12-31")
+                            ? dayjs(value).toDate()
+                            : dayjs("2024-01-01").toDate()
+                        }
+                        disabled={{ before: new Date(2024, 0, 1) }}
+                        mode="single"
+                        selected={dayjs(value)?.toDate()}
+                        formatters={{
+                          formatCaption: (date) => {
+                            const year = date.getFullYear();
+                            const month = date.getMonth() + 1;
+                            return `${year}년 ${month}월`;
+                          },
+                        }}
+                        onSelect={(date) => {
+                          onChange(dayjs(date).format("YYYY-MM-DD"));
+                          setIsCalendarOpen(false);
+                        }}
+                      />
+                    )}
+                  />
+                </PopoverContent>
+              </Popover>
+              <button
+                className="flex h-[48px] w-[50px] shrink-0 items-center justify-center rounded-[20px] border border-white/10 bg-[#ffffff]/4 text-[14px]"
+                type="button"
+                onClick={() => {
+                  setIsAutoSearchOpen(true);
+                }}
+              >
+                <Search />
+              </button>
+            </div>
           </LabelContent>
           <LabelContent label="경기장" isRequired>
             <Controller
@@ -345,10 +400,11 @@ const GameLogForm = ({
               render={({ field: { value } }) => (
                 <button
                   className={cn(
-                    "flex h-[48px] w-full items-center rounded-[20px] border border-white/10 bg-[#ffffff]/4 p-[14px] text-start text-[14px]",
+                    "flex h-[48px] w-full items-center rounded-[20px] border border-white/10 bg-[#ffffff]/4 p-[14px] text-start text-[14px] disabled:cursor-not-allowed disabled:opacity-50",
                     !value && "text-[#ffffff]/60",
                   )}
                   type="button"
+                  disabled={isAutoSearchSelected}
                   onClick={() => setIsStadiumModalOpen(true)}
                 >
                   {value
@@ -380,10 +436,11 @@ const GameLogForm = ({
                   render={({ field: { value } }) => (
                     <button
                       className={cn(
-                        "flex h-[48px] w-full items-center rounded-[20px] border border-white/10 bg-[#ffffff]/4 p-[14px] text-start text-[14px]",
+                        "flex h-[48px] w-full items-center rounded-[20px] border border-white/10 bg-[#ffffff]/4 p-[14px] text-start text-[14px] disabled:cursor-not-allowed disabled:opacity-50",
                         !value && "text-[#ffffff]/60",
                       )}
                       type="button"
+                      disabled={isAutoSearchSelected}
                       onClick={() => setIsHomeTeamModalOpen(true)}
                     >
                       {value
@@ -421,10 +478,11 @@ const GameLogForm = ({
                   render={({ field: { value } }) => (
                     <button
                       className={cn(
-                        "flex h-[48px] w-full items-center rounded-[20px] border border-white/10 bg-[#ffffff]/4 p-[14px] text-start text-[14px]",
+                        "flex h-[48px] w-full items-center rounded-[20px] border border-white/10 bg-[#ffffff]/4 p-[14px] text-start text-[14px] disabled:cursor-not-allowed disabled:opacity-50",
                         !value && "text-[#ffffff]/60",
                       )}
                       type="button"
+                      disabled={isAutoSearchSelected}
                       onClick={() => setIsAwayTeamModalOpen(true)}
                     >
                       {value
@@ -457,14 +515,15 @@ const GameLogForm = ({
             </div>
             <div className="flex gap-[16px]">
               <LabelContent className="flex-1" label="응원팀 점수" isRequired>
-                <div className="flex h-[48px] w-full items-center rounded-[20px] border border-white/10 bg-[#ffffff]/4 px-[14px]">
+                <div className="flex h-[48px] w-full items-center rounded-[20px] border border-white/10 bg-[#ffffff]/4 px-[14px] has-disabled:opacity-50 has-disabled:cursor-not-allowed">
                   <input
-                    className="min-w-0 flex-1 [appearance:textfield] bg-transparent [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none"
+                    className="min-w-0 flex-1 [appearance:textfield] bg-transparent [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none disabled:cursor-not-allowed"
                     min={0}
                     max={50}
                     step={1}
                     type="number"
                     placeholder="0"
+                    disabled={isAutoSearchSelected}
                     onKeyDown={(e) =>
                       [".", ",", "e", "E", "+", "-"].includes(e.key) &&
                       e.preventDefault()
@@ -485,14 +544,15 @@ const GameLogForm = ({
                 </div>
               </LabelContent>
               <LabelContent className="flex-1" label="상대팀 점수" isRequired>
-                <div className="flex h-[48px] w-full items-center rounded-[20px] border border-white/10 bg-[#ffffff]/4 px-[14px]">
+                <div className="flex h-[48px] w-full items-center rounded-[20px] border border-white/10 bg-[#ffffff]/4 px-[14px] has-disabled:opacity-50 has-disabled:cursor-not-allowed">
                   <input
-                    className="min-w-0 flex-1 [appearance:textfield] bg-transparent [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none"
+                    className="min-w-0 flex-1 [appearance:textfield] bg-transparent [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none disabled:cursor-not-allowed"
                     min={0}
                     max={50}
                     step={1}
                     type="number"
                     placeholder="0"
+                    disabled={isAutoSearchSelected}
                     onKeyDown={(e) =>
                       [".", ",", "e", "E", "+", "-"].includes(e.key) &&
                       e.preventDefault()
@@ -518,14 +578,17 @@ const GameLogForm = ({
                 className="w-full resize-none justify-start rounded-[20px] border border-white/10 bg-[#ffffff]/4 px-[12px] py-[8px]"
                 rows={2}
                 maxLength={200}
-                placeholder="오늘 경기는 어땠나요? 자유롭게 기록해보세요 ✨"
+                placeholder="오늘 경기는 어땠나요?"
                 {...register("note", { maxLength: 200 })}
               />
             </LabelContent>
             <LabelContent label="사진">
               <Notification
                 className="mb-[4px]"
-                text="사진을 추가하면 랭킹에 바로 반영돼요. 경기와 무관한 사진은 추후 인증이 취소될 수 있어요 ✨"
+                text=<>
+                  사진을 추가하면 랭킹에 바로 반영돼요.
+                  <br /> 경기와 무관한 사진은 추후 인증이 취소될 수 있어요
+                </>
               />
               <Controller
                 control={control}
