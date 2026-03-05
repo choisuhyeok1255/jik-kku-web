@@ -4,7 +4,7 @@ import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 
 import { toast } from "sonner";
-import { useGetUser, useUpdateNickname } from "@/src/entities";
+import { useGetUser, useUpdateUser } from "@/src/entities";
 import {
   AvatarIcon,
   AVATAR_ICONS,
@@ -17,7 +17,7 @@ const MyPageNinknamePage = () => {
   const router = useRouter();
 
   const { data: user } = useGetUser();
-  const { mutate: updateNickname } = useUpdateNickname();
+  const { mutate: updateUser } = useUpdateUser();
 
   const [nickname, setNickname] = useState(user?.nickname ?? "");
   const [avatar, setAvatar] = useState<string | null>(user?.avatar ?? null);
@@ -29,7 +29,7 @@ const MyPageNinknamePage = () => {
     }
   }, [user]);
 
-  const handleClickUpdateNickname = () => {
+  const handleClickUpdateUser = () => {
     if (!user?.id) return;
 
     if (!nickname) {
@@ -42,11 +42,11 @@ const MyPageNinknamePage = () => {
       return;
     }
 
-    updateNickname(
+    updateUser(
       { body: { nickname, avatar } },
       {
         onSuccess: () => {
-          toast.success("닉네임이 성공적으로 수정되었습니다.");
+          toast.success("유저 정보가 성공적으로 수정되었습니다.");
           router.push("/myPage");
         },
         onError: (error: unknown) => {
@@ -103,7 +103,7 @@ const MyPageNinknamePage = () => {
         <div className="mt-auto px-[4px] py-[24px]">
           <button
             className="h-[56px] w-full rounded-[20px] bg-[#5724F0] text-[16px] text-white"
-            onClick={handleClickUpdateNickname}
+            onClick={handleClickUpdateUser}
           >
             완료
           </button>
