@@ -7,7 +7,7 @@ import { useEffect, useState } from "react";
 
 import CertifiedIcon from "@/public/certified.svg";
 import { useGetStadiums, useGetTeams } from "@/src/entities";
-import { MatchResultTag, useGetSignedUrl } from "@/src/shared";
+import { cn, MatchResultTag, useGetSignedUrl } from "@/src/shared";
 
 const GameLogsItem = ({
   gameLog,
@@ -125,18 +125,7 @@ const GameLogsItem = ({
                   )}
                 </div>
               </div>
-              <div className="flex items-center gap-[4px]">
-                <div>{getStadiumName() ?? "-"}</div>
-                {gameLog.youtube_url && (
-                  <Link
-                    href={gameLog.youtube_url}
-                    target="_blank"
-                    onClick={(e) => e.stopPropagation()}
-                  >
-                    <Play size={16} />
-                  </Link>
-                )}
-              </div>
+              <div>{getStadiumName() ?? "-"}</div>
             </div>
             <MatchResultTag isVictory={getResult()} />
           </div>
@@ -151,6 +140,26 @@ const GameLogsItem = ({
               <div>{gameLog.away_team_score}</div>
             </div>
           </div>
+          <Link
+            href={gameLog.youtube_url || ""}
+            target="_blank"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="mt-[12px] flex items-center gap-[4px]">
+              <Play
+                size={16}
+                className={gameLog.youtube_url ? "text-white" : "text-white/40"}
+              />
+              <span
+                className={cn(
+                  "text-[12px]",
+                  gameLog.youtube_url ? "text-white" : "text-white/40",
+                )}
+              >
+                경기 하이라이트
+              </span>
+            </div>
+          </Link>
         </div>
 
         {/* 뒷면 */}
