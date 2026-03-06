@@ -9,10 +9,12 @@ const FileDropzone = ({
   onChange,
   className,
   initImageUrl,
+  placeholder,
 }: {
   onChange: (files: FileList | null) => void;
   className?: string;
   initImageUrl?: string | null;
+  placeholder?: React.ReactNode;
 }) => {
   const [droppedImageUrl, setDroppedImageUrl] = useState<string | null>(null);
 
@@ -88,8 +90,12 @@ const FileDropzone = ({
     >
       <input {...getInputProps()} />
       <p className="text-center text-[14px] text-white/40">
-        경기 사진, 인증샷 등 다양한
-        <br /> 사진을 업로드해보세요
+        {placeholder ?? (
+          <>
+            경기 사진, 인증샷 등 다양한
+            <br /> 사진을 업로드해보세요
+          </>
+        )}
       </p>
     </div>
   );
