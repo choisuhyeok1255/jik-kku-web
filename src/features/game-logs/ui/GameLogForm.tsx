@@ -378,7 +378,7 @@ const GameLogForm = ({
   return (
     <form
       className={cn(
-        "flex min-h-full flex-col px-[16px] pb-[20px]",
+        "flex min-h-0 flex-1 flex-col px-[16px] pb-[20px]",
         defaultValues && "py-[20px]",
       )}
       onSubmit={handleSubmit(
