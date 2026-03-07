@@ -533,11 +533,12 @@ const CreateModeFormStep1 = ({
                 </span>
               </div>
             ) : (
-              <div className="flex flex-col gap-[12px]">
+              <div className="grid grid-cols-2 gap-[12px]">
                 {kboEvents.map((event) => {
                   const isSelected = selectedEvent?.idEvent === event.idEvent;
                   const { homeTeamName, awayTeamName, stadiumName } =
                     getDisplayNames(event);
+                  const short = (n: string) => n?.split(" ")[0] ?? n ?? "";
                   return (
                     <button
                       key={event.idEvent}
@@ -551,7 +552,7 @@ const CreateModeFormStep1 = ({
                       onClick={() => handleSelectEvent(event)}
                     >
                       <div className="text-[14px] font-bold text-white">
-                        {homeTeamName} vs {awayTeamName}
+                        {short(homeTeamName)} vs {short(awayTeamName)}
                       </div>
                       <div className="text-[12px] text-white/80">
                         {event.strStatus === "FT"
