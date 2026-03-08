@@ -1,5 +1,6 @@
 "use client";
 
+import dayjs from "dayjs";
 import { useEffect, useState } from "react";
 import { Controller, useForm } from "react-hook-form";
 
@@ -7,7 +8,7 @@ import { toast } from "sonner";
 
 import { GameLogStadiumModal } from "@/src/features";
 import { useGetStadiums, useAuthStore } from "@/src/entities";
-import { cn, DateTimePicker, LabelContent } from "@/src/shared";
+import { cn, DatePicker, LabelContent } from "@/src/shared";
 import type { CreateShareForm } from "../model/types/form";
 
 const ShareForm = ({
@@ -63,7 +64,7 @@ const ShareForm = ({
           handleClickSubmit({
             title: formData.title,
             content: formData.content,
-            deadline: formData.deadline.toISOString(),
+            deadline: formData.deadline,
             stadium_id: formData.stadiumId,
             max_attendees: formData.maxAttendees,
           });
@@ -88,26 +89,16 @@ const ShareForm = ({
               <Controller
                 control={control}
                 name="deadline"
-                rules={{
-                  required: "마감일을 선택해 주세요",
-                  validate: (value) => {
-                    if (!value) return true;
-                    return value > new Date()
-                      ? true
-                      : "마감일은 현재 시간보다 이후로 설정해 주세요";
-                  },
-                }}
+                rules={{ required: "마감일을 선택해 주세요" }}
                 render={({
                   field: { value, onChange },
                   fieldState: { error },
                 }) => (
                   <div className="flex flex-col gap-[8px]">
-                    <DateTimePicker
-                      value={value ?? undefined}
+                    <DatePicker
+                      minDate={dayjs().format("YYYY-MM-DD")}
+                      value={value ? dayjs(value).format("YYYY-MM-DD") : null}
                       onChange={(date) => onChange(date ?? null)}
-                      placeholder="마감일과 시간 선택"
-                      minDate={new Date()}
-                      defaultMonth={new Date()}
                     />
                     {error && (
                       <span className="text-[14px] text-red-500">

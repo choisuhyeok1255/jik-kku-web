@@ -1,7 +1,7 @@
 export interface CreateShareForm {
   title: string;
   content: string;
-  deadline: Date | null;
+  deadline: string | null;
   stadiumId: number | null;
   maxAttendees: number;
 }

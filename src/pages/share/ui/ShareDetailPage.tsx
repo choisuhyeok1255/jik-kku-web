@@ -1,5 +1,6 @@
 "use client";
 
+import dayjs from "dayjs";
 import Link from "next/link";
 import { useParams } from "next/navigation";
 
@@ -77,13 +78,7 @@ const ShareDetailPage = () => {
 
   const formatDeadline = () => {
     if (!share?.deadline) return "-";
-    return new Date(share.deadline).toLocaleString("ko-KR", {
-      year: "numeric",
-      month: "2-digit",
-      day: "2-digit",
-      hour: "2-digit",
-      minute: "2-digit",
-    });
+    return dayjs(share.deadline).format("YYYY-MM-DD");
   };
 
   return (

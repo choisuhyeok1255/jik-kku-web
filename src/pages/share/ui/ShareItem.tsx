@@ -23,7 +23,7 @@ const ShareItem = ({
 
   const getFormattedDeadline = () => {
     if (!share.deadline) return null;
-    return dayjs(share.deadline).format("YYYY-MM-DD HH:mm");
+    return dayjs(share.deadline).format("YYYY-MM-DD");
   };
 
   const getApplicantCount = () => {
@@ -36,7 +36,7 @@ const ShareItem = ({
   const contentPreview =
     share.content && share.content.length > 80
       ? `${share.content.slice(0, 80)}...`
-      : share.content ?? "";
+      : (share.content ?? "");
 
   const applicantCount = getApplicantCount();
   const isExpired = isShareExpired(share.deadline);
@@ -77,7 +77,7 @@ const ShareItem = ({
           </div>
         </div>
         {contentPreview && (
-          <p className="text-[14px] text-white/80 line-clamp-2">
+          <p className="line-clamp-2 text-[14px] text-white/80">
             {contentPreview}
           </p>
         )}
