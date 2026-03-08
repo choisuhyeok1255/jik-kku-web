@@ -1,7 +1,8 @@
 "use client";
 
 import dayjs from "dayjs";
-import { ChevronLeft } from "lucide-react";
+import { ChevronLeftIcon } from "lucide-react";
+import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import {
   Control,
@@ -38,10 +39,399 @@ import {
   LabelContent,
   Spinner,
   compressImage,
+  Header,
 } from "@/src/shared";
 import { findTeamIdByKboName } from "../lib/kboTeamMapping";
 import GameLogStadiumModal from "./GameLogStadiumModal";
 import GameLogTeamModal from "./GameLogTeamModal";
+
+const CreateModeFormStep1 = ({
+  control,
+  matchDate,
+  kboEvents,
+  isLoading,
+  selectedEvent,
+  isCalendarMounted,
+  getDisplayNames,
+  handleDateChange,
+  handleSelectEvent,
+  handleClickMainButton,
+  isMainButtonEnabled,
+}: {
+  control: Control<CreateGameLogForm | UpdateGameLogForm>;
+  matchDate: string | null | undefined;
+  kboEvents: KboEventRow[];
+  isLoading: boolean;
+  selectedEvent: KboEventRow | null;
+  isCalendarMounted: boolean;
+  getDisplayNames: (event: KboEventRow) => {
+    homeTeamName: string;
+    awayTeamName: string;
+    stadiumName: string;
+  };
+  handleDateChange: () => void;
+  handleSelectEvent: (event: KboEventRow) => void;
+  handleClickMainButton: () => void;
+
+  isMainButtonEnabled: boolean;
+}) => {
+  return (
+    <div className="flex min-h-0 flex-1 flex-col gap-[16px]">
+      <div className="shrink-0">
+        <Controller
+          control={control}
+          name="matchDate"
+          rules={{ required: "날짜를 선택해주세요!" }}
+          render={({ field: { value, onChange } }) => {
+            return isCalendarMounted ? (
+              <Calendar
+                value={value}
+                onChange={(date) => {
+                  handleDateChange();
+                  if (date === null) {
+                    onChange(null);
+                  } else {
+                    const dateObj = Array.isArray(date) ? date[0] : date;
+                    onChange(
+                      dateObj ? dayjs(dateObj).format("YYYY-MM-DD") : null,
+                    );
+                  }
+                }}
+              />
+            ) : (
+              <></>
+            );
+          }}
+        />
+      </div>
+      {matchDate && (
+        <div className="min-h-0 flex-1 overflow-y-auto">
+          {isLoading ? (
+            <div className="flex min-h-full items-center justify-center">
+              <Spinner className="size-8 text-white" />
+            </div>
+          ) : !kboEvents.length ? (
+            <div className="flex min-h-full items-center justify-center">
+              <span className="text-[14px] text-white/60">
+                해당 날짜에 경기가 없어요
+              </span>
+            </div>
+          ) : (
+            <div className="grid grid-cols-2 gap-[12px]">
+              {kboEvents.map((event) => {
+                const isSelected = selectedEvent?.idEvent === event.idEvent;
+                const { homeTeamName, awayTeamName, stadiumName } =
+                  getDisplayNames(event);
+                const short = (n: string) => n?.split(" ")[0] ?? n ?? "";
+                return (
+                  <button
+                    key={event.idEvent}
+                    className={cn(
+                      "flex flex-col gap-[4px] rounded-[20px] border p-[12px] text-left",
+                      isSelected
+                        ? "border-[#5724F0] bg-[#5724F0]/4"
+                        : "border-white/10 bg-white/4",
+                    )}
+                    type="button"
+                    onClick={() => handleSelectEvent(event)}
+                  >
+                    <div className="text-[14px] font-bold text-white">
+                      {short(homeTeamName)} vs {short(awayTeamName)}
+                    </div>
+                    <div className="text-[12px] text-white/80">
+                      {event.strStatus === "FT"
+                        ? `${event.intHomeScore} : ${event.intAwayScore}`
+                        : event.strStatus === "POST"
+                          ? "경기 취소"
+                          : "경기 예정"}
+                    </div>
+                    <div className="text-[12px] text-white/60">
+                      {stadiumName}
+                    </div>
+                  </button>
+                );
+              })}
+            </div>
+          )}
+        </div>
+      )}
+    </div>
+  );
+};
+
+const CreateModeFormStep2 = ({
+  control,
+  register,
+  watch,
+  setValue,
+  teams,
+  stadiums,
+  initImageUrl,
+  isSending,
+  isFieldsLocked,
+  setIsStadiumModalOpen,
+  setIsHomeTeamModalOpen,
+  setIsAwayTeamModalOpen,
+  isStadiumModalOpen,
+  isHomeTeamModalOpen,
+  isAwayTeamModalOpen,
+}: {
+  control: Control<CreateGameLogForm | UpdateGameLogForm>;
+  register: UseFormRegister<CreateGameLogForm | UpdateGameLogForm>;
+  watch: UseFormWatch<CreateGameLogForm | UpdateGameLogForm>;
+  setValue: UseFormSetValue<CreateGameLogForm | UpdateGameLogForm>;
+  teams: { id: number; team_name: string | null }[];
+  stadiums: { id: number; name: string | null }[];
+  initImageUrl: string | null;
+  isSending: boolean;
+  isFieldsLocked: boolean;
+
+  setIsStadiumModalOpen: (v: boolean) => void;
+  setIsHomeTeamModalOpen: (v: boolean) => void;
+  setIsAwayTeamModalOpen: (v: boolean) => void;
+  isStadiumModalOpen: boolean;
+  isHomeTeamModalOpen: boolean;
+  isAwayTeamModalOpen: boolean;
+}) => {
+  return (
+    <div className="flex min-h-0 flex-1 flex-col">
+      <div className="min-h-0 flex-1 overflow-y-auto">
+        <div className="flex flex-col gap-[16px]">
+          <div className="flex gap-[16px]">
+            <LabelContent className="flex-1" label="날짜" isRequired>
+              <>
+                <div
+                  className={cn(
+                    "flex h-[48px] w-full items-center rounded-[20px] border border-white/10 bg-[#ffffff]/4 px-[14px] text-[14px]",
+                    isFieldsLocked && "cursor-not-allowed opacity-50",
+                  )}
+                >
+                  {watch("matchDate") ?? (
+                    <span className="text-white/60">날짜 선택</span>
+                  )}
+                </div>
+              </>
+            </LabelContent>
+            <LabelContent className="flex-1" label="경기장" isRequired>
+              <Controller
+                control={control}
+                name="stadiumId"
+                rules={{ required: "경기장을 선택해주세요!" }}
+                render={({ field: { value } }) => (
+                  <button
+                    className={cn(
+                      "flex h-[48px] w-full items-center rounded-[20px] border border-white/10 bg-[#ffffff]/4 p-[14px] text-start text-[14px] disabled:cursor-not-allowed disabled:opacity-50",
+                      !value && "text-[#ffffff]/60",
+                    )}
+                    type="button"
+                    disabled={isFieldsLocked}
+                    onClick={() => setIsStadiumModalOpen(true)}
+                  >
+                    {value
+                      ? stadiums?.find((s) => s.id === value)?.name
+                      : "경기장 선택"}
+                  </button>
+                )}
+              />
+              {isStadiumModalOpen && (
+                <GameLogStadiumModal
+                  initSelectedStadiumId={watch("stadiumId")}
+                  handleClickStadium={(stadiumId) => {
+                    setValue("stadiumId", stadiumId, {
+                      shouldDirty: !!stadiumId,
+                      shouldValidate: !!stadiumId,
+                    });
+                  }}
+                  handleCloseModal={() => setIsStadiumModalOpen(false)}
+                />
+              )}
+            </LabelContent>
+          </div>
+          <div className="flex justify-between gap-[16px]">
+            <LabelContent className="flex-1" label="응원팀" isRequired>
+              <Controller
+                control={control}
+                name="homeTeamId"
+                rules={{ required: "응원팀을 선택해주세요!" }}
+                render={({ field: { value } }) => (
+                  <button
+                    className={cn(
+                      "flex h-[48px] w-full items-center rounded-[20px] border border-white/10 bg-[#ffffff]/4 p-[14px] text-start text-[14px] disabled:cursor-not-allowed disabled:opacity-50",
+                      !value && "text-[#ffffff]/60",
+                    )}
+                    type="button"
+                    disabled={isFieldsLocked}
+                    onClick={() => setIsHomeTeamModalOpen(true)}
+                  >
+                    {value
+                      ? teams?.find((t) => t.id === value)?.team_name
+                      : "팀 선택"}
+                  </button>
+                )}
+              />
+              {isHomeTeamModalOpen && (
+                <GameLogTeamModal
+                  initSelectedTeamId={{
+                    homeTeamId: watch("homeTeamId"),
+                    awayTeamId: watch("awayTeamId"),
+                  }}
+                  initCurrentTab="homeTeam"
+                  handleClickTeam={({ homeTeamId, awayTeamId }) => {
+                    setValue("homeTeamId", homeTeamId, {
+                      shouldDirty: !!homeTeamId,
+                      shouldValidate: !!homeTeamId,
+                    });
+                    setValue("awayTeamId", awayTeamId, {
+                      shouldDirty: !!awayTeamId,
+                      shouldValidate: !!awayTeamId,
+                    });
+                  }}
+                  handleCloseModal={() => setIsHomeTeamModalOpen(false)}
+                />
+              )}
+            </LabelContent>
+            <LabelContent className="flex-1" label="상대팀" isRequired>
+              <Controller
+                control={control}
+                name="awayTeamId"
+                rules={{ required: "상대팀을 선택해주세요!" }}
+                render={({ field: { value } }) => (
+                  <button
+                    className={cn(
+                      "flex h-[48px] w-full items-center rounded-[20px] border border-white/10 bg-[#ffffff]/4 p-[14px] text-start text-[14px] disabled:cursor-not-allowed disabled:opacity-50",
+                      !value && "text-[#ffffff]/60",
+                    )}
+                    type="button"
+                    disabled={isFieldsLocked}
+                    onClick={() => setIsAwayTeamModalOpen(true)}
+                  >
+                    {value
+                      ? teams?.find((t) => t.id === value)?.team_name
+                      : "팀 선택"}
+                  </button>
+                )}
+              />
+              {isAwayTeamModalOpen && (
+                <GameLogTeamModal
+                  initSelectedTeamId={{
+                    homeTeamId: watch("homeTeamId"),
+                    awayTeamId: watch("awayTeamId"),
+                  }}
+                  initCurrentTab="awayTeam"
+                  handleClickTeam={({ homeTeamId, awayTeamId }) => {
+                    setValue("homeTeamId", homeTeamId, {
+                      shouldDirty: !!homeTeamId,
+                      shouldValidate: !!homeTeamId,
+                    });
+                    setValue("awayTeamId", awayTeamId, {
+                      shouldDirty: !!awayTeamId,
+                      shouldValidate: !!awayTeamId,
+                    });
+                  }}
+                  handleCloseModal={() => setIsAwayTeamModalOpen(false)}
+                />
+              )}
+            </LabelContent>
+          </div>
+          <div className="flex gap-[16px]">
+            <LabelContent className="flex-1" label="응원팀 점수" isRequired>
+              <div
+                className={cn(
+                  "flex h-[48px] w-full items-center rounded-[20px] border border-white/10 bg-[#ffffff]/4 px-[14px]",
+                  isFieldsLocked && "has-disabled:opacity-50",
+                )}
+              >
+                <input
+                  className="min-w-0 flex-1 [appearance:textfield] bg-transparent disabled:cursor-not-allowed [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none"
+                  min={0}
+                  max={50}
+                  type="number"
+                  placeholder="0"
+                  disabled={isFieldsLocked}
+                  onKeyDown={(e) =>
+                    [".", ",", "e", "E", "+", "-"].includes(e.key) &&
+                    e.preventDefault()
+                  }
+                  {...register("homeTeamScore", {
+                    required: "응원팀 점수를 입력해주세요!",
+                    setValueAs: (v) => {
+                      const n = Math.floor(Number(v));
+                      return Number.isNaN(n)
+                        ? undefined
+                        : Math.min(50, Math.max(0, n));
+                    },
+                  })}
+                />
+                <span className="text-[14px] text-white/60">점</span>
+              </div>
+            </LabelContent>
+            <LabelContent className="flex-1" label="상대팀 점수" isRequired>
+              <div
+                className={cn(
+                  "flex h-[48px] w-full items-center rounded-[20px] border border-white/10 bg-[#ffffff]/4 px-[14px]",
+                  isFieldsLocked && "has-disabled:opacity-50",
+                )}
+              >
+                <input
+                  className="min-w-0 flex-1 [appearance:textfield] bg-transparent disabled:cursor-not-allowed [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none"
+                  min={0}
+                  max={50}
+                  type="number"
+                  placeholder="0"
+                  disabled={isFieldsLocked}
+                  onKeyDown={(e) =>
+                    [".", ",", "e", "E", "+", "-"].includes(e.key) &&
+                    e.preventDefault()
+                  }
+                  {...register("awayTeamScore", {
+                    required: "상대팀 점수를 입력해주세요!",
+                    setValueAs: (v) => {
+                      const n = Math.floor(Number(v));
+                      return Number.isNaN(n)
+                        ? undefined
+                        : Math.min(50, Math.max(0, n));
+                    },
+                  })}
+                />
+                <span className="text-[14px] text-white/60">점</span>
+              </div>
+            </LabelContent>
+          </div>
+          <LabelContent label="메모">
+            <textarea
+              className="w-full resize-none rounded-[20px] border border-white/10 bg-[#ffffff]/4 px-[12px] py-[8px]"
+              rows={2}
+              maxLength={200}
+              placeholder="오늘 경기는 어땠나요?"
+              {...register("note", { maxLength: 200 })}
+            />
+          </LabelContent>
+          <LabelContent label="사진">
+            <Controller
+              control={control}
+              name="gameLogImage"
+              render={({ field: { value, onChange } }) => (
+                <FileDropzone
+                  className="h-[144px]"
+                  initImageUrl={
+                    typeof value === "string" ? initImageUrl : undefined
+                  }
+                  placeholder={
+                    <span>
+                      사진을 추가하면 랭킹에 바로 반영돼요.
+                      <br /> 경기와 무관한 사진은 추후 인증이 취소될 수 있어요
+                    </span>
+                  }
+                  onChange={(files) => onChange(files)}
+                />
+              )}
+            />
+          </LabelContent>
+        </div>
+      </div>
+    </div>
+  );
+};
 
 const GameLogForm = ({
   defaultValues,
@@ -52,6 +442,8 @@ const GameLogForm = ({
     | ((body: CreateGameLogQueryModel["body"]) => void)
     | ((body: UpdateGameLogQueryModel["body"]) => void);
 }) => {
+  const router = useRouter();
+
   const { data: user } = useGetUser();
   const { data: teams } = useGetTeams();
   const { data: stadiums } = useGetStadiums();
@@ -330,13 +722,8 @@ const GameLogForm = ({
     : hasGames
       ? selectedEvent !== null
       : true;
-  const mainButtonText = isLoading
-    ? "다음"
-    : hasGames
-      ? "다음"
-      : "직접 입력하기";
 
-  const handleClickMainButton = () => {
+  const handleClickNextStep = () => {
     if (hasGames && selectedEvent) {
       applyEventToForm(selectedEvent);
       setStep(2);
@@ -376,53 +763,80 @@ const GameLogForm = ({
     : handleCreateGameLog;
 
   return (
-    <form
-      className={cn(
-        "flex min-h-0 flex-1 flex-col px-[16px] pb-[20px]",
-        defaultValues && "py-[20px]",
-      )}
-      onSubmit={handleSubmit(
-        async (formData) => {
-          setIsSending(true);
-          handleFormSubmit(formData);
-        },
-        (error) => {
-          const errors = Object.values(error);
-          const errorMessage =
-            errors.length === 1 ? errors[0]?.message : "필수 입력 해주세요!";
-          toast.error(errorMessage);
-          setIsSending(false);
-        },
-      )}
-    >
-      {step === 1 ? (
-        <CreateModeFormStep1
-          control={control}
-          matchDate={matchDate}
-          kboEvents={kboEvents ?? []}
-          isLoading={isLoading}
-          selectedEvent={selectedEvent}
-          isCalendarMounted={isCalendarMounted}
-          getDisplayNames={getDisplayNames}
-          handleDateChange={handleDateChange}
-          handleSelectEvent={handleSelectEvent}
-          handleClickMainButton={handleClickMainButton}
-          mainButtonText={mainButtonText}
-          isMainButtonEnabled={isMainButtonEnabled}
-        />
-      ) : (
-        <div className="flex min-h-0 flex-1 flex-col gap-[24px]">
+    <div className="flex h-dvh flex-col">
+      <Header
+        title={{ text: "직관 등록", position: "center" }}
+        leftAction={
           <button
             type="button"
-            className="flex w-fit shrink-0 items-center gap-[4px] text-[14px] text-white/80"
-            onClick={handleClickBack}
+            onClick={
+              step === 1
+                ? () => {
+                    router.push("/?tab=gameLogs");
+                  }
+                : handleClickBack
+            }
           >
-            <ChevronLeft size={20} />
-            이전 단계
+            <ChevronLeftIcon size={32} />
           </button>
-
+        }
+        rightAction={
+          <button
+            className="disabled:opacity-50"
+            type="button"
+            disabled={!isMainButtonEnabled}
+            onClick={
+              step === 1
+                ? handleClickNextStep
+                : handleSubmit(
+                    async (formData) => {
+                      setIsSending(true);
+                      handleFormSubmit(formData);
+                    },
+                    (error) => {
+                      const errors = Object.values(error);
+                      const errorMessage =
+                        errors.length === 1
+                          ? errors[0]?.message
+                          : "필수 입력 해주세요!";
+                      toast.error(errorMessage);
+                      setIsSending(false);
+                    },
+                  )
+            }
+          >
+            {step === 1 ? (
+              "다음"
+            ) : isSending ? (
+              <Spinner className="size-5 text-white" />
+            ) : (
+              "등록"
+            )}
+          </button>
+        }
+      />
+      <form
+        className={cn(
+          "flex min-h-0 flex-1 flex-col overflow-hidden px-[16px] pb-[20px]",
+          defaultValues && "py-[20px]",
+        )}
+      >
+        {step === 1 ? (
+          <CreateModeFormStep1
+            control={control}
+            matchDate={matchDate}
+            kboEvents={kboEvents ?? []}
+            isLoading={isLoading}
+            selectedEvent={selectedEvent}
+            isCalendarMounted={isCalendarMounted}
+            getDisplayNames={getDisplayNames}
+            handleDateChange={handleDateChange}
+            handleSelectEvent={handleSelectEvent}
+            handleClickMainButton={handleClickNextStep}
+            isMainButtonEnabled={isMainButtonEnabled}
+          />
+        ) : (
           <CreateModeFormStep2
-            submitButtonText={defaultValues ? "수정완료" : "직관 등록하기"}
             control={control}
             register={register}
             watch={watch}
@@ -439,442 +853,8 @@ const GameLogForm = ({
             isHomeTeamModalOpen={isHomeTeamModalOpen}
             isAwayTeamModalOpen={isAwayTeamModalOpen}
           />
-        </div>
-      )}
-    </form>
-  );
-};
-
-const CreateModeFormStep1 = ({
-  control,
-  matchDate,
-  kboEvents,
-  isLoading,
-  selectedEvent,
-  isCalendarMounted,
-  getDisplayNames,
-  handleDateChange,
-  handleSelectEvent,
-  handleClickMainButton,
-  mainButtonText,
-  isMainButtonEnabled,
-}: {
-  control: Control<CreateGameLogForm | UpdateGameLogForm>;
-  matchDate: string | null | undefined;
-  kboEvents: KboEventRow[];
-  isLoading: boolean;
-  selectedEvent: KboEventRow | null;
-  isCalendarMounted: boolean;
-  getDisplayNames: (event: KboEventRow) => {
-    homeTeamName: string;
-    awayTeamName: string;
-    stadiumName: string;
-  };
-  handleDateChange: () => void;
-  handleSelectEvent: (event: KboEventRow) => void;
-  handleClickMainButton: () => void;
-  mainButtonText: string;
-  isMainButtonEnabled: boolean;
-}) => {
-  return (
-    <div className="flex min-h-0 flex-1 flex-col">
-      <div className="shrink-0">
-        <Controller
-          control={control}
-          name="matchDate"
-          rules={{ required: "날짜를 선택해주세요!" }}
-          render={({ field: { value, onChange } }) =>
-            isCalendarMounted ? (
-              <Calendar
-                key={value ?? "empty"}
-                classNames={{ root: "bg-white" }}
-                defaultMonth={
-                  value && dayjs(value).isAfter("2023-12-31")
-                    ? dayjs(value).toDate()
-                    : dayjs("2024-01-01").toDate()
-                }
-                disabled={[
-                  { before: new Date(2024, 0, 1) },
-                  { after: dayjs().endOf("day").toDate() },
-                ]}
-                mode="single"
-                selected={dayjs(value)?.toDate()}
-                formatters={{
-                  formatCaption: (date) => {
-                    const year = date.getFullYear();
-                    const month = date.getMonth() + 1;
-                    return `${year}년 ${month}월`;
-                  },
-                }}
-                onSelect={(date) => {
-                  const dateStr = dayjs(date).format("YYYY-MM-DD");
-                  onChange(dateStr);
-                  handleDateChange();
-                }}
-              />
-            ) : (
-              <></>
-            )
-          }
-        />
-      </div>
-
-      <div className="flex min-h-0 flex-1 flex-col overflow-y-auto">
-        {matchDate && (
-          <div className="flex min-h-0 flex-1 flex-col gap-[12px]">
-            {isLoading ? (
-              <div className="flex min-h-0 flex-1 flex-col items-center justify-center">
-                <Spinner className="size-8 text-white" />
-              </div>
-            ) : !kboEvents.length ? (
-              <div className="flex min-h-0 flex-1 flex-col items-center justify-center">
-                <span className="text-[14px] text-white/60">
-                  해당 날짜에 경기가 없어요
-                </span>
-              </div>
-            ) : (
-              <div className="grid grid-cols-2 gap-[12px]">
-                {kboEvents.map((event) => {
-                  const isSelected = selectedEvent?.idEvent === event.idEvent;
-                  const { homeTeamName, awayTeamName, stadiumName } =
-                    getDisplayNames(event);
-                  const short = (n: string) => n?.split(" ")[0] ?? n ?? "";
-                  return (
-                    <button
-                      key={event.idEvent}
-                      className={cn(
-                        "flex flex-col gap-[4px] rounded-[20px] border p-[12px] text-left",
-                        isSelected
-                          ? "border-[#5724F0] bg-[#5724F0]/4"
-                          : "border-white/10 bg-white/4",
-                      )}
-                      type="button"
-                      onClick={() => handleSelectEvent(event)}
-                    >
-                      <div className="text-[14px] font-bold text-white">
-                        {short(homeTeamName)} vs {short(awayTeamName)}
-                      </div>
-                      <div className="text-[12px] text-white/80">
-                        {event.strStatus === "FT"
-                          ? `${event.intHomeScore} : ${event.intAwayScore}`
-                          : event.strStatus === "POST"
-                            ? "경기 취소"
-                            : "경기 예정"}
-                      </div>
-                      <div className="text-[12px] text-white/60">
-                        {stadiumName}
-                      </div>
-                    </button>
-                  );
-                })}
-              </div>
-            )}
-          </div>
         )}
-      </div>
-
-      <div className="shrink-0 pt-[24px]">
-        <Button
-          type="button"
-          className="h-[56px] w-full rounded-[20px] bg-[#5724F0] text-[16px] disabled:opacity-50"
-          disabled={!isMainButtonEnabled}
-          onClick={handleClickMainButton}
-        >
-          {mainButtonText}
-        </Button>
-      </div>
-    </div>
-  );
-};
-
-const CreateModeFormStep2 = ({
-  control,
-  register,
-  watch,
-  setValue,
-  teams,
-  stadiums,
-  initImageUrl,
-  isSending,
-  isFieldsLocked,
-  submitButtonText,
-  setIsStadiumModalOpen,
-  setIsHomeTeamModalOpen,
-  setIsAwayTeamModalOpen,
-  isStadiumModalOpen,
-  isHomeTeamModalOpen,
-  isAwayTeamModalOpen,
-}: {
-  control: Control<CreateGameLogForm | UpdateGameLogForm>;
-  register: UseFormRegister<CreateGameLogForm | UpdateGameLogForm>;
-  watch: UseFormWatch<CreateGameLogForm | UpdateGameLogForm>;
-  setValue: UseFormSetValue<CreateGameLogForm | UpdateGameLogForm>;
-  teams: { id: number; team_name: string | null }[];
-  stadiums: { id: number; name: string | null }[];
-  initImageUrl: string | null;
-  isSending: boolean;
-  isFieldsLocked: boolean;
-  submitButtonText: string;
-  setIsStadiumModalOpen: (v: boolean) => void;
-  setIsHomeTeamModalOpen: (v: boolean) => void;
-  setIsAwayTeamModalOpen: (v: boolean) => void;
-  isStadiumModalOpen: boolean;
-  isHomeTeamModalOpen: boolean;
-  isAwayTeamModalOpen: boolean;
-}) => {
-  return (
-    <div className="flex min-h-0 flex-1 flex-col">
-      <div className="min-h-0 flex-1 overflow-y-auto">
-        <div className="flex flex-col gap-[16px]">
-          <div className="flex gap-[16px]">
-            <LabelContent className="flex-1" label="날짜" isRequired>
-              <>
-                <input
-                  type="hidden"
-                  {...register("matchDate", {
-                    required: "날짜를 선택해주세요!",
-                  })}
-                />
-                <div
-                  className={cn(
-                    "flex h-[48px] w-full items-center rounded-[20px] border border-white/10 bg-[#ffffff]/4 px-[14px] text-[14px]",
-                    isFieldsLocked && "cursor-not-allowed opacity-50",
-                  )}
-                >
-                  {watch("matchDate") ?? (
-                    <span className="text-white/60">날짜 선택</span>
-                  )}
-                </div>
-              </>
-            </LabelContent>
-            <LabelContent className="flex-1" label="경기장" isRequired>
-              <Controller
-                control={control}
-                name="stadiumId"
-                rules={{ required: "경기장을 선택해주세요!" }}
-                render={({ field: { value } }) => (
-                  <button
-                    className={cn(
-                      "flex h-[48px] w-full items-center rounded-[20px] border border-white/10 bg-[#ffffff]/4 p-[14px] text-start text-[14px] disabled:cursor-not-allowed disabled:opacity-50",
-                      !value && "text-[#ffffff]/60",
-                    )}
-                    type="button"
-                    disabled={isFieldsLocked}
-                    onClick={() => setIsStadiumModalOpen(true)}
-                  >
-                    {value
-                      ? stadiums?.find((s) => s.id === value)?.name
-                      : "경기장 선택"}
-                  </button>
-                )}
-              />
-              {isStadiumModalOpen && (
-                <GameLogStadiumModal
-                  initSelectedStadiumId={watch("stadiumId")}
-                  handleClickStadium={(stadiumId) => {
-                    setValue("stadiumId", stadiumId, {
-                      shouldDirty: !!stadiumId,
-                      shouldValidate: !!stadiumId,
-                    });
-                  }}
-                  handleCloseModal={() => setIsStadiumModalOpen(false)}
-                />
-              )}
-            </LabelContent>
-          </div>
-          <div className="flex justify-between gap-[16px]">
-            <LabelContent className="flex-1" label="응원팀" isRequired>
-              <Controller
-                control={control}
-                name="homeTeamId"
-                rules={{ required: "응원팀을 선택해주세요!" }}
-                render={({ field: { value } }) => (
-                  <button
-                    className={cn(
-                      "flex h-[48px] w-full items-center rounded-[20px] border border-white/10 bg-[#ffffff]/4 p-[14px] text-start text-[14px] disabled:cursor-not-allowed disabled:opacity-50",
-                      !value && "text-[#ffffff]/60",
-                    )}
-                    type="button"
-                    disabled={isFieldsLocked}
-                    onClick={() => setIsHomeTeamModalOpen(true)}
-                  >
-                    {value
-                      ? teams?.find((t) => t.id === value)?.team_name
-                      : "팀 선택"}
-                  </button>
-                )}
-              />
-              {isHomeTeamModalOpen && (
-                <GameLogTeamModal
-                  initSelectedTeamId={{
-                    homeTeamId: watch("homeTeamId"),
-                    awayTeamId: watch("awayTeamId"),
-                  }}
-                  initCurrentTab="homeTeam"
-                  handleClickTeam={({ homeTeamId, awayTeamId }) => {
-                    setValue("homeTeamId", homeTeamId, {
-                      shouldDirty: !!homeTeamId,
-                      shouldValidate: !!homeTeamId,
-                    });
-                    setValue("awayTeamId", awayTeamId, {
-                      shouldDirty: !!awayTeamId,
-                      shouldValidate: !!awayTeamId,
-                    });
-                  }}
-                  handleCloseModal={() => setIsHomeTeamModalOpen(false)}
-                />
-              )}
-            </LabelContent>
-            <LabelContent className="flex-1" label="상대팀" isRequired>
-              <Controller
-                control={control}
-                name="awayTeamId"
-                rules={{ required: "상대팀을 선택해주세요!" }}
-                render={({ field: { value } }) => (
-                  <button
-                    className={cn(
-                      "flex h-[48px] w-full items-center rounded-[20px] border border-white/10 bg-[#ffffff]/4 p-[14px] text-start text-[14px] disabled:cursor-not-allowed disabled:opacity-50",
-                      !value && "text-[#ffffff]/60",
-                    )}
-                    type="button"
-                    disabled={isFieldsLocked}
-                    onClick={() => setIsAwayTeamModalOpen(true)}
-                  >
-                    {value
-                      ? teams?.find((t) => t.id === value)?.team_name
-                      : "팀 선택"}
-                  </button>
-                )}
-              />
-              {isAwayTeamModalOpen && (
-                <GameLogTeamModal
-                  initSelectedTeamId={{
-                    homeTeamId: watch("homeTeamId"),
-                    awayTeamId: watch("awayTeamId"),
-                  }}
-                  initCurrentTab="awayTeam"
-                  handleClickTeam={({ homeTeamId, awayTeamId }) => {
-                    setValue("homeTeamId", homeTeamId, {
-                      shouldDirty: !!homeTeamId,
-                      shouldValidate: !!homeTeamId,
-                    });
-                    setValue("awayTeamId", awayTeamId, {
-                      shouldDirty: !!awayTeamId,
-                      shouldValidate: !!awayTeamId,
-                    });
-                  }}
-                  handleCloseModal={() => setIsAwayTeamModalOpen(false)}
-                />
-              )}
-            </LabelContent>
-          </div>
-          <div className="flex gap-[16px]">
-            <LabelContent className="flex-1" label="응원팀 점수" isRequired>
-              <div
-                className={cn(
-                  "flex h-[48px] w-full items-center rounded-[20px] border border-white/10 bg-[#ffffff]/4 px-[14px]",
-                  isFieldsLocked && "has-disabled:opacity-50",
-                )}
-              >
-                <input
-                  className="min-w-0 flex-1 [appearance:textfield] bg-transparent disabled:cursor-not-allowed [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none"
-                  min={0}
-                  max={50}
-                  type="number"
-                  placeholder="0"
-                  disabled={isFieldsLocked}
-                  onKeyDown={(e) =>
-                    [".", ",", "e", "E", "+", "-"].includes(e.key) &&
-                    e.preventDefault()
-                  }
-                  {...register("homeTeamScore", {
-                    required: "응원팀 점수를 입력해주세요!",
-                    setValueAs: (v) => {
-                      const n = Math.floor(Number(v));
-                      return Number.isNaN(n)
-                        ? undefined
-                        : Math.min(50, Math.max(0, n));
-                    },
-                  })}
-                />
-                <span className="text-[14px] text-white/60">점</span>
-              </div>
-            </LabelContent>
-            <LabelContent className="flex-1" label="상대팀 점수" isRequired>
-              <div
-                className={cn(
-                  "flex h-[48px] w-full items-center rounded-[20px] border border-white/10 bg-[#ffffff]/4 px-[14px]",
-                  isFieldsLocked && "has-disabled:opacity-50",
-                )}
-              >
-                <input
-                  className="min-w-0 flex-1 [appearance:textfield] bg-transparent disabled:cursor-not-allowed [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none"
-                  min={0}
-                  max={50}
-                  type="number"
-                  placeholder="0"
-                  disabled={isFieldsLocked}
-                  onKeyDown={(e) =>
-                    [".", ",", "e", "E", "+", "-"].includes(e.key) &&
-                    e.preventDefault()
-                  }
-                  {...register("awayTeamScore", {
-                    required: "상대팀 점수를 입력해주세요!",
-                    setValueAs: (v) => {
-                      const n = Math.floor(Number(v));
-                      return Number.isNaN(n)
-                        ? undefined
-                        : Math.min(50, Math.max(0, n));
-                    },
-                  })}
-                />
-                <span className="text-[14px] text-white/60">점</span>
-              </div>
-            </LabelContent>
-          </div>
-          <LabelContent label="메모">
-            <textarea
-              className="w-full resize-none rounded-[20px] border border-white/10 bg-[#ffffff]/4 px-[12px] py-[8px]"
-              rows={2}
-              maxLength={200}
-              placeholder="오늘 경기는 어땠나요?"
-              {...register("note", { maxLength: 200 })}
-            />
-          </LabelContent>
-          <LabelContent label="사진">
-            <Controller
-              control={control}
-              name="gameLogImage"
-              render={({ field: { value, onChange } }) => (
-                <FileDropzone
-                  className="h-[144px]"
-                  initImageUrl={
-                    typeof value === "string" ? initImageUrl : undefined
-                  }
-                  placeholder={
-                    <span>
-                      사진을 추가하면 랭킹에 바로 반영돼요.
-                      <br /> 경기와 무관한 사진은 추후 인증이 취소될 수 있어요
-                    </span>
-                  }
-                  onChange={(files) => onChange(files)}
-                />
-              )}
-            />
-          </LabelContent>
-        </div>
-      </div>
-      <button
-        type="submit"
-        className="mt-[24px] flex h-[56px] w-full shrink-0 items-center justify-center rounded-[20px] bg-[#5724F0] text-[16px] disabled:opacity-50"
-        disabled={isSending}
-      >
-        {isSending ? (
-          <Spinner className="size-5 text-white" />
-        ) : (
-          submitButtonText
-        )}
-      </button>
+      </form>
     </div>
   );
 };

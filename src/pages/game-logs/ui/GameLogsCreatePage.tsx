@@ -5,7 +5,6 @@ import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 import { GameLogForm, useCreateGameLog } from "@/src/features";
 import { CreateGameLogQueryModel, useGameLogCreateStore } from "@/src/entities";
-import { Header } from "@/src/shared";
 
 const GameLogCreatePage = () => {
   const router = useRouter();
@@ -32,17 +31,7 @@ const GameLogCreatePage = () => {
     );
   };
 
-  return (
-    <div className="flex h-dvh flex-col">
-      <Header
-        title={{ text: "직관 등록", position: "center" }}
-        prevPage={{ href: "/" }}
-      />
-      <div className="flex min-h-0 flex-1 flex-col">
-        <GameLogForm handleClickSubmit={handleClickSubmit} />
-      </div>
-    </div>
-  );
+  return <GameLogForm handleClickSubmit={handleClickSubmit} />;
 };
 
 export default GameLogCreatePage;
