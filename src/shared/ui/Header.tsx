@@ -3,16 +3,24 @@
 import { ChevronLeftIcon } from "lucide-react";
 import { useRouter } from "next/navigation";
 
+import React from "react";
 import { cn } from "../lib/tailwind";
 
 interface HeaderProps {
   className?: string;
   title: { text: string; position: "left" | "center" | "right" };
   prevPage?: { href: string; forceUseHref?: boolean };
+  leftAction?: React.ReactNode;
   rightAction?: React.ReactNode;
 }
 
-const Header = ({ className, title, prevPage, rightAction }: HeaderProps) => {
+const Header = ({
+  className,
+  title,
+  prevPage,
+  leftAction,
+  rightAction,
+}: HeaderProps) => {
   const router = useRouter();
 
   const getTitleClassName = () => {
@@ -59,15 +67,17 @@ const Header = ({ className, title, prevPage, rightAction }: HeaderProps) => {
     <header
       className={cn("relative flex h-[60px] items-center px-4", className)}
     >
-      {prevPage && (
-        <button
-          type="button"
-          className="flex h-[48px] w-[48px]! shrink-0 cursor-pointer items-center justify-center"
-          onClick={handlePrevPageClick}
-        >
-          <ChevronLeftIcon size={32} />
-        </button>
-      )}
+      {leftAction
+        ? leftAction
+        : prevPage && (
+            <button
+              type="button"
+              className="flex h-[48px] w-[48px]! shrink-0 cursor-pointer items-center justify-center"
+              onClick={handlePrevPageClick}
+            >
+              <ChevronLeftIcon size={32} />
+            </button>
+          )}
       <h2 className={cn("text-[20px] font-bold", getTitleClassName())}>
         {title.text}
       </h2>
