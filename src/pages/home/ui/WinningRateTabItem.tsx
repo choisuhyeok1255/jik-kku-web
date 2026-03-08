@@ -77,7 +77,7 @@ const WinningRateTabItem = ({
   }
 
   return (
-    <div className="relative flex flex-1 flex-col gap-[60px] overflow-hidden">
+    <div className="relative mt-[88px] flex flex-1 flex-col gap-[60px] overflow-hidden">
       <div>
         <div
           className="mx-auto mb-[16px] flex h-[196px] w-[361px] items-center justify-center rounded-[64px] py-[24px]"

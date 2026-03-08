@@ -82,7 +82,7 @@ const GameLogsTabItem = ({
   }
 
   return (
-    <div className="flex flex-1 flex-col gap-[16px] overflow-y-auto px-[16px] pb-[116px]">
+    <div className="flex flex-1 flex-col gap-[16px] overflow-y-auto px-[16px] pt-[88px] pb-[116px]">
       {flatGameLogs.map((gameLog, index) => (
         <GameLogsItem
           key={gameLog.id}
