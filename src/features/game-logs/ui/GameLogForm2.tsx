@@ -24,11 +24,8 @@ import {
   UploadFileQueryModel,
   cn,
   Notification,
-  Calendar,
-  Popover,
-  PopoverTrigger,
+  DatePicker,
   Button,
-  PopoverContent,
   FileDropzone,
   LabelContent,
   Spinner,
@@ -61,7 +58,6 @@ const GameLogForm = ({
     CreateGameLogForm | UpdateGameLogForm
   >({ mode: "all", shouldFocusError: false });
 
-  const [isCalendarOpen, setIsCalendarOpen] = useState(false);
   const [isHomeTeamModalOpen, setIsHomeTeamModalOpen] = useState(false);
   const [isAwayTeamModalOpen, setIsAwayTeamModalOpen] = useState(false);
   const [isStadiumModalOpen, setIsStadiumModalOpen] = useState(false);
@@ -331,56 +327,20 @@ const GameLogForm = ({
       )}
       <div className="flex flex-col gap-[40px]">
         <div className="flex flex-col gap-[16px]">
-          <LabelContent label="날짜" isRequired>
-            <div className="flex items-center gap-[8px]">
-              <Popover open={isCalendarOpen} onOpenChange={setIsCalendarOpen}>
-                <PopoverTrigger asChild>
-                  <Button
-                    className="h-[48px] min-w-0 flex-1 justify-start rounded-[20px] border border-white/10 bg-[#ffffff]/4"
-                    variant="outline"
-                  >
-                    {watch("matchDate") ? (
-                      watch("matchDate")
-                    ) : (
-                      <span className="text-[14px] text-white/60">
-                        날짜 선택
-                      </span>
-                    )}
-                  </Button>
-                </PopoverTrigger>
-                <PopoverContent className="w-auto border border-white/10 bg-[#171717] p-0">
-                  <Controller
-                    control={control}
-                    name="matchDate"
-                    rules={{ required: "날짜를 선택해주세요!" }}
-                    render={({ field: { value, onChange } }) => (
-                      <Calendar
-                        key={isCalendarOpen ? (value ?? "empty") : "closed"}
-                        classNames={{ root: "bg-white" }}
-                        defaultMonth={
-                          value && dayjs(value).isAfter("2023-12-31")
-                            ? dayjs(value).toDate()
-                            : dayjs("2024-01-01").toDate()
-                        }
-                        disabled={{ before: new Date(2024, 0, 1) }}
-                        mode="single"
-                        selected={dayjs(value)?.toDate()}
-                        formatters={{
-                          formatCaption: (date) => {
-                            const year = date.getFullYear();
-                            const month = date.getMonth() + 1;
-                            return `${year}년 ${month}월`;
-                          },
-                        }}
-                        onSelect={(date) => {
-                          onChange(dayjs(date).format("YYYY-MM-DD"));
-                          setIsCalendarOpen(false);
-                        }}
-                      />
-                    )}
-                  />
-                </PopoverContent>
-              </Popover>
+            <LabelContent label="날짜" isRequired>
+              <div className="flex items-center gap-[8px]">
+                <Controller
+                  control={control}
+                  name="matchDate"
+                  rules={{ required: "날짜를 선택해주세요!" }}
+                  render={({ field: { value, onChange } }) => (
+                    <DatePicker
+                      value={value}
+                      onChange={onChange}
+                      placeholder="날짜 선택"
+                    />
+                  )}
+                />
               <button
                 className="flex h-[48px] w-[50px] shrink-0 items-center justify-center rounded-[20px] border border-white/10 bg-[#ffffff]/4 text-[14px]"
                 type="button"
