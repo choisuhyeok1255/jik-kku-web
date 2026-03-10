@@ -79,11 +79,7 @@ const MyPage = () => {
   if (isLoadingTeams) {
     return (
       <div className="flex h-dvh flex-col">
-        <Header
-          className="mb-[12px] shrink-0"
-          title={{ text: "마이페이지", position: "left" }}
-        />
-        <div className="flex min-h-0 flex-1 flex-col gap-[12px] overflow-y-auto px-[16px] pb-[150px]">
+        <div className="flex min-h-0 flex-1 flex-col gap-[12px] overflow-y-auto px-[16px] pt-[24px] pb-[150px]">
           <div className={CARD_BASE}>
             <div className="flex h-[40px] items-center gap-[12px]">
               <Skeleton className="h-[32px] w-[32px] shrink-0 rounded-full bg-white/10" />
@@ -110,11 +106,7 @@ const MyPage = () => {
 
   return (
     <div className="flex h-dvh flex-col">
-      <Header
-        className="mb-[12px] shrink-0"
-        title={{ text: "마이페이지", position: "left" }}
-      />
-      <div className="flex min-h-0 flex-1 flex-col gap-[12px] overflow-y-auto px-[16px] pb-[150px]">
+      <div className="flex min-h-0 flex-1 flex-col gap-[12px] overflow-y-auto px-[16px] pt-[24px] pb-[150px]">
         <MyPageCardButton onClick={() => router.push("/myPage/nickname")}>
           <div className="flex h-[40px] min-w-0 items-center gap-3">
             {user?.avatar ? (

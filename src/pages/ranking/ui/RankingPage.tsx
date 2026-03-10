@@ -77,11 +77,7 @@ const RankingPage = ({
 
   return (
     <div className="flex h-dvh flex-col">
-      <Header
-        className="mb-[12px] shrink-0"
-        title={{ text: "직관 랭킹", position: "left" }}
-      />
-      <div className="flex min-h-0 flex-1 flex-col overflow-y-auto px-[16px] pb-[100px]">
+      <div className="flex min-h-0 flex-1 flex-col overflow-y-auto px-[16px] pt-[24px] pb-[100px]">
         <AppTab
           className="mb-[20px]"
           currentTab={sortBy}
