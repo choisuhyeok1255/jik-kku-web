@@ -7,7 +7,6 @@ import type { ReactNode } from "react";
 import { useGetTeams, useGetUser, TeamIcon } from "@/src/entities";
 import {
   AvatarIcon,
-  Header,
   NotLogin,
   Skeleton,
   cn,

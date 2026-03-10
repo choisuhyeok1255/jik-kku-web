@@ -10,7 +10,7 @@ import {
   UserWinStatsRow,
   type RankingSortBy,
 } from "@/src/entities";
-import { AppTab, AvatarIcon, Header, Notification } from "@/src/shared";
+import { AppTab, AvatarIcon, Notification } from "@/src/shared";
 import { cn } from "@/src/shared";
 
 const RankingPage = ({
