@@ -84,6 +84,12 @@ const RootLayout = ({
 
   return (
     <html lang="ko" className="h-dvh overflow-hidden">
+      <head>
+        <meta
+          name="naver-site-verification"
+          content="67cce44785ab0952a16599d9f2bf4fc88c9ddc9c"
+        />
+      </head>
       <GoogleTagManager gtmId={gtmId} />
       <body
         className={`${laundryGothic.variable} ${laundryGothic.className} h-dvh overflow-hidden bg-[#232323]`}
