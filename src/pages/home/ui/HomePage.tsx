@@ -58,7 +58,7 @@ const HomePage = () => {
   return (
     <div className="flex h-full flex-col">
       <AppTab
-        className="absolute top-[24px] right-0 left-0 mx-[40px] mb-[20px]"
+        className="absolute top-[24px] right-0 left-0 z-10 mx-[40px] mb-[20px]"
         currentTab={currentTab}
         tabItems={[
           { label: "직관", value: "game" },
