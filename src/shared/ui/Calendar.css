@@ -1,3 +1,8 @@
+.calendar-swipe-wrapper {
+  touch-action: pan-y;
+  user-select: none;
+}
+
 .calendar-custom.react-calendar {
   width: 100%;
   margin: 0 auto;
@@ -33,11 +38,15 @@
   align-items: center;
   justify-content: center;
   background: none;
+  user-select: none;
+  -webkit-user-select: none;
+  -webkit-tap-highlight-color: transparent;
+  -webkit-user-drag: none;
 }
 
 .calendar-custom .react-calendar__navigation button:enabled:hover,
 .calendar-custom .react-calendar__navigation button:enabled:focus {
-  background-color: #e6e6e6;
+  background-color: transparent;
 }
 
 .calendar-custom .react-calendar__month-view__weekdays {
@@ -73,6 +82,11 @@
   text-align: center;
   font: inherit;
   font-size: 0.833em;
+}
+
+.calendar-custom .react-calendar__tile:enabled:hover,
+.calendar-custom .react-calendar__tile:enabled:focus {
+  background: none;
 }
 
 .calendar-custom .react-calendar__month-view__days__day--neighboringMonth {
