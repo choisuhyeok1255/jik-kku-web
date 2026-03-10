@@ -26,6 +26,7 @@ import {
   UpdateGameLogQueryModel,
   useGetStadiums,
   useGetUser,
+  useGetKboEventsBySeason,
 } from "@/src/entities";
 import type { KboEventRow } from "@/src/entities";
 import {
@@ -34,7 +35,6 @@ import {
   UploadFileQueryModel,
   cn,
   Calendar,
-  Button,
   FileDropzone,
   LabelContent,
   Spinner,
@@ -55,8 +55,6 @@ const CreateModeFormStep1 = ({
   getDisplayNames,
   handleDateChange,
   handleSelectEvent,
-  handleClickMainButton,
-  isMainButtonEnabled,
 }: {
   control: Control<CreateGameLogForm | UpdateGameLogForm>;
   matchDate: string | null | undefined;
@@ -167,7 +165,6 @@ const CreateModeFormStep2 = ({
   teams,
   stadiums,
   initImageUrl,
-  isSending,
   isFieldsLocked,
   setIsStadiumModalOpen,
   setIsHomeTeamModalOpen,
@@ -183,9 +180,7 @@ const CreateModeFormStep2 = ({
   teams: { id: number; team_name: string | null }[];
   stadiums: { id: number; name: string | null }[];
   initImageUrl: string | null;
-  isSending: boolean;
   isFieldsLocked: boolean;
-
   setIsStadiumModalOpen: (v: boolean) => void;
   setIsHomeTeamModalOpen: (v: boolean) => void;
   setIsAwayTeamModalOpen: (v: boolean) => void;
@@ -479,6 +474,10 @@ const GameLogForm = ({
   const kboQueryDate = matchDate && step === 1 ? matchDate : "";
   const { data: kboEvents, isLoading } = useGetKboEventsByDate({
     date: kboQueryDate,
+  });
+  const kboQuerySeason = matchDate && step === 1 ? matchDate.split("-")[0] : "";
+  const { data: kboEventsBySeason } = useGetKboEventsBySeason({
+    season: kboQuerySeason,
   });
 
   const handleCreateGameLog = async (
@@ -844,7 +843,6 @@ const GameLogForm = ({
             teams={teams ?? []}
             stadiums={stadiums ?? []}
             initImageUrl={initImageUrl}
-            isSending={isSending}
             isFieldsLocked={isFieldsLocked}
             setIsStadiumModalOpen={setIsStadiumModalOpen}
             setIsHomeTeamModalOpen={setIsHomeTeamModalOpen}
