@@ -1,6 +1,7 @@
 import { useQuery } from "@tanstack/react-query";
 
 import type {
+  GetKboEventsBySeasonQueryModel,
   GetKboEventsQueryModel,
   KboEventRow,
   KboTeamRow,
@@ -8,6 +9,7 @@ import type {
 
 const THE_SPORTS_DB_BASE = "https://www.thesportsdb.com/api/v1/json/123";
 const KBO_LEAGUE = "Korean%20KBO%20League";
+const KBO_LEAGUE_ID = "4830";
 
 export const getKboTeams = async (): Promise<KboTeamRow[]> => {
   const res = await fetch(
@@ -43,5 +45,27 @@ export const useGetKboEventsByDate = (req: GetKboEventsQueryModel) => {
     staleTime: Infinity,
     gcTime: Infinity,
     enabled: !!req.date,
+  });
+};
+
+export const getKboEventsBySeason = async (
+  season: string,
+): Promise<KboEventRow[]> => {
+  const res = await fetch(
+    `${THE_SPORTS_DB_BASE}/eventsseason.php?id=${KBO_LEAGUE_ID}&s=${season}`,
+  );
+  const data = await res.json();
+  return (data.events ?? []) as KboEventRow[];
+};
+
+export const useGetKboEventsBySeason = (
+  req: GetKboEventsBySeasonQueryModel,
+) => {
+  return useQuery({
+    queryKey: ["kbo-events-by-season", req.season],
+    queryFn: () => getKboEventsBySeason(req.season),
+    staleTime: Infinity,
+    gcTime: Infinity,
+    enabled: !!req.season,
   });
 };
