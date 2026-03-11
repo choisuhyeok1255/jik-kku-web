@@ -4,9 +4,10 @@ import { Play } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import { useEffect, useState } from "react";
+import { toast } from "sonner";
 
 import CertifiedIcon from "@/public/certified.svg";
-import { useGetStadiums, useGetTeams } from "@/src/entities";
+import { useDeleteGameLog, useGetStadiums, useGetTeams } from "@/src/entities";
 import { cn, MatchResultTag, useGetSignedUrl } from "@/src/shared";
 
 const GameLogsItem = ({
@@ -35,10 +36,27 @@ const GameLogsItem = ({
   const { mutateAsync: getSignedUrl } = useGetSignedUrl();
   const { data: teams } = useGetTeams();
   const { data: stadiums } = useGetStadiums();
+  const { mutate: deleteGameLog } = useDeleteGameLog();
 
   const [imageUrl, setImageUrl] = useState<string | null>(null);
   const [isImageLoading, setIsImageLoading] = useState(false);
   const [isFlipped, setIsFlipped] = useState(false);
+
+  const handleDelete = () => {
+    if (!window.confirm("정말로 이 직관 기록을 삭제하시겠습니까?")) return;
+
+    deleteGameLog(
+      { query: { gameLogId: gameLog.game_log_id } },
+      {
+        onSuccess: () => {
+          toast.success("직관 기록이 삭제되었습니다.");
+        },
+        onError: () => {
+          toast.error("직관 기록 삭제에 실패했습니다.");
+        },
+      },
+    );
+  };
 
   const getResult = () => {
     if (
@@ -166,14 +184,26 @@ const GameLogsItem = ({
         <div
           className={`flip-card-back ${cardBaseClass} relative flex flex-col overflow-y-auto`}
         >
-          {/* 수정하기 - absolute로 띄움 (전면 승리/패배 위치) */}
-          <Link
-            href={`/game-logs/${gameLog.game_log_id}/edit`}
-            onClick={(e) => e.stopPropagation()}
-            className="absolute top-[20px] right-[20px] z-10 text-[14px] font-bold text-white transition-opacity hover:opacity-80"
-          >
-            수정하기
-          </Link>
+          {/* 수정/삭제 - absolute로 띄움 */}
+          <div className="absolute top-[20px] right-[20px] z-10 flex gap-[12px]">
+            <Link
+              href={`/game-logs/${gameLog.game_log_id}/edit`}
+              onClick={(e) => e.stopPropagation()}
+              className="text-[14px] font-bold text-white transition-opacity hover:opacity-80"
+            >
+              수정
+            </Link>
+            <button
+              type="button"
+              onClick={(e) => {
+                e.stopPropagation();
+                handleDelete();
+              }}
+              className="text-[14px] font-bold text-red-500 transition-opacity hover:opacity-80"
+            >
+              삭제
+            </button>
+          </div>
 
           {/* 사진 + 메모 (전체 높이 사용) */}
           <div className="flex min-h-0 flex-1 gap-[12px]">
