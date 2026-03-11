@@ -472,9 +472,14 @@ const GameLogForm = ({
   }, []);
 
   const kboQueryDate = matchDate && step === 1 ? matchDate : "";
-  const { data: kboEvents, isLoading } = useGetKboEventsByDate({
+  const {
+    data: kboEvents,
+    isLoading,
+    isError,
+  } = useGetKboEventsByDate({
     date: kboQueryDate,
   });
+
   const kboQuerySeason = matchDate && step === 1 ? matchDate.split("-")[0] : "";
   const { data: kboEventsBySeason } = useGetKboEventsBySeason({
     season: kboQuerySeason,
@@ -585,6 +590,12 @@ const GameLogForm = ({
       );
     }
   };
+
+  useEffect(() => {
+    if (isError) {
+      toast.error("경기 조회에 실패했습니다. 1분 후 다시 시도해주세요.");
+    }
+  }, [isError]);
 
   useEffect(() => {
     if (!user || defaultValues || !stadiums) return;
@@ -764,7 +775,10 @@ const GameLogForm = ({
   return (
     <div className="flex h-dvh flex-col">
       <Header
-        title={{ text: "직관 등록", position: "center" }}
+        title={{
+          text: defaultValues ? "직관 수정" : "직관 등록",
+          position: "center",
+        }}
         leftAction={
           <button
             type="button"
@@ -809,7 +823,7 @@ const GameLogForm = ({
             ) : isSending ? (
               <Spinner className="size-5 text-white" />
             ) : (
-              "등록"
+              "완료"
             )}
           </button>
         }
