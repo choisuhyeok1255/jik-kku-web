@@ -79,7 +79,7 @@ const RankingPage = ({
     <div className="flex h-dvh flex-col">
       <div className="flex min-h-0 flex-1 flex-col overflow-y-auto px-[16px] pt-[24px] pb-[100px]">
         <AppTab
-          className="mb-[20px]"
+          className="mx-auto mb-[20px]"
           currentTab={sortBy}
           tabItems={[
             { label: "승률순", value: "win_rate" },
