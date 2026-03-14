@@ -32,7 +32,7 @@ const SharePage = () => {
   return (
     <div className="flex h-full flex-col pt-[24px]">
       <AppTab
-        className="mx-[40px] mb-[20px]"
+        className="mx-auto mb-[20px] w-[calc(100%-32px)]"
         currentTab={currentTab}
         tabItems={[
           { label: "진행 중", value: "ongoing" },
