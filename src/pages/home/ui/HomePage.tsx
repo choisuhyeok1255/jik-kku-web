@@ -56,7 +56,7 @@ const HomePage = () => {
   }
 
   return (
-    <div className="flex h-full flex-col pt-[24px]">
+    <div className="flex h-full flex-col">
       <AppTab
         className="absolute top-[24px] right-0 left-0 z-10 mx-auto mb-[20px] w-[calc(100%-32px)]"
         currentTab={currentTab}
