@@ -41,7 +41,7 @@ const SharePage = () => {
         handleChangeTab={handleChangeTab}
       />
       {isLoading ? (
-        <div className="flex flex-1 items-center justify-center pt-[88px]">
+        <div className="flex flex-1 items-center justify-center">
           <span className="text-white/60">로딩 중...</span>
         </div>
       ) : (

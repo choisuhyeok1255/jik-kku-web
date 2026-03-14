@@ -15,7 +15,7 @@ const ShareExpiredTabItem = ({ shares }: { shares: ShareServerModel[] }) => {
 
   if (expiredShares.length === 0) {
     return (
-      <div className="flex min-h-0 flex-1 items-center justify-center pt-[88px]">
+      <div className="flex min-h-0 flex-1 items-center justify-center">
         <span className="text-center text-white/60">
           마감된 나눔이 없습니다.
         </span>
