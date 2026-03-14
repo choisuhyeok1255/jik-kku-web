@@ -30,9 +30,9 @@ const SharePage = () => {
   }, [initialTab]);
 
   return (
-    <div className="flex h-full flex-col pt-[24px]">
+    <div className="relative flex h-full flex-col">
       <AppTab
-        className="mx-auto mb-[20px] w-[calc(100%-32px)]"
+        className="absolute top-[24px] right-0 left-0 z-10 mx-auto mb-[20px] w-[calc(100%-32px)]"
         currentTab={currentTab}
         tabItems={[
           { label: "진행 중", value: "ongoing" },
@@ -41,7 +41,7 @@ const SharePage = () => {
         handleChangeTab={handleChangeTab}
       />
       {isLoading ? (
-        <div className="flex flex-1 items-center justify-center">
+        <div className="flex flex-1 items-center justify-center pt-[88px]">
           <span className="text-white/60">로딩 중...</span>
         </div>
       ) : (
