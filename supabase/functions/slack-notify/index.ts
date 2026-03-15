@@ -44,7 +44,7 @@ interface GameLogRecord {
 function formatKstDate(isoDate: string): string {
   const date = new Date(isoDate);
   const kstTime = new Date(date.getTime() + 9 * 60 * 60 * 1000);
-  return `${kstTime.getUTCFullYear()}-${String(kstTime.getUTCMonth() + 1).padStart(2, "0")}-${String(kstTime.getUTCDate()).padStart(2, "0")} ${String(kstTime.getUTCHours()).padStart(2, "0")}:${String(kstTime.getUTCMinutes()).padStart(2, "0")}`;
+  return `${kstTime.getUTCFullYear()}-${String(kstTime.getUTCMonth() + 1).padStart(2, "0")}-${String(kstTime.getUTCDate()).padStart(2, "0")} ${String(kstTime.getUTCHours()).padStart(2, "0")}:${String(kstTime.getUTCMinutes()).padStart(2, "0")}:${String(kstTime.getUTCSeconds()).padStart(2, "0")}`;
 }
 
 function buildSlackMessage(payload: WebhookPayload): object | null {
