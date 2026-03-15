@@ -186,6 +186,40 @@ pnpm start
 - 카카오 OAuth 로그인
 - Supabase Auth (`@supabase/ssr`) + PKCE
 
+## 슬랙 알림 (관리자)
+
+1대1 문의·직관 인증 요청 시 슬랙으로 알림을 받을 수 있습니다.
+
+### 1. Edge Function 배포
+
+```bash
+# Supabase CLI 로그인 및 프로젝트 연결 후
+supabase functions deploy slack-notify --no-verify-jwt
+```
+
+### 2. Secret 설정
+
+Supabase Dashboard → Project Settings → Edge Functions → Secrets에서 추가:
+
+| 이름 | 값 |
+|------|-----|
+| `SLACK_WEBHOOK_URL` | Slack Incoming Webhook URL |
+
+### 3. Database Webhook 설정
+
+Supabase Dashboard → Database → Webhooks에서 생성:
+
+| 이름 | 테이블 | 이벤트 | URL |
+|------|--------|--------|-----|
+| inquiries-slack | `public.inquiries` | INSERT | `https://<project-ref>.supabase.co/functions/v1/slack-notify` |
+
+- `<project-ref>`는 Supabase Dashboard URL의 프로젝트 ID입니다.
+- HTTP Headers: `Content-Type: application/json` (기본값)
+
+### 알림 조건
+
+- **1대1 문의**: `inquiries` 테이블에 새 행 INSERT 시
+
 ## 라이선스
 
 Private
