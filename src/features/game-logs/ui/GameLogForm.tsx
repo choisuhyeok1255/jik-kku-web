@@ -26,7 +26,6 @@ import {
   UpdateGameLogQueryModel,
   useGetStadiums,
   useGetUser,
-  useGetKboEventsBySeason,
 } from "@/src/entities";
 import type { KboEventRow } from "@/src/entities";
 import {
@@ -476,14 +475,7 @@ const GameLogForm = ({
     data: kboEvents,
     isLoading,
     isError,
-  } = useGetKboEventsByDate({
-    date: kboQueryDate,
-  });
-
-  const kboQuerySeason = matchDate && step === 1 ? matchDate.split("-")[0] : "";
-  const { data: kboEventsBySeason } = useGetKboEventsBySeason({
-    season: kboQuerySeason,
-  });
+  } = useGetKboEventsByDate({ date: kboQueryDate });
 
   const handleCreateGameLog = async (
     formData: CreateGameLogForm | UpdateGameLogForm,

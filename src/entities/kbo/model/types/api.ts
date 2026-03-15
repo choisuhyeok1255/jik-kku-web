@@ -2,10 +2,6 @@ export interface GetKboEventsQueryModel {
   date: string;
 }
 
-export interface GetKboEventsBySeasonQueryModel {
-  season: string;
-}
-
 export interface KboEventRow {
   idEvent: string;
   idHomeTeam: string;
