@@ -22,6 +22,14 @@
 ### 랭킹
 - 직관 승률 랭킹
 
+### 경기 일정
+- **구단별 KBO 경기 일정** 달력
+  - 팀 선택 (Select)
+  - 월 네비게이션 (이전/다음 버튼), 스와이프로 월 이동
+  - 날짜 3단계 색상 (오늘 / 이번달 / 이전·다음달)
+  - 상대팀, 경기장 표시
+  - 로딩 시 Skeleton UI, 접근성(aria-label) 지원
+
 ### 마이페이지
 - 프로필, 닉네임 수정, 팀 설정, 문의하기, 로그아웃
 - **문의하기** - 1:1 문의 등록 및 아코디언 UI로 내역 확인
@@ -46,7 +54,7 @@
 |------|-------------|------|
 | **SSR** | `/share`, `/ranking` | 서버에서 데이터 fetch 후 클라이언트에 `initialData`로 전달. 첫 화면 로딩 시 데이터 포함 |
 | **ISR** | `/ranking` | `revalidate = 60` — 60초마다 백그라운드에서 페이지 재생성. 랭킹 데이터 주기적 갱신 |
-| **CSR** | `/`, `/share/[id]`, `/share/create`, `/my-page`, `/my-page/inquiry`, `/game-logs/*`, `/admin/*` | 클라이언트에서 React Query로 데이터 fetch. `"use client"` 컴포넌트 |
+| **CSR** | `/`, `/calendar`, `/share/[id]`, `/share/create`, `/my-page`, `/my-page/inquiry`, `/game-logs/*`, `/admin/*` | 클라이언트에서 React Query로 데이터 fetch. `"use client"` 컴포넌트 |
 
 ### 상세
 
@@ -88,7 +96,7 @@ src/
 ├── app/          # 앱 라우터, 레이아웃, 페이지 라우트
 ├── entities/     # 도메인 엔티티 (user, share, game-log, team, stadium, user-win-stats, inquiry)
 ├── features/     # 기능 단위 (ShareForm, GameLogForm, TeamSettingGuard, AdminGuard 등)
-├── pages/        # 페이지 컴포넌트 (Home, Share, Ranking, MyPage, GameLogs, Admin 등)
+├── pages/        # 페이지 컴포넌트 (Home, Share, Ranking, Calendar, MyPage, GameLogs, Admin 등)
 └── shared/       # 공유 UI, 유틸, API (Header, FileDropzone, Supabase, Accordion 등)
 ```
 
@@ -105,6 +113,7 @@ src/
 | `/share/[id]` | 나눔 상세 |
 | `/share/[id]/edit` | 나눔 수정 |
 | `/ranking` | 직관 랭킹 |
+| `/calendar` | 경기 일정 (구단별 KBO 일정) |
 | `/my-page` | 마이페이지 |
 | `/my-page/nickname` | 닉네임 수정 |
 | `/my-page/team` | 팀 설정 |
