@@ -46,7 +46,7 @@ const MyPageAppDownloadPage = () => {
       <Header
         className="mb-[12px] shrink-0"
         title={{ text: "앱 다운로드", position: "center" }}
-        prevPage={{ href: "/myPage" }}
+        prevPage={{ href: "/my-page" }}
       />
       <div className="flex min-h-0 flex-1 flex-col overflow-y-auto px-[16px] pb-[150px]">
         <p className="mb-[24px] text-center text-[14px] leading-[22px] text-white/80">

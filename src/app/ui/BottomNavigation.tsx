@@ -22,9 +22,10 @@ const HIDDEN_PATHS: string[] = [
   "/share/create",
   "/share/",
   "/admin",
-  "/myPage/nickname",
-  "/myPage/team",
-  "/myPage/inquiry/create",
+  "/my-page/nickname",
+  "/my-page/team",
+  "/my-page/inquiry/create",
+  "/my-page/service-info",
 ];
 
 const homeItem = {
@@ -47,7 +48,7 @@ const shareItem = {
 };
 const myPageItem = {
   label: "마이페이지",
-  href: "/myPage",
+  href: "/my-page",
   activeIcon: PersonActiveIcon,
   unActiveIcon: PersonUnActiveIcon,
 };
@@ -74,8 +75,8 @@ const BottomNavigation = () => {
     ) {
       return { href: "/game-logs/create" };
     }
-    if (pathname === "/myPage/inquiry") {
-      return { href: "/myPage/inquiry/create" };
+    if (pathname === "/my-page/inquiry") {
+      return { href: "/my-page/inquiry/create" };
     }
     return null;
   }, [pathname, isGameLogsTab, user, winStatsSummary]);

@@ -35,7 +35,7 @@ const MyPageTeamPage = () => {
         onSuccess: async () => {
           toast.success("응원팀이 성공적으로 변경되었습니다.");
           await refetchUser();
-          router.push("/myPage");
+          router.push("/my-page");
         },
         onError: () => {
           toast.error("응원팀 변경에 실패했습니다.");
@@ -52,7 +52,7 @@ const MyPageTeamPage = () => {
           text: user?.team_id ? "응원팀 변경" : "응원팀 설정",
           position: "center",
         }}
-        {...(user?.team_id && { prevPage: { href: "/myPage" } })}
+        {...(user?.team_id && { prevPage: { href: "/my-page" } })}
       />
       <div className="flex min-h-0 flex-1 flex-col overflow-y-auto px-[16px] pb-[24px]">
         <div className="grid grid-cols-2 gap-[12px]">

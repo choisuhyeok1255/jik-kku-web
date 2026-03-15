@@ -41,7 +41,7 @@ const MyPageInquiryPage = () => {
       <Header
         className="mb-[12px] shrink-0"
         title={{ text: "문의사항", position: "center" }}
-        prevPage={{ href: "/myPage" }}
+        prevPage={{ href: "/my-page" }}
       />
       <div className="flex min-h-0 flex-1 flex-col gap-[12px] overflow-y-auto px-[16px] pb-[150px]">
         {inquiries.length === 0 ? (

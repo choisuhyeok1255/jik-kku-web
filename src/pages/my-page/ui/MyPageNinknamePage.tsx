@@ -47,7 +47,7 @@ const MyPageNinknamePage = () => {
       {
         onSuccess: () => {
           toast.success("유저 정보가 성공적으로 수정되었습니다.");
-          router.push("/myPage");
+          router.push("/my-page");
         },
         onError: (error: unknown) => {
           const err = error as { code?: string };
@@ -67,7 +67,7 @@ const MyPageNinknamePage = () => {
       <Header
         className="mb-[20px] shrink-0"
         title={{ text: "유저 정보 수정", position: "center" }}
-        prevPage={{ href: "/myPage" }}
+        prevPage={{ href: "/my-page" }}
       />
 
       <div className="flex flex-1 flex-col px-[16px]">

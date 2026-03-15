@@ -37,7 +37,7 @@ const MyPageInquiryCreatePage = () => {
       {
         onSuccess: () => {
           toast.success("문의가 등록되었습니다.");
-          router.push("/myPage/inquiry");
+          router.push("/my-page/inquiry");
         },
         onError: () => {
           toast.error("문의 등록에 실패했습니다.");
@@ -51,7 +51,7 @@ const MyPageInquiryCreatePage = () => {
       <Header
         className="mb-[20px] shrink-0"
         title={{ text: "문의 작성", position: "center" }}
-        prevPage={{ href: "/myPage/inquiry" }}
+        prevPage={{ href: "/my-page/inquiry" }}
       />
       <div className="flex flex-1 flex-col gap-[20px] overflow-y-auto px-[16px] pb-[24px]">
         <LabelContent label="제목" isRequired>

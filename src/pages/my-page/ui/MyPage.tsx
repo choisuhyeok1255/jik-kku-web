@@ -5,13 +5,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import type { ReactNode } from "react";
 import { useGetTeams, useGetUser, TeamIcon } from "@/src/entities";
-import {
-  AvatarIcon,
-  NotLogin,
-  Skeleton,
-  cn,
-  supabase,
-} from "@/src/shared";
+import { AvatarIcon, NotLogin, Skeleton, cn, supabase } from "@/src/shared";
 
 const CARD_BASE =
   "rounded-[20px] border border-white/10 bg-white/[0.04] p-[20px]";
@@ -106,7 +100,7 @@ const MyPage = () => {
   return (
     <div className="flex h-dvh flex-col">
       <div className="flex min-h-0 flex-1 flex-col gap-[12px] overflow-y-auto px-[16px] pt-[24px] pb-[150px]">
-        <MyPageCardButton onClick={() => router.push("/myPage/nickname")}>
+        <MyPageCardButton onClick={() => router.push("/my-page/nickname")}>
           <div className="flex h-[40px] min-w-0 items-center gap-3">
             {user?.avatar ? (
               <AvatarIcon iconName={user.avatar} size={28} />
@@ -119,7 +113,7 @@ const MyPage = () => {
           </div>
         </MyPageCardButton>
 
-        <MyPageCardButton onClick={() => router.push("/myPage/team")}>
+        <MyPageCardButton onClick={() => router.push("/my-page/team")}>
           <div className="flex flex-col gap-[16px]">
             {user?.team_id ? (
               <>
@@ -141,7 +135,16 @@ const MyPage = () => {
 
         <div className="flex items-center justify-center gap-[8px]">
           <Link
-            href="/myPage/inquiry"
+            href="/my-page/service-info"
+            className="flex h-[48px] min-w-0 items-center justify-center"
+          >
+            <span className="min-w-0 truncate text-[14px] font-bold text-[#ffffff]/60">
+              서비스 정보
+            </span>
+          </Link>
+          <span className="text-[14px] text-[#ffffff]/40">|</span>
+          <Link
+            href="/my-page/inquiry"
             className="flex h-[48px] min-w-0 items-center justify-center"
           >
             <span className="min-w-0 truncate text-[14px] font-bold text-[#ffffff]/60">
@@ -150,7 +153,7 @@ const MyPage = () => {
           </Link>
           <span className="text-[14px] text-[#ffffff]/40">|</span>
           <Link
-            href="/myPage/appDownload"
+            href="/my-page/app-download"
             className="flex h-[48px] min-w-0 items-center justify-center"
           >
             <span className="min-w-0 truncate text-[14px] font-bold text-[#ffffff]/60">

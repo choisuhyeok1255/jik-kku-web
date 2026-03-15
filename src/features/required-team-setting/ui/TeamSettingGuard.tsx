@@ -11,13 +11,13 @@ const TeamSettingGuard = ({ children }: { children: React.ReactNode }) => {
 
   const { data: user, isLoading } = useGetUser();
 
-  const excludedPaths = ["/myPage/team", "/auth"];
+  const excludedPaths = ["/my-page/team", "/auth"];
   const isExcluded = excludedPaths.some((p) => pathname?.startsWith(p));
   const shouldShowGuard = !isLoading && !!user && !user.team_id && !isExcluded;
 
   useEffect(() => {
     if (shouldShowGuard) {
-      router.push("/myPage/team");
+      router.push("/my-page/team");
     }
   }, [shouldShowGuard, router]);
 
