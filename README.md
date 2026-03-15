@@ -199,11 +199,13 @@ supabase functions deploy slack-notify --no-verify-jwt
 
 ### 2. Secret 설정
 
-Supabase Dashboard → Project Settings → Edge Functions → Secrets에서 추가:
+Supabase Dashboard → Edge Functions → Secrets에서 추가:
 
 | 이름 | 값 |
 |------|-----|
-| `SLACK_WEBHOOK_URL` | Slack Incoming Webhook URL |
+| `SLACK_WEBHOOK_URL` | Slack Incoming Webhook URL (1대1 문의 기본) |
+| `SLACK_WEBHOOK_URL_GAME_LOGS` | (선택) 직관 생성 전용. 없으면 `SLACK_WEBHOOK_URL` 사용 |
+| `SLACK_WEBHOOK_URL_USERS` | (선택) 회원가입 전용. 없으면 `SLACK_WEBHOOK_URL` 사용 |
 
 ### 3. Database Webhook 설정
 
@@ -212,6 +214,8 @@ Supabase Dashboard → Database → Webhooks에서 생성:
 | 이름 | 테이블 | 이벤트 | URL |
 |------|--------|--------|-----|
 | inquiries-slack | `public.inquiries` | INSERT | `https://<project-ref>.supabase.co/functions/v1/slack-notify` |
+| users-slack | `public.users` | INSERT | `https://<project-ref>.supabase.co/functions/v1/slack-notify` |
+| game-logs-slack | `public.game_logs` | INSERT | `https://<project-ref>.supabase.co/functions/v1/slack-notify` |
 
 - `<project-ref>`는 Supabase Dashboard URL의 프로젝트 ID입니다.
 - HTTP Headers: `Content-Type: application/json` (기본값)
@@ -219,6 +223,8 @@ Supabase Dashboard → Database → Webhooks에서 생성:
 ### 알림 조건
 
 - **1대1 문의**: `inquiries` 테이블에 새 행 INSERT 시
+- **회원가입**: `users` 테이블에 새 행 INSERT 시
+- **경기 기록**: `game_logs` 테이블에 새 행 INSERT 시
 
 ## 라이선스
 
