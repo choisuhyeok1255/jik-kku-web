@@ -5,6 +5,8 @@ import { usePathname, useSearchParams } from "next/navigation";
 import { useMemo } from "react";
 
 import AddWhiteIcon from "@/public/add-white.svg";
+import CalendarActiveIcon from "@/public/calendar-active.svg";
+import CalendarUnActiveIcon from "@/public/calendar-un-active.svg";
 import HomeActiveIcon from "@/public/home-active.svg";
 import HomeUnActiveIcon from "@/public/home-un-active.svg";
 import NoticeBoardActiveIcon from "@/public/notice-board-active.svg";
@@ -46,6 +48,12 @@ const shareItem = {
   activeIcon: NoticeBoardActiveIcon,
   unActiveIcon: NoticeBoardUnActiveIcon,
 };
+const calendarItem = {
+  label: "일정",
+  href: "/calendar",
+  activeIcon: CalendarActiveIcon,
+  unActiveIcon: CalendarUnActiveIcon,
+};
 const myPageItem = {
   label: "마이페이지",
   href: "/my-page",
@@ -86,7 +94,13 @@ const BottomNavigation = () => {
   const shouldHide = HIDDEN_PATHS.some((path) => pathname.startsWith(path));
   if (shouldHide) return null;
 
-  const navigationItems = [homeItem, rankItem, shareItem, myPageItem];
+  const navigationItems = [
+    homeItem,
+    rankItem,
+    calendarItem,
+    shareItem,
+    myPageItem,
+  ];
 
   return (
     <div className="fixed bottom-[21px] left-1/2 z-50 -translate-x-1/2">
