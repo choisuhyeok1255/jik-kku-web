@@ -1,2 +1,3 @@
+export { default as AdminIndexPage } from "./ui/AdminIndexPage";
 export { default as CertifyPage } from "./ui/CertifyPage";
 export { default as InquiriesPage } from "./ui/InquiriesPage";
