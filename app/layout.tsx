@@ -37,6 +37,9 @@ export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),
   title: "직꾸",
   description: "직관 다이어리 꾸미기 - 야구 직관 기록과 나눔",
+  icons: {
+    icon: "/icon.png",
+  },
   openGraph: {
     title: "직꾸",
     description: "직관 다이어리 꾸미기 - 야구 직관 기록과 나눔을 위한 서비스",
@@ -44,11 +47,13 @@ export const metadata: Metadata = {
     siteName: "직꾸",
     type: "website",
     locale: "ko_KR",
+    images: ["/icon.png"],
   },
   twitter: {
-    card: "summary",
+    card: "summary_large_image",
     title: "직꾸",
     description: "직관 다이어리 꾸미기 - 야구 직관 기록과 나눔을 위한 서비스",
+    images: ["/icon.png"],
   },
 };
 
