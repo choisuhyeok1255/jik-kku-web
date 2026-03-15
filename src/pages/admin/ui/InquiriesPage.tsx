@@ -32,6 +32,7 @@ const InquiriesPage = () => {
         <Header
           className="mb-[12px] shrink-0"
           title={{ text: "문의 관리", position: "left" }}
+          prevPage={{ href: "/admin" }}
         />
         <div className="flex flex-1 items-center justify-center">
           <span className="text-white/60">로딩 중...</span>
@@ -45,6 +46,7 @@ const InquiriesPage = () => {
       <Header
         className="mb-[12px] shrink-0"
         title={{ text: "문의 관리", position: "left" }}
+        prevPage={{ href: "/admin" }}
       />
       <div className="flex min-h-0 flex-1 flex-col gap-[16px] overflow-y-auto px-[16px] pb-[24px]">
         {inquiries.length === 0 ? (

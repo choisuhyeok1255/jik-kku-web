@@ -7,7 +7,7 @@ import {
   useGetNotCertifyGameLogs,
   useRejectGameLog,
 } from "@/src/entities";
-import { useGetSignedUrl } from "@/src/shared";
+import { Header, useGetSignedUrl } from "@/src/shared";
 
 const GameLogImage = ({
   gameLogImage,
@@ -70,8 +70,12 @@ const CertifyPage = () => {
 
   return (
     <div className="flex h-dvh flex-col">
+      <Header
+        className="mb-[12px] shrink-0"
+        title={{ text: "직관 인증", position: "left" }}
+        prevPage={{ href: "/admin" }}
+      />
       <div className="flex min-h-0 flex-1 flex-col gap-2 overflow-y-auto p-4">
-        <div className="shrink-0">직관 인증 페이지</div>
         {isLoading ? (
           <div className="flex flex-1 items-center justify-center">
             <span className="text-white/60">로딩 중...</span>
