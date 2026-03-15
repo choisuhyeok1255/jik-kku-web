@@ -46,7 +46,7 @@
 |------|-------------|------|
 | **SSR** | `/share`, `/ranking` | 서버에서 데이터 fetch 후 클라이언트에 `initialData`로 전달. 첫 화면 로딩 시 데이터 포함 |
 | **ISR** | `/ranking` | `revalidate = 60` — 60초마다 백그라운드에서 페이지 재생성. 랭킹 데이터 주기적 갱신 |
-| **CSR** | `/`, `/share/[id]`, `/share/create`, `/myPage`, `/myPage/inquiry`, `/game-logs/*`, `/admin/*` | 클라이언트에서 React Query로 데이터 fetch. `"use client"` 컴포넌트 |
+| **CSR** | `/`, `/share/[id]`, `/share/create`, `/my-page`, `/my-page/inquiry`, `/game-logs/*`, `/admin/*` | 클라이언트에서 React Query로 데이터 fetch. `"use client"` 컴포넌트 |
 
 ### 상세
 
@@ -105,11 +105,11 @@ src/
 | `/share/[id]` | 나눔 상세 |
 | `/share/[id]/edit` | 나눔 수정 |
 | `/ranking` | 직관 랭킹 |
-| `/myPage` | 마이페이지 |
-| `/myPage/nickname` | 닉네임 수정 |
-| `/myPage/team` | 팀 설정 |
-| `/myPage/inquiry` | 문의하기 (아코디언 목록) |
-| `/myPage/inquiry/create` | 문의 작성 |
+| `/my-page` | 마이페이지 |
+| `/my-page/nickname` | 닉네임 수정 |
+| `/my-page/team` | 팀 설정 |
+| `/my-page/inquiry` | 문의하기 (아코디언 목록) |
+| `/my-page/inquiry/create` | 문의 작성 |
 | `/admin/certify` | 직관 인증 (관리자) |
 | `/admin/inquiries` | 문의 관리 (관리자) |
 | `/auth/callback` | OAuth 콜백 |
