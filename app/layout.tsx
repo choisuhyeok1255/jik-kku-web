@@ -36,13 +36,13 @@ export const viewport: Viewport = {
 export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),
   title: "직꾸",
-  description: "직관 다이어리 꾸미기 - 야구 직관 기록과 나눔",
+  description: "직관 다이어리 꾸미기",
   icons: {
     icon: "/icon.png",
   },
   openGraph: {
     title: "직꾸",
-    description: "직관 다이어리 꾸미기 - 야구 직관 기록과 나눔을 위한 서비스",
+    description: "직관 다이어리 꾸미기",
     url: "/",
     siteName: "직꾸",
     type: "website",
@@ -52,7 +52,7 @@ export const metadata: Metadata = {
   twitter: {
     card: "summary_large_image",
     title: "직꾸",
-    description: "직관 다이어리 꾸미기 - 야구 직관 기록과 나눔을 위한 서비스",
+    description: "직관 다이어리 꾸미기",
     images: ["/icon.png"],
   },
 };
@@ -69,8 +69,7 @@ const RootLayout = ({
         "@type": "Organization",
         "@id": `${SITE_URL}/#organization`,
         name: "직꾸",
-        description:
-          "직관 다이어리 꾸미기 - 야구 직관 기록과 나눔을 위한 서비스",
+        description: "직관 다이어리 꾸미기",
         url: SITE_URL,
       },
       {
@@ -78,8 +77,7 @@ const RootLayout = ({
         "@id": `${SITE_URL}/#website`,
         url: SITE_URL,
         name: "직꾸",
-        description:
-          "직관 다이어리 꾸미기 - 야구 직관 기록과 나눔을 위한 서비스",
+        description: "직관 다이어리 꾸미기",
         publisher: { "@id": `${SITE_URL}/#organization` },
       },
     ],
