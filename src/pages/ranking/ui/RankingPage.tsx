@@ -1,6 +1,7 @@
 "use client";
 
 import { useRouter, useSearchParams } from "next/navigation";
+import { useMemo } from "react";
 import Medal1Icon from "@/public/medal-1.svg";
 import Medal2Icon from "@/public/medal-2.svg";
 import Medal3Icon from "@/public/medal-3.svg";
@@ -12,6 +13,26 @@ import {
 } from "@/src/entities";
 import { AppTab, AvatarIcon, Notification } from "@/src/shared";
 import { cn } from "@/src/shared";
+
+/** 동점 시 공동 등수 반환 (예: 70%, 70%, 70% → 3, 3, 3) */
+const getRanks = (
+  list: UserWinStatsRow[],
+  sortBy: RankingSortBy,
+): number[] => {
+  const getValue = (u: UserWinStatsRow) =>
+    sortBy === "total_games" ? u.total_games ?? -1 : u.win_rate ?? -1;
+
+  const ranks: number[] = [];
+  for (let i = 0; i < list.length; i++) {
+    if (i === 0) ranks.push(1);
+    else {
+      const value = getValue(list[i]!);
+      const prevValue = getValue(list[i - 1]!);
+      ranks.push(value === prevValue ? ranks[i - 1]! : i + 1);
+    }
+  }
+  return ranks;
+};
 
 const RankingPage = ({
   initialRankingByWinRate,
@@ -40,6 +61,11 @@ const RankingPage = ({
   const error = errorWinRate ?? errorTotalGames;
   const ranking =
     sortBy === "win_rate" ? rankingByWinRate : rankingByTotalGames;
+
+  const ranks = useMemo(
+    () => (ranking ? getRanks(ranking, sortBy) : []),
+    [ranking, sortBy],
+  );
 
   const handleChangeTab = (tab: string) => {
     const newTab = tab as RankingSortBy;
@@ -92,45 +118,48 @@ const RankingPage = ({
           데이터는 1분마다 갱신됩니다.
         </p>
         <div className="mt-[24px] flex flex-col gap-[16px]">
-          {ranking?.map((user, i) => (
-            <div
-              key={i}
-              className={cn(
-                "flex h-[68px] items-center gap-[8px] rounded-[20px] border p-[20px]",
-                user.user_id === currentUser?.id
-                  ? "border-[#5724F0] bg-[#5724F0]/4"
-                  : "border-white/10 bg-[#FFFFFF]/4",
-              )}
-            >
-              <div className="flex shrink-0 items-center gap-[12px]">
-                <div className="flex h-[28px] w-[28px] shrink-0 items-center justify-center">
-                  {i === 0 && <Medal1Icon className="h-[28px] w-[28px]" />}
-                  {i === 1 && <Medal2Icon className="h-[28px] w-[28px]" />}
-                  {i === 2 && <Medal3Icon className="h-[28px] w-[28px]" />}
-                  {i >= 3 && (
-                    <div className="flex h-[28px] w-[28px] items-center justify-center rounded-full bg-white/10 text-[14px] font-bold text-[#FFFFFF]">
-                      {i + 1}
-                    </div>
-                  )}
+          {ranking?.map((user, i) => {
+            const rank = ranks[i] ?? i + 1;
+            return (
+              <div
+                key={user.user_id ?? i}
+                className={cn(
+                  "flex h-[68px] items-center gap-[8px] rounded-[20px] border p-[20px]",
+                  user.user_id === currentUser?.id
+                    ? "border-[#5724F0] bg-[#5724F0]/4"
+                    : "border-white/10 bg-[#FFFFFF]/4",
+                )}
+              >
+                <div className="flex shrink-0 items-center gap-[12px]">
+                  <div className="flex h-[28px] w-[28px] shrink-0 items-center justify-center">
+                    {rank === 1 && <Medal1Icon className="h-[28px] w-[28px]" />}
+                    {rank === 2 && <Medal2Icon className="h-[28px] w-[28px]" />}
+                    {rank === 3 && <Medal3Icon className="h-[28px] w-[28px]" />}
+                    {rank >= 4 && (
+                      <div className="flex h-[28px] w-[28px] items-center justify-center rounded-full bg-white/10 text-[14px] font-bold text-[#FFFFFF]">
+                        {rank}
+                      </div>
+                    )}
+                  </div>
+                  {user.avatar && <AvatarIcon iconName={user.avatar} size={28} />}
                 </div>
-                {user.avatar && <AvatarIcon iconName={user.avatar} size={28} />}
-              </div>
-              <div className="min-w-0 flex-1">
-                <div className="truncate text-[16px] font-bold text-white">
-                  {user.nickname ?? "알 수 없음"}
+                <div className="min-w-0 flex-1">
+                  <div className="truncate text-[16px] font-bold text-white">
+                    {user.nickname ?? "알 수 없음"}
+                  </div>
+                </div>
+                <div className="shrink-0 text-[24px] font-bold text-[#FFFFFF]">
+                  {sortBy === "total_games"
+                    ? user.total_games != null
+                      ? `${user.total_games}경기`
+                      : "-"
+                    : user.win_rate != null
+                      ? `${user.win_rate}%`
+                      : "-"}
                 </div>
               </div>
-              <div className="shrink-0 text-[24px] font-bold text-[#FFFFFF]">
-                {sortBy === "total_games"
-                  ? user.total_games != null
-                    ? `${user.total_games}경기`
-                    : "-"
-                  : user.win_rate != null
-                    ? `${user.win_rate}%`
-                    : "-"}
-              </div>
-            </div>
-          ))}
+            );
+          })}
         </div>
       </div>
     </div>
