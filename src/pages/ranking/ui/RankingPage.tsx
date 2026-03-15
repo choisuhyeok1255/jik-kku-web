@@ -103,7 +103,7 @@ const RankingPage = ({
 
   return (
     <div className="flex h-dvh flex-col">
-      <div className="flex min-h-0 flex-1 flex-col overflow-y-auto px-[16px] pt-[24px] pb-[100px]">
+      <div className="shrink-0 px-[16px] pt-[24px]">
         <AppTab
           className="mx-auto mb-[20px]"
           currentTab={sortBy}
@@ -117,7 +117,9 @@ const RankingPage = ({
         <p className="mt-[8px] text-[12px] text-white/50">
           데이터는 1분마다 갱신됩니다.
         </p>
-        <div className="mt-[24px] flex flex-col gap-[16px]">
+      </div>
+      <div className="min-h-0 flex-1 overflow-y-auto px-[16px] pb-[100px] pt-[24px]">
+        <div className="flex flex-col gap-[16px]">
           {ranking?.map((user, i) => {
             const rank = ranks[i] ?? i + 1;
             return (
