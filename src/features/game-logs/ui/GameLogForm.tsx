@@ -20,12 +20,12 @@ import {
   transformFormToApiBody,
 } from "@/src/features";
 import {
-  useGetKboEventsByDate,
   useGetTeams,
   CreateGameLogQueryModel,
   UpdateGameLogQueryModel,
   useGetStadiums,
   useGetUser,
+  useGetKboEventsByDay,
 } from "@/src/entities";
 import type { KboEventRow } from "@/src/entities";
 import {
@@ -471,11 +471,9 @@ const GameLogForm = ({
   }, []);
 
   const kboQueryDate = matchDate && step === 1 ? matchDate : "";
-  const {
-    data: kboEvents,
-    isLoading,
-    isError,
-  } = useGetKboEventsByDate({ date: kboQueryDate });
+  const { data: kboEvents, isLoading } = useGetKboEventsByDay({
+    day: kboQueryDate,
+  });
 
   const handleCreateGameLog = async (
     formData: CreateGameLogForm | UpdateGameLogForm,
@@ -584,12 +582,6 @@ const GameLogForm = ({
   };
 
   useEffect(() => {
-    if (isError) {
-      toast.error("경기 조회에 실패했습니다. 1분 후 다시 시도해주세요.");
-    }
-  }, [isError]);
-
-  useEffect(() => {
     if (!user || defaultValues || !stadiums) return;
 
     reset({
@@ -637,6 +629,15 @@ const GameLogForm = ({
       setInitImageUrl(null);
     }
   }, [defaultValues?.gameLogImage, getSignedUrl]);
+
+  // useEffect(() => {
+  //  데이터 추가용
+  //   if (!kboQueryDate || !kboEvents) return;
+  //   if (kboEvents.length === 0) return;
+
+  //   console.log("추가");
+  //   addKboEvent({ body: { id: kboQueryDate, data: kboEvents } });
+  // }, [kboQueryDate, kboEvents, addKboEvent]);
 
   const applyEventToForm = (event: KboEventRow) => {
     if (!teams) return;
