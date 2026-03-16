@@ -59,3 +59,11 @@ export interface KboTeamRow {
   strLogo: string | null;
   strStadium: string | null;
 }
+
+export interface GetKboEventsByDayQueryModel {
+  day: string;
+}
+
+export interface AddKboEventQueryModel {
+  body: { id: string; data: KboEventRow[] };
+}

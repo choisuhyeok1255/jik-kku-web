@@ -3,6 +3,8 @@ export {
   getKboTeams,
   useGetKboEventsByDate,
   useGetKboTeams,
+  useGetKboEventsByDay,
+  useAddKboEvent,
 } from "./api/kbo";
 export type {
   GetKboEventsQueryModel,

@@ -1,8 +1,12 @@
-import { useQuery } from "@tanstack/react-query";
+import { useMutation, useQuery } from "@tanstack/react-query";
 
+import { supabase } from "@/src/shared";
 import { SITE_URL } from "@/src/shared/lib/site-url";
+import type { Json } from "@/src/shared/lib/supabase.types";
 
 import type {
+  AddKboEventQueryModel,
+  GetKboEventsByDayQueryModel,
   GetKboEventsQueryModel,
   KboEventRow,
   KboTeamRow,
@@ -47,5 +51,33 @@ export const useGetKboEventsByDate = (req: GetKboEventsQueryModel) => {
     staleTime: Infinity,
     gcTime: Infinity,
     enabled: !!req.date,
+  });
+};
+
+export const useGetKboEventsByDay = (req: GetKboEventsByDayQueryModel) => {
+  return useQuery({
+    queryKey: ["kbo-events-by-day", req.day],
+    queryFn: async () => {
+      const { data } = await supabase
+        .from("kbo_events_cache")
+        .select("data")
+        .eq("id", req.day)
+        .maybeSingle();
+
+      return (data?.data ?? []) as unknown as KboEventRow[];
+    },
+    enabled: !!req.day,
+  });
+};
+
+export const useAddKboEvent = () => {
+  return useMutation({
+    mutationFn: async (req: AddKboEventQueryModel) => {
+      const { error } = await supabase.from("kbo_events_cache").upsert({
+        id: req.body.id,
+        data: req.body.data as unknown as Json,
+      });
+      if (error) throw error;
+    },
   });
 };
