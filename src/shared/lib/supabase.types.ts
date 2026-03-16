@@ -145,6 +145,21 @@ export type Database = {
         }
         Relationships: []
       }
+      kbo_events_cache: {
+        Row: {
+          data: Json
+          id: string
+        }
+        Insert: {
+          data: Json
+          id: string
+        }
+        Update: {
+          data?: Json
+          id?: string
+        }
+        Relationships: []
+      }
       share: {
         Row: {
           attendee_user_ids: Json
