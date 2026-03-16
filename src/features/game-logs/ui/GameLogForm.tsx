@@ -83,6 +83,7 @@ const CreateModeFormStep1 = ({
             return isCalendarMounted ? (
               <Calendar
                 value={value}
+                maxDate={dayjs().toDate()}
                 onChange={(date) => {
                   handleDateChange();
                   if (date === null) {
