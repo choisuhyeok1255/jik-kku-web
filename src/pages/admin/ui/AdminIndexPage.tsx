@@ -26,6 +26,13 @@ const AdminIndexPage = () => {
           <span className="text-[16px] font-medium">1대1 문의</span>
           <span className="text-white/60">→</span>
         </Link>
+        <Link
+          href="/admin/game-logs"
+          className="flex items-center justify-between rounded-[20px] border border-white/10 bg-white/4 p-[20px] text-white transition-opacity hover:opacity-90"
+        >
+          <span className="text-[16px] font-medium">직관 기록</span>
+          <span className="text-white/60">→</span>
+        </Link>
       </div>
     </div>
   );
