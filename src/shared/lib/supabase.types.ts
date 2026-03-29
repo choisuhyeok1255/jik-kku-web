@@ -46,14 +46,18 @@ export type Database = {
           created_at: string
           game_log_image: string | null
           game_log_image_thumbnail: string | null
+          game_log_images: string[]
+          game_record_id: number | null
           home_team_id: number
           home_team_score: number
           id: number
           is_admin_certified: boolean
           is_certified: boolean
+          is_private: boolean
           match_date: string
           note: string | null
           stadium_id: number
+          support_team_id: number
           user_id: string
           youtube_url: string | null
         }
@@ -63,14 +67,18 @@ export type Database = {
           created_at?: string
           game_log_image?: string | null
           game_log_image_thumbnail?: string | null
+          game_log_images?: string[]
+          game_record_id?: number | null
           home_team_id: number
           home_team_score: number
           id?: number
           is_admin_certified?: boolean
           is_certified?: boolean
+          is_private?: boolean
           match_date: string
           note?: string | null
           stadium_id: number
+          support_team_id: number
           user_id?: string
           youtube_url?: string | null
         }
@@ -80,14 +88,18 @@ export type Database = {
           created_at?: string
           game_log_image?: string | null
           game_log_image_thumbnail?: string | null
+          game_log_images?: string[]
+          game_record_id?: number | null
           home_team_id?: number
           home_team_score?: number
           id?: number
           is_admin_certified?: boolean
           is_certified?: boolean
+          is_private?: boolean
           match_date?: string
           note?: string | null
           stadium_id?: number
+          support_team_id?: number
           user_id?: string
           youtube_url?: string | null
         }
@@ -100,6 +112,13 @@ export type Database = {
             referencedColumns: ["id"]
           },
           {
+            foreignKeyName: "game_logs_game_record_id_fkey"
+            columns: ["game_record_id"]
+            isOneToOne: false
+            referencedRelation: "game_records"
+            referencedColumns: ["id"]
+          },
+          {
             foreignKeyName: "game_logs_home_team_id_fkey"
             columns: ["home_team_id"]
             isOneToOne: false
@@ -108,6 +127,88 @@ export type Database = {
           },
           {
             foreignKeyName: "game_logs_stadium_id_fkey"
+            columns: ["stadium_id"]
+            isOneToOne: false
+            referencedRelation: "stadium"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "game_logs_support_team_id_fkey"
+            columns: ["support_team_id"]
+            isOneToOne: false
+            referencedRelation: "teams"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "game_logs_user_id_fkey2"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "user_win_stats"
+            referencedColumns: ["user_id"]
+          },
+          {
+            foreignKeyName: "game_logs_user_id_fkey2"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      game_records: {
+        Row: {
+          away_team_id: number
+          away_team_score: number | null
+          created_at: string
+          home_team_id: number
+          home_team_score: number | null
+          id: number
+          match_date: string
+          stadium_id: number
+          status: string
+          youtube_url: string | null
+        }
+        Insert: {
+          away_team_id: number
+          away_team_score?: number | null
+          created_at?: string
+          home_team_id: number
+          home_team_score?: number | null
+          id?: number
+          match_date: string
+          stadium_id: number
+          status: string
+          youtube_url?: string | null
+        }
+        Update: {
+          away_team_id?: number
+          away_team_score?: number | null
+          created_at?: string
+          home_team_id?: number
+          home_team_score?: number | null
+          id?: number
+          match_date?: string
+          stadium_id?: number
+          status?: string
+          youtube_url?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "game_records_away_team_id_fkey"
+            columns: ["away_team_id"]
+            isOneToOne: false
+            referencedRelation: "teams"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "game_records_home_team_id_fkey"
+            columns: ["home_team_id"]
+            isOneToOne: false
+            referencedRelation: "teams"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "game_records_stadium_id_fkey"
             columns: ["stadium_id"]
             isOneToOne: false
             referencedRelation: "stadium"
@@ -232,6 +333,7 @@ export type Database = {
           stadium_id: number | null
           team_logo: string | null
           team_name: string | null
+          team_name_en: string | null
         }
         Insert: {
           id?: number
@@ -239,6 +341,7 @@ export type Database = {
           stadium_id?: number | null
           team_logo?: string | null
           team_name?: string | null
+          team_name_en?: string | null
         }
         Update: {
           id?: number
@@ -246,6 +349,7 @@ export type Database = {
           stadium_id?: number | null
           team_logo?: string | null
           team_name?: string | null
+          team_name_en?: string | null
         }
         Relationships: [
           {
@@ -310,7 +414,22 @@ export type Database = {
           user_id: string | null
           wins: number | null
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "game_logs_user_id_fkey2"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "user_win_stats"
+            referencedColumns: ["user_id"]
+          },
+          {
+            foreignKeyName: "game_logs_user_id_fkey2"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          },
+        ]
       }
     }
     Functions: {
