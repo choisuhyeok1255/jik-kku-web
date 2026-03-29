@@ -39,6 +39,10 @@ export const transformFormToApiBody = ({
     note: formData.note,
     stadium_id: formData.stadiumId,
     youtube_url: formData.youtubeUrl,
+    support_team_id: formData.homeTeamId,
+    game_log_images: [],
+    is_private: false,
+    game_record_id: null,
     ...(isCertified !== undefined && { is_certified: isCertified }),
     ...(isAdminCertified !== undefined && {
       is_admin_certified: isAdminCertified,

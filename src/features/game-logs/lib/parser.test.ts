@@ -13,6 +13,7 @@ describe("transformFormToApiBody", () => {
       matchDate: "2024-01-01",
       stadiumId: 5,
       note: "재밌는 경기",
+      youtubeUrl: null,
     };
 
     const result = transformFormToApiBody({ userId: "user-123", formData });
@@ -26,6 +27,11 @@ describe("transformFormToApiBody", () => {
       match_date: "2024-01-01",
       stadium_id: 5,
       note: "재밌는 경기",
+      youtube_url: null,
+      support_team_id: 1,
+      game_log_images: [],
+      is_private: false,
+      game_record_id: null,
     });
   });
 
@@ -36,8 +42,9 @@ describe("transformFormToApiBody", () => {
       homeTeamScore: 3,
       awayTeamScore: 2,
       matchDate: "2024-01-01",
-      stadiumId: null,
+      stadiumId: 5,
       note: "",
+      youtubeUrl: null,
     };
 
     const result = transformFormToApiBody({
@@ -56,8 +63,9 @@ describe("transformFormToApiBody", () => {
       homeTeamScore: 3,
       awayTeamScore: 2,
       matchDate: "2024-01-01",
-      stadiumId: null,
+      stadiumId: 5,
       note: "",
+      youtubeUrl: null,
     };
 
     const result = transformFormToApiBody({ userId: "user-123", formData });
@@ -72,8 +80,9 @@ describe("transformFormToApiBody", () => {
       homeTeamScore: 3,
       awayTeamScore: 2,
       matchDate: "2024-01-01",
-      stadiumId: null,
+      stadiumId: 5,
       note: "",
+      youtubeUrl: null,
     };
 
     const result = transformFormToApiBody({
@@ -92,8 +101,9 @@ describe("transformFormToApiBody", () => {
       homeTeamScore: 3,
       awayTeamScore: 2,
       matchDate: "2024-01-01",
-      stadiumId: null,
+      stadiumId: 5,
       note: "",
+      youtubeUrl: null,
     };
 
     const result = transformFormToApiBody({
@@ -120,8 +130,13 @@ describe("transformApiToGameLogForm", () => {
       note: "재밌는 경기",
       game_log_image: "image.jpg",
       game_log_image_thumbnail: "thumbnail.jpg",
+      game_log_images: [],
+      game_record_id: null,
       is_certified: false,
       is_admin_certified: false,
+      is_private: false,
+      support_team_id: 1,
+      youtube_url: null,
       created_at: "2024-01-01T00:00:00Z",
     };
 
@@ -136,6 +151,7 @@ describe("transformApiToGameLogForm", () => {
       matchDate: "2024-01-01",
       note: "재밌는 경기",
       gameLogImage: "thumbnail.jpg",
+      youtubeUrl: null,
     });
   });
 
@@ -148,12 +164,17 @@ describe("transformApiToGameLogForm", () => {
       home_team_score: 3,
       away_team_score: 2,
       match_date: "2024-01-01",
-      stadium_id: null,
+      stadium_id: 5,
       note: null,
       game_log_image: null,
       game_log_image_thumbnail: null,
+      game_log_images: [],
+      game_record_id: null,
       is_certified: false,
       is_admin_certified: false,
+      is_private: false,
+      support_team_id: 1,
+      youtube_url: null,
       created_at: "2024-01-01T00:00:00Z",
     };
 
