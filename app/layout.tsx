@@ -4,7 +4,7 @@ import localFont from "next/font/local";
 import { Suspense } from "react";
 import { Toaster } from "sonner";
 
-import { BottomNavigation, Providers } from "@/src/app";
+import { AppDevelopmentNotice, BottomNavigation, Providers } from "@/src/app";
 import { TeamSettingGuard } from "@/src/features";
 import { SITE_URL } from "@/src/shared/lib/site-url";
 import "./globals.css";
@@ -105,6 +105,7 @@ const RootLayout = ({
           <TeamSettingGuard>
             <div className="flex justify-center">
               <div className="relative h-dvh w-full max-w-[440px] min-w-[360px] bg-[#181818]">
+                <AppDevelopmentNotice />
                 {children}
                 <Suspense fallback={null}>
                   <BottomNavigation />
