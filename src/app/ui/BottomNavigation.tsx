@@ -61,8 +61,6 @@ const myPageItem = {
   unActiveIcon: PersonUnActiveIcon,
 };
 
-const a = "test";
-
 const BottomNavigation = () => {
   const pathname = usePathname();
   const searchParams = useSearchParams();
