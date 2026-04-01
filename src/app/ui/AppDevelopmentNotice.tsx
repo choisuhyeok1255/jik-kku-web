@@ -12,7 +12,9 @@ import {
   DialogTitle,
 } from "@/src/shared";
 
-const STORAGE_KEY = "victory-app-dev-notice-dismiss-permanent";
+/** 모달 문구를 바꿔 예전에 「앞으로 보지 않기」한 사용자에게도 다시 보이게 하려면 1씩 올리기 */
+const NOTICE_VERSION = 2;
+const STORAGE_KEY = `victory-app-dev-notice-dismiss-v${NOTICE_VERSION}`;
 
 const AppDevelopmentNotice = () => {
   const [hydrated, setHydrated] = useState(false);
@@ -54,7 +56,7 @@ const AppDevelopmentNotice = () => {
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogContent
         showCloseButton={false}
-        className="max-w-[calc(100%-2rem)] border border-white/10 bg-[#181818] text-white sm:max-w-md"
+        className="w-full max-w-[400px] border border-white/10 bg-[#181818] text-white"
         onPointerDownOutside={(e) => {
           e.preventDefault();
         }}
@@ -69,19 +71,31 @@ const AppDevelopmentNotice = () => {
           <DialogDescription asChild>
             <div className="space-y-3 pt-1 text-left text-[14px] leading-relaxed text-white/80">
               <p>
-                <span className="text-white/95">4월 내 앱 출시</span>를 목표로
-                하고 있습니다.
+                직꾸 <span className="text-white/95">iOS 앱</span>이 앱스토어에
+                등록되었습니다.
               </p>
               <p>
-                이용 중이신 계정과 작성하신 내용은{" "}
-                <span className="text-white/95">안전하게 보관</span>됩니다.
+                <span className="text-white/95">안드로이드</span> 앱은 현재
+                개발·검수를 진행 중이며, 곧 찾아뵙겠습니다.
               </p>
-              <p className="text-white/70">
-                빠른 시간 내 앱 출시를 안내드리겠습니다. <br /> 감사합니다.
+              <p>
+                웹과 <span className="text-white/95">동일한 계정</span>으로 앱에
+                로그인해 이용하실 수 있습니다.
               </p>
+              <p className="text-white/70">감사합니다.</p>
             </div>
           </DialogDescription>
         </DialogHeader>
+
+        <a
+          href={"https://apps.apple.com/kr/app/%EC%A7%81%EA%BE%B8/id6761379053"}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="mt-3 flex w-full items-center justify-center rounded-[12px] border border-sky-500/40 bg-sky-600/25 px-4 py-3 text-[14px] font-medium text-sky-100 transition-colors hover:bg-sky-600/35"
+        >
+          App Store에서 받기
+        </a>
+
         <DialogFooter className="mt-2 flex w-full flex-row flex-wrap gap-2 sm:justify-stretch">
           <Button
             type="button"
