@@ -12,13 +12,17 @@ export const metadata: Metadata = {
     type: "website",
     locale: "ko_KR",
   },
-  twitter: { card: "summary", title: "페이지를 찾을 수 없음 | 직꾸", description: "요청한 페이지를 찾을 수 없습니다." },
+  twitter: {
+    card: "summary",
+    title: "페이지를 찾을 수 없음 | 직꾸",
+    description: "요청한 페이지를 찾을 수 없습니다.",
+  },
 };
 
 export default function NotFound() {
   return (
-    <div className="flex min-h-dvh flex-col items-center justify-center gap-[24px] px-[24px]">
-      <p className="text-[80px] font-bold leading-none text-white/20">404</p>
+    <div className="flex min-h-dvh flex-col items-center justify-center gap-[24px] bg-black px-[24px]">
+      <p className="text-[80px] leading-none font-bold text-white/70">404</p>
       <p className="text-center text-[16px] text-white/70">
         페이지를 찾을 수 없어요
       </p>

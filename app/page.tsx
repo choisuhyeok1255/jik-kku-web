@@ -1,6 +1,5 @@
 import type { Metadata } from "next";
-import { Suspense } from "react";
-import { HomePage } from "@/src/pages/home";
+import { IntroductionPage } from "@/src/pages/introduction";
 
 export const metadata: Metadata = {
   title: "직꾸",
@@ -22,13 +21,5 @@ export const metadata: Metadata = {
 };
 
 export default function Page() {
-  return (
-    <Suspense
-      fallback={
-        <div className="flex h-dvh items-center justify-center">로딩 중...</div>
-      }
-    >
-      <HomePage />
-    </Suspense>
-  );
+  return <IntroductionPage />;
 }

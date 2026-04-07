@@ -1,18 +1,16 @@
 @import "tailwindcss";
 @import "tw-animate-css";
-
 body {
   color: #ffffff;
 }
-
 /* 스크롤바 숨기기 */
-html {
+/* html {
   overflow: hidden;
 }
 
 body {
   overflow: hidden;
-}
+} */
 
 button {
   cursor: pointer;

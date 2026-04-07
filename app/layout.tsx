@@ -4,7 +4,7 @@ import localFont from "next/font/local";
 import { Suspense } from "react";
 import { Toaster } from "sonner";
 
-import { AppDevelopmentNotice, BottomNavigation, Providers } from "@/src/app";
+import { BottomNavigation, Providers } from "@/src/app";
 import { TeamSettingGuard } from "@/src/features";
 import { SITE_URL } from "@/src/shared/lib/site-url";
 import "./globals.css";
@@ -29,8 +29,6 @@ const laundryGothic = localFont({
 export const viewport: Viewport = {
   width: "device-width",
   initialScale: 1,
-  maximumScale: 1,
-  userScalable: false,
 };
 
 export const metadata: Metadata = {
@@ -86,7 +84,7 @@ const RootLayout = ({
   const gtmId = process.env.NEXT_PUBLIC_GTM_ID ?? "GTM-5NNJTCN9";
 
   return (
-    <html lang="ko" className="h-dvh overflow-hidden">
+    <html lang="ko">
       <head>
         <meta
           name="naver-site-verification"
@@ -95,25 +93,20 @@ const RootLayout = ({
       </head>
       <GoogleTagManager gtmId={gtmId} />
       <body
-        className={`${laundryGothic.variable} ${laundryGothic.className} h-dvh overflow-hidden bg-[#232323]`}
+        className={`${laundryGothic.variable} ${laundryGothic.className} bg-[#232323]`}
       >
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
         />
         <Providers>
-          <TeamSettingGuard>
-            <div className="flex justify-center">
-              <div className="relative h-dvh w-full max-w-[440px] min-w-[360px] bg-[#181818]">
-                <AppDevelopmentNotice />
-                {children}
-                <Suspense fallback={null}>
+          <div className="min-h-dvh min-w-[360px]">
+            {children}
+            {/* <Suspense fallback={null}>
                   <BottomNavigation />
-                </Suspense>
-              </div>
-            </div>
-            <Toaster richColors position="top-center" />
-          </TeamSettingGuard>
+                </Suspense> */}
+          </div>
+          {/* <Toaster richColors position="top-center" /> */}
         </Providers>
       </body>
     </html>

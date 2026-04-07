@@ -5,3 +5,4 @@ export * from "./home";
 export * from "./my-page";
 export * from "./ranking";
 export * from "./calendar";
+export * from "./introduction";
