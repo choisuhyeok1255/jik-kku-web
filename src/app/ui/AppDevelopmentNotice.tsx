@@ -30,16 +30,6 @@ const AppDevelopmentNotice = () => {
     setOpen(false);
   }, []);
 
-  const handleNeverShowAgain = useCallback(() => {
-    try {
-      localStorage.setItem(STORAGE_KEY, "1");
-    } catch {
-      /* ignore quota / private mode */
-    }
-    setPermanentDismiss(true);
-    setOpen(false);
-  }, []);
-
   useEffect(() => {
     try {
       if (localStorage.getItem(STORAGE_KEY) === "1") {
@@ -110,13 +100,6 @@ const AppDevelopmentNotice = () => {
         </div>
 
         <DialogFooter className="mt-2 flex w-full flex-row flex-wrap gap-2 sm:justify-stretch">
-          <Button
-            type="button"
-            className="min-w-0 flex-1 bg-emerald-600/90 text-white hover:bg-emerald-600"
-            onClick={handleNeverShowAgain}
-          >
-            앞으로 보지 않기
-          </Button>
           <Button
             type="button"
             variant="outline"
