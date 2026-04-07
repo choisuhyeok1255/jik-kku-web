@@ -136,7 +136,11 @@ const GameRecordsPage = () => {
   }, [stadiumsForManual]);
 
   const computedManualId = useMemo(() => {
-    if (!manualMatchDate || manualHomeTeamId === "" || manualAwayTeamId === "") {
+    if (
+      !manualMatchDate ||
+      manualHomeTeamId === "" ||
+      manualAwayTeamId === ""
+    ) {
       return "";
     }
     return buildGameRecordId(
@@ -336,7 +340,7 @@ const GameRecordsPage = () => {
 
   useEffect(() => {
     if (fetchedEditRows) {
-      setEditRows(fetchedEditRows.map((r) => ({ ...r })));
+      setEditRows(fetchedEditRows.map((r) => ({ ...r, status: "경기 종료" })));
     }
   }, [fetchedEditRows]);
 
@@ -355,9 +359,7 @@ const GameRecordsPage = () => {
         <section className="rounded-[16px] border border-white/10 bg-white/4 p-4">
           <p className="mb-3 text-[12px] leading-relaxed text-white/55">
             날짜를 고른 뒤 API로 해당 일정을 불러옵니다. 아래 미리보기는{" "}
-            <span className="text-white/80">
-              id·팀·구장만 계산한 값
-            </span>
+            <span className="text-white/80">id·팀·구장만 계산한 값</span>
             이고, 「DB 반영」으로 저장합니다. 동일 id는{" "}
             <span className="text-amber-200/90">upsert(덮어쓰기)</span>입니다.
           </p>
@@ -501,8 +503,8 @@ const GameRecordsPage = () => {
             2. DB에 있는 경기
           </h2>
           <p className="mb-3 text-[12px] text-white/50">
-            위에서 고른 날짜(`{dateInput}`)의 `game_records`입니다. 정렬:
-            경기일 최신 우선, 같은 날이면 생성 시각 최신순에 가깝게.
+            위에서 고른 날짜(`{dateInput}`)의 `game_records`입니다. 정렬: 경기일
+            최신 우선, 같은 날이면 생성 시각 최신순에 가깝게.
           </p>
           {loadingDb && (
             <p className="text-[13px] text-white/55">불러오는 중…</p>
@@ -529,21 +531,19 @@ const GameRecordsPage = () => {
                 <tbody>
                   {(dbRecords ?? []).map((r) => (
                     <tr key={r.id}>
-                      <td className={`${td} font-mono text-[11px]`}>
-                        {r.id}
-                      </td>
+                      <td className={`${td} font-mono text-[11px]`}>{r.id}</td>
                       <td className={td}>
                         <div>
                           {teamLabelById.get(r.home_team_id) ?? r.home_team_id}{" "}
-                          vs {teamLabelById.get(r.away_team_id) ?? r.away_team_id}
+                          vs{" "}
+                          {teamLabelById.get(r.away_team_id) ?? r.away_team_id}
                         </div>
                         <div className="mt-1 text-[11px] text-white/40">
                           id {r.home_team_id} · {r.away_team_id}
                         </div>
                       </td>
                       <td className={td}>
-                        {r.home_team_score ?? "—"} :{" "}
-                        {r.away_team_score ?? "—"}
+                        {r.home_team_score ?? "—"} : {r.away_team_score ?? "—"}
                       </td>
                       <td className={td}>{r.status}</td>
                       <td className={td}>{r.stadium_id}</td>
@@ -597,7 +597,9 @@ const GameRecordsPage = () => {
                   </td>
                   <td className="border border-white/10 px-3 py-2">
                     <select
-                      value={manualHomeTeamId === "" ? "" : String(manualHomeTeamId)}
+                      value={
+                        manualHomeTeamId === "" ? "" : String(manualHomeTeamId)
+                      }
                       onChange={(e) =>
                         handleManualHomeTeamChange(e.target.value)
                       }
@@ -618,7 +620,9 @@ const GameRecordsPage = () => {
                   </td>
                   <td className="border border-white/10 px-3 py-2">
                     <select
-                      value={manualAwayTeamId === "" ? "" : String(manualAwayTeamId)}
+                      value={
+                        manualAwayTeamId === "" ? "" : String(manualAwayTeamId)
+                      }
                       onChange={(e) =>
                         handleManualAwayTeamChange(e.target.value)
                       }
@@ -708,7 +712,9 @@ const GameRecordsPage = () => {
                   </td>
                   <td className="border border-white/10 px-3 py-2">
                     <select
-                      value={manualStadiumId === "" ? "" : String(manualStadiumId)}
+                      value={
+                        manualStadiumId === "" ? "" : String(manualStadiumId)
+                      }
                       onChange={(e) =>
                         setManualStadiumId(
                           e.target.value === "" ? "" : Number(e.target.value),
@@ -776,11 +782,11 @@ const GameRecordsPage = () => {
             4. 일괄 수정 (날짜별)
           </h2>
           <p className="mb-3 text-[12px] leading-relaxed text-white/50">
-            날짜를 고르면 해당 <span className="text-white/75">match_date</span>의
-            모든 경기를 불러와 테이블에서 수정합니다. 「전체 저장」은{" "}
-            <span className="text-amber-200/90">upsert</span>로 한 번에 반영합니다.
-            날짜를 바꾸면 서버 데이터로 다시 채워지므로, 저장 전에 날짜를 바꾸지
-            마세요.
+            날짜를 고르면 해당 <span className="text-white/75">match_date</span>
+            의 모든 경기를 불러와 테이블에서 수정합니다. 「전체 저장」은{" "}
+            <span className="text-amber-200/90">upsert</span>로 한 번에
+            반영합니다. 날짜를 바꾸면 서버 데이터로 다시 채워지므로, 저장 전에
+            날짜를 바꾸지 마세요.
           </p>
           <div className="mb-4 flex flex-wrap items-end gap-3">
             <label className="flex flex-col gap-1 text-[12px] text-white/70">
@@ -914,7 +920,7 @@ const GameRecordsPage = () => {
                                 stadium_id: Number(e.target.value),
                               })
                             }
-                            className="w-full min-w-[120px] max-w-[200px] rounded-[8px] border border-white/15 bg-[#232323] px-2 py-1 text-[13px] text-white"
+                            className="w-full max-w-[200px] min-w-[120px] rounded-[8px] border border-white/15 bg-[#232323] px-2 py-1 text-[13px] text-white"
                           >
                             {sortedStadiums.map((s) => (
                               <option key={s.id} value={s.id}>
@@ -936,7 +942,7 @@ const GameRecordsPage = () => {
                                     : e.target.value.trim(),
                               })
                             }
-                            className="w-full min-w-[140px] max-w-[220px] rounded-[8px] border border-white/15 bg-[#232323] px-2 py-1 text-[12px] text-white"
+                            className="w-full max-w-[220px] min-w-[140px] rounded-[8px] border border-white/15 bg-[#232323] px-2 py-1 text-[12px] text-white"
                           />
                         </td>
                       </tr>
@@ -953,12 +959,11 @@ const GameRecordsPage = () => {
                   }
                   className="rounded-[12px] bg-violet-600/90 px-4 py-2 text-[14px] font-medium text-white transition-opacity hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-40"
                 >
-                  {batchSaveEditMutation.isPending
-                    ? "저장 중…"
-                    : "전체 저장"}
+                  {batchSaveEditMutation.isPending ? "저장 중…" : "전체 저장"}
                 </button>
                 <span className="text-[11px] text-white/45">
-                  {editRows.length}건 편집 중 · id·팀·경기일은 변경되지 않습니다.
+                  {editRows.length}건 편집 중 · id·팀·경기일은 변경되지
+                  않습니다.
                 </span>
               </div>
             </>
