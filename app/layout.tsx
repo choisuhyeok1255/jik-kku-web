@@ -106,7 +106,7 @@ const RootLayout = ({
                   <BottomNavigation />
                 </Suspense> */}
           </div>
-          {/* <Toaster richColors position="top-center" /> */}
+          <Toaster richColors position="top-center" />
         </Providers>
       </body>
     </html>
