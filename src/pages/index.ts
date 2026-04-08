@@ -6,3 +6,4 @@ export * from "./my-page";
 export * from "./ranking";
 export * from "./calendar";
 export * from "./introduction";
+export * from "./seo";
