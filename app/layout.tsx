@@ -6,6 +6,7 @@ import { Toaster } from "sonner";
 
 import { BottomNavigation, Providers } from "@/src/app";
 import { TeamSettingGuard } from "@/src/features";
+import { HOME_PAGE_DESCRIPTION, HOME_PAGE_TITLE } from "@/src/shared/lib/seo-home";
 import { SITE_URL } from "@/src/shared/lib/site-url";
 import "./globals.css";
 
@@ -33,14 +34,17 @@ export const viewport: Viewport = {
 
 export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),
-  title: "직꾸",
-  description: "직관 다이어리 꾸미기",
+  title: {
+    default: HOME_PAGE_TITLE,
+    template: "%s · 직꾸",
+  },
+  description: HOME_PAGE_DESCRIPTION,
   icons: {
     icon: "/icon.png",
   },
   openGraph: {
-    title: "직꾸",
-    description: "직관 다이어리 꾸미기",
+    title: HOME_PAGE_TITLE,
+    description: HOME_PAGE_DESCRIPTION,
     url: "/",
     siteName: "직꾸",
     type: "website",
@@ -49,8 +53,8 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    title: "직꾸",
-    description: "직관 다이어리 꾸미기",
+    title: HOME_PAGE_TITLE,
+    description: HOME_PAGE_DESCRIPTION,
     images: ["/icon.png"],
   },
 };
@@ -67,7 +71,7 @@ const RootLayout = ({
         "@type": "Organization",
         "@id": `${SITE_URL}/#organization`,
         name: "직꾸",
-        description: "직관 다이어리 꾸미기",
+        description: HOME_PAGE_DESCRIPTION,
         url: SITE_URL,
       },
       {
@@ -75,7 +79,7 @@ const RootLayout = ({
         "@id": `${SITE_URL}/#website`,
         url: SITE_URL,
         name: "직꾸",
-        description: "직관 다이어리 꾸미기",
+        description: HOME_PAGE_DESCRIPTION,
         publisher: { "@id": `${SITE_URL}/#organization` },
       },
     ],
