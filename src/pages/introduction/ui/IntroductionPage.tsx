@@ -75,7 +75,7 @@ const IntroductionPage = () => {
     <div className="w-full min-w-0 bg-[#0a0a0a] text-white">
       {/* 상단 네비 */}
       <header className="sticky top-0 z-50 border-b border-white/10 bg-[#0a0a0a]/90 backdrop-blur-md">
-        <div className="relative mx-auto flex max-w-7xl items-center justify-between px-4 py-4 md:px-6 lg:px-8">
+        <div className="relative mx-auto grid max-w-7xl grid-cols-[auto_1fr_auto] items-center gap-3 px-4 py-4 md:gap-4 md:px-6 lg:px-8">
           <Link
             href="/"
             className="relative z-10 flex items-center gap-2 text-lg font-bold tracking-tight"
@@ -93,8 +93,8 @@ const IntroductionPage = () => {
           </Link>
 
           <nav
-            className="absolute top-1/2 left-1/2 z-0 hidden -translate-x-1/2 -translate-y-1/2 items-center gap-8 text-[15px] text-white/80 md:flex"
-            aria-label="페이지 섹션"
+            className="hidden justify-center gap-8 text-[15px] text-white/80 md:flex"
+            aria-label="이 페이지 섹션"
           >
             <a className="transition-colors hover:text-white" href="#hero">
               소개
@@ -116,23 +116,60 @@ const IntroductionPage = () => {
             </a> */}
           </nav>
 
-          <button
-            type="button"
-            className="relative z-10 rounded-lg p-2 text-white md:hidden"
-            onClick={mobileOpen ? handleCloseMobile : handleOpenMobile}
-            aria-label={mobileOpen ? "메뉴 닫기" : "메뉴 열기"}
-          >
-            {mobileOpen ? (
-              <X className="h-6 w-6" />
-            ) : (
-              <Menu className="h-6 w-6" />
-            )}
-          </button>
+          <div className="flex items-center justify-end gap-2">
+            <nav
+              className="hidden items-center gap-3 text-sm text-white/55 md:flex"
+              aria-label="기능 소개 페이지"
+            >
+              <Link
+                href="/easy-game-log"
+                className="transition-colors hover:text-white"
+              >
+                직관 기록
+              </Link>
+              <span className="text-white/25" aria-hidden>
+                ·
+              </span>
+              <Link
+                href="/youtube-highlight"
+                className="transition-colors hover:text-white"
+              >
+                하이라이트
+              </Link>
+              <span className="text-white/25" aria-hidden>
+                ·
+              </span>
+              <Link
+                href="/kbo-calendar"
+                className="transition-colors hover:text-white"
+              >
+                경기 일정
+              </Link>
+            </nav>
+            <button
+              type="button"
+              className="relative z-10 rounded-lg p-2 text-white md:hidden"
+              onClick={mobileOpen ? handleCloseMobile : handleOpenMobile}
+              aria-label={mobileOpen ? "메뉴 닫기" : "메뉴 열기"}
+            >
+              {mobileOpen ? (
+                <X className="h-6 w-6" />
+              ) : (
+                <Menu className="h-6 w-6" />
+              )}
+            </button>
+          </div>
         </div>
 
         {mobileOpen && (
           <div className="border-t border-white/10 bg-[#111] px-4 py-4 md:hidden">
-            <nav className="flex flex-col gap-3 text-[15px]">
+            <nav
+              className="flex flex-col gap-1 text-[15px]"
+              aria-label="모바일 메뉴"
+            >
+              <p className="mb-1 text-xs font-medium tracking-wide text-white/40 uppercase">
+                이 페이지
+              </p>
               <a
                 href="#hero"
                 className="py-2 text-white/90"
@@ -168,6 +205,34 @@ const IntroductionPage = () => {
               >
                 후기
               </a>
+              <div
+                className="my-3 border-t border-white/10 pt-3"
+                role="separator"
+              />
+              <p className="mb-1 text-xs font-medium tracking-wide text-white/40 uppercase">
+                기능 소개
+              </p>
+              <Link
+                href="/easy-game-log"
+                className="py-2 text-white/75"
+                onClick={handleCloseMobile}
+              >
+                직관 기록
+              </Link>
+              <Link
+                href="/youtube-highlight"
+                className="py-2 text-white/75"
+                onClick={handleCloseMobile}
+              >
+                하이라이트
+              </Link>
+              <Link
+                href="/kbo-calendar"
+                className="py-2 text-white/75"
+                onClick={handleCloseMobile}
+              >
+                경기 일정
+              </Link>
               {/* <a
                 href="#insights"
                 className="py-2 text-white/90"
@@ -192,14 +257,15 @@ const IntroductionPage = () => {
         <div className="relative mx-auto flex max-w-7xl flex-col items-center gap-12 lg:flex-row lg:items-center lg:justify-between lg:gap-16">
           <div className="max-w-xl text-center lg:min-w-0 lg:flex-1 lg:text-left">
             <p className="mb-3 text-sm font-medium text-orange-400 md:text-base">
-              직관 다이어리 · 야구 팬을 위한 기록
+              야구 직관 기록 앱 · 직관 다이어리
             </p>
             <h1 className="text-3xl leading-tight font-bold tracking-tight md:text-4xl lg:text-5xl lg:leading-[1.15]">
               직관을 기록하고,
               <br className="hidden sm:block" /> 나만의 다이어리로 꾸며보세요
             </h1>
             <p className="mt-4 text-[15px] leading-relaxed text-white/65 md:text-base lg:max-w-lg">
-              일정 클릭하고, 응원 팀·사진·메모로 추억을 남기세요.
+              KBO 야구 팬을 위한 직관 기록 앱. 경기 일정·응원팀 기록·사진·메모·직관
+              승률까지 한 번에 관리하세요.
             </p>
             <div className="mt-8 flex flex-col gap-3 sm:flex-row sm:flex-wrap sm:justify-center lg:justify-start">
               <a
@@ -273,6 +339,14 @@ const IntroductionPage = () => {
                   </li>
                 ))}
               </ul>
+              <p className="mt-6 text-[15px]">
+                <Link
+                  href="/easy-game-log"
+                  className="font-medium text-orange-400 underline-offset-4 hover:underline"
+                >
+                  직관 기록 기능 더 보기 →
+                </Link>
+              </p>
             </div>
             <div className="rounded-2xl border border-white/10 bg-[#141414] p-6 shadow-xl">
               <p className="text-xs font-medium tracking-wide text-white/40 uppercase">
@@ -298,6 +372,14 @@ const IntroductionPage = () => {
                   />
                 </div>
               </div>
+              <p className="mt-4 text-center text-[15px]">
+                <Link
+                  href="/youtube-highlight"
+                  className="font-medium text-orange-400 underline-offset-4 hover:underline"
+                >
+                  경기 하이라이트 기능 더 보기 →
+                </Link>
+              </p>
             </div>
           </div>
         </div>
@@ -507,16 +589,47 @@ const IntroductionPage = () => {
       {/* 푸터 */}
       <footer className="border-t border-white/10 px-4 py-10 md:px-6 lg:px-8">
         <div className="mx-auto flex max-w-7xl flex-col items-center justify-between gap-6 text-center text-sm text-white/45 md:flex-row md:text-left">
-          <div className="flex items-center gap-2">
-            <Image
-              src="/2.svg"
-              alt=""
-              width={32}
-              height={32}
-              className="h-8 w-8 shrink-0"
-              aria-hidden
-            />
-            <span className="font-semibold text-white/80">직꾸</span>
+          <div className="flex flex-col items-center gap-4 md:flex-row md:items-center md:gap-8">
+            <div className="flex items-center gap-2">
+              <Image
+                src="/2.svg"
+                alt=""
+                width={32}
+                height={32}
+                className="h-8 w-8 shrink-0"
+                aria-hidden
+              />
+              <span className="font-semibold text-white/80">직꾸</span>
+            </div>
+            <nav
+              className="flex flex-wrap items-center justify-center gap-x-4 gap-y-2 text-white/60"
+              aria-label="기능 소개"
+            >
+              <Link
+                href="/easy-game-log"
+                className="transition-colors hover:text-white"
+              >
+                직관 기록
+              </Link>
+              <span className="text-white/25" aria-hidden>
+                ·
+              </span>
+              <Link
+                href="/youtube-highlight"
+                className="transition-colors hover:text-white"
+              >
+                경기 하이라이트
+              </Link>
+              <span className="text-white/25" aria-hidden>
+                ·
+              </span>
+              <Link
+                href="/kbo-calendar"
+                className="transition-colors hover:text-white"
+              >
+                KBO 일정
+              </Link>
+            </nav>
           </div>
           <p>© {new Date().getFullYear()} 직꾸. All rights reserved.</p>
         </div>
