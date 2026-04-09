@@ -1,10 +1,12 @@
 import type { MetadataRoute } from "next";
 
+import { HOME_PAGE_DESCRIPTION } from "@/src/shared/lib/seo-home";
+
 export default function manifest(): MetadataRoute.Manifest {
   return {
     name: "직꾸",
     short_name: "직꾸",
-    description: "직관 다이어리 꾸미기 - 야구 직관 기록과 나눔",
+    description: HOME_PAGE_DESCRIPTION,
     start_url: "/",
     display: "standalone",
     background_color: "#181818",
