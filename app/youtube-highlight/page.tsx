@@ -1,16 +1,18 @@
 import type { Metadata } from "next";
 import { YoutubeHighlightLandingPage } from "@/src/pages/seo";
 
-const title = "유튜브 하이라이트 연동";
+const title = "야구 하이라이트 | 기록한 경기 영상 다시보기 | 직꾸";
 const description =
-  "직관 기록에 해당 경기 유튜브 하이라이트가 자동으로 연결됩니다. 내 기록·다른 팬 기록에서도 경기 영상을 다시 보기 좋게 모아 둡니다.";
+  "야구 하이라이트를 직관 기록 옆에 두었습니다. 기록한 경기의 하이라이트를 찾아 보기 쉽게 이어집니다.";
 
 export const metadata: Metadata = {
-  title,
+  title: {
+    absolute: title,
+  },
   description,
   alternates: { canonical: "/youtube-highlight" },
   openGraph: {
-    title: `${title} · 직꾸`,
+    title,
     description,
     url: "/youtube-highlight",
     siteName: "직꾸",
@@ -19,7 +21,7 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    title: `${title} · 직꾸`,
+    title,
     description,
   },
 };
