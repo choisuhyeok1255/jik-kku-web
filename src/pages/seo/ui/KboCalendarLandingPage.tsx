@@ -4,6 +4,8 @@ import { Check } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 
+import { SEO_KBO_CALENDAR_FAQ_ITEMS } from "@/src/shared/lib/seo-faq";
+
 import { MarketingSubpageLayout } from "./MarketingSubpageLayout";
 
 const APP_STORE_URL =
@@ -16,21 +18,6 @@ const bullets = [
   "월 단위로 일정을 넘겨 가며 홈·원정·상대 정보를 한눈에 확인할 수 있습니다.",
   "날짜별 경기 일정에서 상대팀과 경기 구장을 함께 볼 수 있습니다.",
   "시즌 내내 우리 팀 일정 흐름을 한 화면에서 파악하기 쉽습니다.",
-];
-
-const faqItems: { q: string; a: string }[] = [
-  {
-    q: "KBO 경기 일정은 어떻게 확인하나요?",
-    a: "응원 팀을 기준으로 달력에 경기가 모이고, 월을 넘겨 가며 연도·시즌 일정을 볼 수 있습니다.",
-  },
-  {
-    q: "구단별 경기 일정과 경기 구장을 함께 볼 수 있나요?",
-    a: "네. 경기별로 상대팀·경기 구장 정보를 함께 확인할 수 있도록 구성했습니다.",
-  },
-  {
-    q: "날짜별 경기 일정에서 상대팀도 확인할 수 있나요?",
-    a: "날짜를 기준으로 어떤 매치업인지 빠르게 훑어 볼 수 있습니다.",
-  },
 ];
 
 const phoneFrameClass =
@@ -114,7 +101,7 @@ const KboCalendarLandingPage = () => {
         <section className="mt-12 rounded-2xl border border-white/10 bg-white/4 p-6">
           <h2 className="text-lg font-semibold text-white">자주 묻는 질문</h2>
           <dl className="mt-6 space-y-6">
-            {faqItems.map(({ q, a }) => (
+            {SEO_KBO_CALENDAR_FAQ_ITEMS.map(({ q, a }) => (
               <div key={q}>
                 <dt className="text-[15px] font-medium text-white/90">{q}</dt>
                 <dd className="mt-2 text-[15px] leading-relaxed text-white/65">

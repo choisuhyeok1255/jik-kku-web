@@ -1,5 +1,10 @@
 import type { Metadata } from "next";
+
 import { KboCalendarLandingPage } from "@/src/pages/seo";
+import {
+  SEO_KBO_CALENDAR_FAQ_ITEMS,
+  faqPageJsonLd,
+} from "@/src/shared/lib/seo-faq";
 
 const title = "KBO 경기 일정 | 구단별·날짜별 일정 확인 | 직꾸";
 const description =
@@ -27,5 +32,15 @@ export const metadata: Metadata = {
 };
 
 export default function Page() {
-  return <KboCalendarLandingPage />;
+  const faqJsonLd = faqPageJsonLd(SEO_KBO_CALENDAR_FAQ_ITEMS);
+
+  return (
+    <>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(faqJsonLd) }}
+      />
+      <KboCalendarLandingPage />
+    </>
+  );
 }

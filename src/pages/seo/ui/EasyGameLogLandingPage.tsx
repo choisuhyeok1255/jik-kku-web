@@ -4,6 +4,8 @@ import { Check } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 
+import { SEO_EASY_GAME_LOG_FAQ_ITEMS } from "@/src/shared/lib/seo-faq";
+
 import { MarketingSubpageLayout } from "./MarketingSubpageLayout";
 
 const APP_STORE_URL =
@@ -16,17 +18,6 @@ const bullets = [
   "응원하는 팀을 선택하면 그 기준으로 직관 승률을 계산해 줍니다.",
   "사진은 최대 5장까지, 그날의 기억은 메모로 남길 수 있습니다.",
   "직관을 등록할 때 날짜와 경기 선택만으로도 빠르게 기록을 남길 수 있습니다.",
-];
-
-const faqItems: { q: string; a: string }[] = [
-  {
-    q: "직관 기록은 어떻게 남기나요?",
-    a: "날짜와 경기를 고른 뒤 응원 팀·사진·메모를 더하면 됩니다. 경기와 관련된 기본 정보는 일정에서 가져와 채워 줍니다.",
-  },
-  {
-    q: "야구 경기 기록으로 어떤 내용을 저장할 수 있나요?",
-    a: "홈·원정, 점수, 경기장 등 경기 정보와 함께 사진·메모·직관 승률까지 한 기록에 묶어 둘 수 있습니다.",
-  },
 ];
 
 const EasyGameLogLandingPage = () => {
@@ -153,7 +144,7 @@ const EasyGameLogLandingPage = () => {
         <section className="mt-12 rounded-2xl border border-white/10 bg-white/4 p-6">
           <h2 className="text-lg font-semibold text-white">자주 묻는 질문</h2>
           <dl className="mt-6 space-y-6">
-            {faqItems.map(({ q, a }) => (
+            {SEO_EASY_GAME_LOG_FAQ_ITEMS.map(({ q, a }) => (
               <div key={q}>
                 <dt className="text-[15px] font-medium text-white/90">{q}</dt>
                 <dd className="mt-2 text-[15px] leading-relaxed text-white/65">

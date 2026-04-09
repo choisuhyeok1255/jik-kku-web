@@ -4,6 +4,8 @@ import { Check } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 
+import { SEO_YOUTUBE_HIGHLIGHT_FAQ_ITEMS } from "@/src/shared/lib/seo-faq";
+
 import { MarketingSubpageLayout } from "./MarketingSubpageLayout";
 
 const APP_STORE_URL =
@@ -15,17 +17,6 @@ const bullets = [
   "내가 작성한 직관 기록에도, 해당 경기 하이라이트가 연결됩니다.",
   "다른 사람이 올린 기록을 볼 때도 같은 경기라면 하이라이트를 함께 볼 수 있습니다.",
   "직관 후에 유튜브를 따로 검색하지 않아도, 기록과 함께 다시 보기 좋게 모아 둡니다.",
-];
-
-const faqItems: { q: string; a: string }[] = [
-  {
-    q: "기록한 경기의 하이라이트를 다시 볼 수 있나요?",
-    a: "네. 직관 기록에 묶인 경기라면 하이라이트를 함께 확인할 수 있도록 연결해 둡니다.",
-  },
-  {
-    q: "경기 다시보기는 어떻게 연결되나요?",
-    a: "해당 경기의 하이라이트 영상을 자동으로 찾아 기록과 나란히 볼 수 있게 구성했습니다.",
-  },
 ];
 
 const YoutubeHighlightLandingPage = () => {
@@ -92,7 +83,7 @@ const YoutubeHighlightLandingPage = () => {
         <section className="mt-12 rounded-2xl border border-white/10 bg-white/4 p-6">
           <h2 className="text-lg font-semibold text-white">자주 묻는 질문</h2>
           <dl className="mt-6 space-y-6">
-            {faqItems.map(({ q, a }) => (
+            {SEO_YOUTUBE_HIGHLIGHT_FAQ_ITEMS.map(({ q, a }) => (
               <div key={q}>
                 <dt className="text-[15px] font-medium text-white/90">{q}</dt>
                 <dd className="mt-2 text-[15px] leading-relaxed text-white/65">

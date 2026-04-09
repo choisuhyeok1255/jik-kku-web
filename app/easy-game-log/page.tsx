@@ -1,5 +1,10 @@
 import type { Metadata } from "next";
+
 import { EasyGameLogLandingPage } from "@/src/pages/seo";
+import {
+  SEO_EASY_GAME_LOG_FAQ_ITEMS,
+  faqPageJsonLd,
+} from "@/src/shared/lib/seo-faq";
 
 const title = "직관 기록 | 야구 직관 기록을 쉽게 남기기 | 직꾸";
 const description =
@@ -27,5 +32,15 @@ export const metadata: Metadata = {
 };
 
 export default function Page() {
-  return <EasyGameLogLandingPage />;
+  const faqJsonLd = faqPageJsonLd(SEO_EASY_GAME_LOG_FAQ_ITEMS);
+
+  return (
+    <>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(faqJsonLd) }}
+      />
+      <EasyGameLogLandingPage />
+    </>
+  );
 }

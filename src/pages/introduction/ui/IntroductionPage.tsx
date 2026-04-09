@@ -5,6 +5,8 @@ import Image from "next/image";
 import Link from "next/link";
 import { useCallback, useState } from "react";
 
+import { SEO_HOME_FAQ_ITEMS } from "@/src/shared/lib/seo-faq";
+
 const APP_STORE_URL =
   "https://apps.apple.com/kr/app/%EC%A7%81%EA%BE%B8/id6761379053";
 const GOOGLE_PLAY_URL =
@@ -16,17 +18,6 @@ const featureChecks = [
   "응원했던 팀과 사진, 메모만 채우면 됩니다",
   "남에게 공개하고 싶지 않으면 비공개로 올릴 수 있어요",
   "사진은 최대 5장까지 넣을 수 있습니다",
-];
-
-const homeFaqItems: { q: string; a: string }[] = [
-  {
-    q: "야구 직관 기록은 어떻게 남길 수 있나요?",
-    a: "날짜와 경기를 고른 뒤 응원 팀·사진·메모를 더하면 됩니다. 경기에 맞는 기본 정보는 일정에서 가져와 채워 줍니다.",
-  },
-  {
-    q: "직관 기록으로 어떤 정보를 정리할 수 있나요?",
-    a: "홈·원정, 점수, 경기장 등 경기 정보와 함께 사진·메모·직관 승률을 한 기록에 묶어 둘 수 있습니다. 하이라이트 영상도 기록과 함께 확인할 수 있습니다.",
-  },
 ];
 
 const reviews = [
@@ -585,7 +576,7 @@ const IntroductionPage = () => {
             자주 묻는 질문
           </h2>
           <dl className="mt-10 space-y-8">
-            {homeFaqItems.map(({ q, a }) => (
+            {SEO_HOME_FAQ_ITEMS.map(({ q, a }) => (
               <div key={q}>
                 <dt className="text-[15px] font-semibold text-white/90">{q}</dt>
                 <dd className="mt-2 text-[15px] leading-relaxed text-white/60">
