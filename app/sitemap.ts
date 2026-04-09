@@ -1,32 +1,33 @@
 import type { MetadataRoute } from "next";
 
+import { SITE_SEO_LAST_MODIFIED } from "@/src/shared/lib/seo-home";
 import { SITE_URL } from "@/src/shared/lib/site-url";
 
 export default function sitemap(): MetadataRoute.Sitemap {
-  const now = new Date();
+  const lastModified = SITE_SEO_LAST_MODIFIED;
 
   return [
     {
       url: SITE_URL,
-      lastModified: now,
+      lastModified,
       changeFrequency: "daily",
       priority: 1,
     },
     {
       url: `${SITE_URL}/easy-game-log`,
-      lastModified: now,
+      lastModified,
       changeFrequency: "monthly",
       priority: 0.85,
     },
     {
       url: `${SITE_URL}/youtube-highlight`,
-      lastModified: now,
+      lastModified,
       changeFrequency: "monthly",
       priority: 0.85,
     },
     {
       url: `${SITE_URL}/kbo-calendar`,
-      lastModified: now,
+      lastModified,
       changeFrequency: "monthly",
       priority: 0.85,
     },
