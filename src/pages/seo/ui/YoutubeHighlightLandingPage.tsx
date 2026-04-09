@@ -17,18 +17,28 @@ const bullets = [
   "직관 후에 유튜브를 따로 검색하지 않아도, 기록과 함께 다시 보기 좋게 모아 둡니다.",
 ];
 
+const faqItems: { q: string; a: string }[] = [
+  {
+    q: "기록한 경기의 하이라이트를 다시 볼 수 있나요?",
+    a: "네. 직관 기록에 묶인 경기라면 하이라이트를 함께 확인할 수 있도록 연결해 둡니다.",
+  },
+  {
+    q: "경기 다시보기는 어떻게 연결되나요?",
+    a: "해당 경기의 하이라이트 영상을 자동으로 찾아 기록과 나란히 볼 수 있게 구성했습니다.",
+  },
+];
+
 const YoutubeHighlightLandingPage = () => {
   return (
     <MarketingSubpageLayout>
       <article className="mx-auto max-w-3xl px-4 py-12 md:py-16 lg:px-8">
         <p className="text-sm font-medium text-orange-400">기능 소개</p>
         <h1 className="mt-2 text-3xl font-bold tracking-tight md:text-4xl">
-          경기 하이라이트를 기록과 함께
+          야구 하이라이트를 기록과 함께 보기
         </h1>
         <p className="mt-4 text-[15px] leading-relaxed text-white/70 md:text-base">
-          직꾸는 해당 경기의 유튜브 하이라이트를 기록과 자동으로 연결합니다.
-          직관이 끝난 뒤에도 영상으로 그날을 다시 느낄 수 있도록 만든
-          기능입니다.
+          야구 하이라이트와 경기 다시보기를 직관 기록 옆에 두었습니다. 기록한
+          경기의 하이라이트를 찾아 보기 쉽게 이어지도록 만든 기능입니다.
         </p>
 
         <figure className="mt-10">
@@ -78,6 +88,20 @@ const YoutubeHighlightLandingPage = () => {
             </li>
           ))}
         </ul>
+
+        <section className="mt-12 rounded-2xl border border-white/10 bg-white/4 p-6">
+          <h2 className="text-lg font-semibold text-white">자주 묻는 질문</h2>
+          <dl className="mt-6 space-y-6">
+            {faqItems.map(({ q, a }) => (
+              <div key={q}>
+                <dt className="text-[15px] font-medium text-white/90">{q}</dt>
+                <dd className="mt-2 text-[15px] leading-relaxed text-white/65">
+                  {a}
+                </dd>
+              </div>
+            ))}
+          </dl>
+        </section>
 
         <div className="mt-12 flex flex-col gap-3 sm:flex-row">
           <a

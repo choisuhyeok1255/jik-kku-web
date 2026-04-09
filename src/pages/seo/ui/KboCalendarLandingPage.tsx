@@ -13,9 +13,24 @@ const GOOGLE_PLAY_URL =
 
 const bullets = [
   "응원하는 KBO 팀을 고르면 그 팀이 나오는 경기만 달력에 모아 볼 수 있습니다.",
-  "월 단위로 일정을 넘겨 보며, 홈·원정·상대 정보를 한눈에 확인할 수 있습니다.",
-  "달력에서 경기를 고르면 직관 기록 작성으로 바로 이어져 일정과 기록이 맞물립니다.",
-  "시즌 내내 ‘우리 팀은 언제 어디서 누구와 붙는지’를 앱 안에서만으로 파악하기 쉽습니다.",
+  "월 단위로 일정을 넘겨 가며 홈·원정·상대 정보를 한눈에 확인할 수 있습니다.",
+  "날짜별 경기 일정에서 상대팀과 경기 구장을 함께 볼 수 있습니다.",
+  "시즌 내내 우리 팀 일정 흐름을 한 화면에서 파악하기 쉽습니다.",
+];
+
+const faqItems: { q: string; a: string }[] = [
+  {
+    q: "KBO 경기 일정은 어떻게 확인하나요?",
+    a: "응원 팀을 기준으로 달력에 경기가 모이고, 월을 넘겨 가며 연도·시즌 일정을 볼 수 있습니다.",
+  },
+  {
+    q: "구단별 경기 일정과 경기 구장을 함께 볼 수 있나요?",
+    a: "네. 경기별로 상대팀·경기 구장 정보를 함께 확인할 수 있도록 구성했습니다.",
+  },
+  {
+    q: "날짜별 경기 일정에서 상대팀도 확인할 수 있나요?",
+    a: "날짜를 기준으로 어떤 매치업인지 빠르게 훑어 볼 수 있습니다.",
+  },
 ];
 
 const phoneFrameClass =
@@ -30,13 +45,12 @@ const KboCalendarLandingPage = () => {
             <section className="space-y-4">
               <p className="text-sm font-medium text-orange-400">기능 소개</p>
               <h1 className="mt-2 text-3xl font-bold tracking-tight md:text-4xl">
-                팀별로 보는 KBO 경기 일정
+                KBO 경기 일정을 팀별로 확인
               </h1>
               <p className="mt-4 max-w-2xl text-[15px] leading-relaxed text-white/70 md:text-base">
-                직꾸에서는 KBO 경기 일정을 달력 형태로 보여 주고, 응원 팀에 맞춰
-                필요한 경기만 골라 볼 수 있습니다. 직관 계획을 세울 때 일정을
-                먼저 확인하고, 이어서 기록까지 한 흐름으로 이어지도록
-                만들었습니다.
+                KBO 경기 일정을 달력 형태로 보여 주며, 응원 팀에 맞춰 필요한
+                경기만 골라 볼 수 있습니다. 구단별 경기 일정과 날짜별로 상대팀·
+                경기 구장을 확인하는 데 초점을 맞춰 두었습니다.
               </p>
               <h2 className="text-xl font-semibold text-white">
                 응원 팀 기준으로 일정만 보기
@@ -59,12 +73,12 @@ const KboCalendarLandingPage = () => {
             </section>
             <section className="space-y-4">
               <h2 className="text-xl font-semibold text-white">
-                일정에서 기록까지 이어지기
+                상대팀·경기 구장까지 함께
               </h2>
               <p className="text-[15px] leading-relaxed text-white/65">
-                달력에서 경기를 선택하면 직관 기록 작성 화면으로 연결되어, 경기
-                정보를 직접 입력하지 않아도 일정 데이터가 반영됩니다. 일정
-                확인과 기록 남기기가 같은 맥락에서 이어집니다.
+                야구 경기 일정을 볼 때 상대팀과 경기 구장을 같이 확인할 수 있어,
+                직관 계획을 세울 때 참고하기 좋습니다. 팀별 경기 일정을 기준으로
+                필요한 정보만 모아 볼 수 있습니다.
               </p>
             </section>
           </div>
@@ -96,6 +110,20 @@ const KboCalendarLandingPage = () => {
             </li>
           ))}
         </ul>
+
+        <section className="mt-12 rounded-2xl border border-white/10 bg-white/4 p-6">
+          <h2 className="text-lg font-semibold text-white">자주 묻는 질문</h2>
+          <dl className="mt-6 space-y-6">
+            {faqItems.map(({ q, a }) => (
+              <div key={q}>
+                <dt className="text-[15px] font-medium text-white/90">{q}</dt>
+                <dd className="mt-2 text-[15px] leading-relaxed text-white/65">
+                  {a}
+                </dd>
+              </div>
+            ))}
+          </dl>
+        </section>
 
         <div className="mt-12 flex flex-col gap-3 sm:flex-row">
           <a
