@@ -18,6 +18,17 @@ const featureChecks = [
   "사진은 최대 5장까지 넣을 수 있습니다",
 ];
 
+const homeFaqItems: { q: string; a: string }[] = [
+  {
+    q: "야구 직관 기록은 어떻게 남길 수 있나요?",
+    a: "날짜와 경기를 고른 뒤 응원 팀·사진·메모를 더하면 됩니다. 경기에 맞는 기본 정보는 일정에서 가져와 채워 줍니다.",
+  },
+  {
+    q: "직관 기록으로 어떤 정보를 정리할 수 있나요?",
+    a: "홈·원정, 점수, 경기장 등 경기 정보와 함께 사진·메모·직관 승률을 한 기록에 묶어 둘 수 있습니다. 하이라이트 영상도 기록과 함께 확인할 수 있습니다.",
+  },
+];
+
 const reviews = [
   {
     quote:
@@ -110,6 +121,9 @@ const IntroductionPage = () => {
             </a>
             <a className="transition-colors hover:text-white" href="#reviews">
               후기
+            </a>
+            <a className="transition-colors hover:text-white" href="#faq">
+              FAQ
             </a>
             {/* <a className="transition-colors hover:text-white" href="#insights">
               가이드
@@ -205,6 +219,13 @@ const IntroductionPage = () => {
               >
                 후기
               </a>
+              <a
+                href="#faq"
+                className="py-2 text-white/90"
+                onClick={handleCloseMobile}
+              >
+                FAQ
+              </a>
               <div
                 className="my-3 border-t border-white/10 pt-3"
                 role="separator"
@@ -257,15 +278,15 @@ const IntroductionPage = () => {
         <div className="relative mx-auto flex max-w-7xl flex-col items-center gap-12 lg:flex-row lg:items-center lg:justify-between lg:gap-16">
           <div className="max-w-xl text-center lg:min-w-0 lg:flex-1 lg:text-left">
             <p className="mb-3 text-sm font-medium text-orange-400 md:text-base">
-              야구 직관 기록 앱 · 직관 다이어리
+              야구 직관 기록
             </p>
             <h1 className="text-3xl leading-tight font-bold tracking-tight md:text-4xl lg:text-5xl lg:leading-[1.15]">
-              직관을 기록하고,
-              <br className="hidden sm:block" /> 나만의 다이어리로 꾸며보세요
+              야구 직관 기록으로 경기를 남기고,
+              <br className="hidden sm:block" /> 직관을 정리해 보세요
             </h1>
             <p className="mt-4 text-[15px] leading-relaxed text-white/65 md:text-base lg:max-w-lg">
-              KBO 야구 팬을 위한 직관 기록 앱. 경기 일정·응원팀 기록·사진·메모·직관
-              승률까지 한 번에 관리하세요.
+              야구 직관과 야구 경기 기록을 한곳에 모은 서비스입니다. 직관 기록을
+              남기고, 경기 일정과 하이라이트까지 이어져 팬의 일상을 돕습니다.
             </p>
             <div className="mt-8 flex flex-col gap-3 sm:flex-row sm:flex-wrap sm:justify-center lg:justify-start">
               <a
@@ -316,15 +337,15 @@ const IntroductionPage = () => {
               야구 직관을 더 즐겁게
             </h2>
             <p className="mx-auto mt-3 max-w-2xl text-[15px] text-white/55 md:text-base">
-              직꾸는 일정 관리부터 기록·커뮤니티까지, 팬의 일상을 한곳에
-              모읍니다.
+              야구 직관 기록을 중심으로 경기 일정·하이라이트·커뮤니티까지, 팬의
+              일상을 한곳에 모읍니다.
             </p>
           </div>
 
           <div className="mt-12 grid gap-12 lg:grid-cols-2 lg:items-center lg:gap-16">
             <div>
               <h3 className="text-xl font-semibold md:text-2xl">
-                기록과 일정을 한번에
+                직관 기록을 빠르게 남기기
               </h3>
               <ul className="mt-6 space-y-4">
                 {featureChecks.map((text) => (
@@ -339,12 +360,18 @@ const IntroductionPage = () => {
                   </li>
                 ))}
               </ul>
-              <p className="mt-6 text-[15px]">
+              <p className="mt-6 flex flex-col gap-3 text-[15px] sm:flex-row sm:flex-wrap sm:gap-x-6 sm:gap-y-2">
                 <Link
                   href="/easy-game-log"
                   className="font-medium text-orange-400 underline-offset-4 hover:underline"
                 >
-                  직관 기록 기능 더 보기 →
+                  직관 기록 방법 보기 →
+                </Link>
+                <Link
+                  href="/kbo-calendar"
+                  className="font-medium text-orange-400/90 underline-offset-4 hover:underline"
+                >
+                  KBO 경기 일정 확인하기 →
                 </Link>
               </p>
             </div>
@@ -377,7 +404,7 @@ const IntroductionPage = () => {
                   href="/youtube-highlight"
                   className="font-medium text-orange-400 underline-offset-4 hover:underline"
                 >
-                  경기 하이라이트 기능 더 보기 →
+                  야구 하이라이트 기능 보기 →
                 </Link>
               </p>
             </div>
@@ -458,9 +485,9 @@ const IntroductionPage = () => {
         className="scroll-mt-[72px] border-t border-white/10 bg-[#0d0d0d] px-4 py-16 md:py-24 lg:px-8"
       >
         <div className="mx-auto max-w-7xl text-center">
-          <h2 className="text-2xl font-bold md:text-3xl">앱 속 직꾸</h2>
+          <h2 className="text-2xl font-bold md:text-3xl">직꾸 화면</h2>
           <p className="mt-2 text-[15px] text-white/55">
-            일정·기록·커뮤니티를 앱 안에서 한 흐름으로 이어가요.
+            홈·피드·경기 일정을 한 흐름으로 이어갑니다.
           </p>
           <div className="mt-12 flex flex-col items-center justify-center gap-6 md:flex-row md:items-end md:gap-4 lg:gap-8">
             <div className="relative hidden h-[420px] w-[200px] shrink-0 overflow-hidden rounded-3xl border border-white/10 md:block md:h-[380px] md:w-[180px] lg:h-[440px] lg:w-[200px]">
@@ -549,6 +576,27 @@ const IntroductionPage = () => {
         </div>
       </section>
 
+      <section
+        id="faq"
+        className="scroll-mt-[72px] border-t border-white/10 bg-[#0d0d0d] px-4 py-16 md:px-6 md:py-20 lg:px-8"
+      >
+        <div className="mx-auto max-w-3xl">
+          <h2 className="text-center text-2xl font-bold md:text-3xl">
+            자주 묻는 질문
+          </h2>
+          <dl className="mt-10 space-y-8">
+            {homeFaqItems.map(({ q, a }) => (
+              <div key={q}>
+                <dt className="text-[15px] font-semibold text-white/90">{q}</dt>
+                <dd className="mt-2 text-[15px] leading-relaxed text-white/60">
+                  {a}
+                </dd>
+              </div>
+            ))}
+          </dl>
+        </div>
+      </section>
+
       {/* 가이드 그리드 — 가이드 & 아이디어
       <section
         id="insights"
@@ -618,7 +666,7 @@ const IntroductionPage = () => {
                 href="/youtube-highlight"
                 className="transition-colors hover:text-white"
               >
-                경기 하이라이트
+                야구 하이라이트
               </Link>
               <span className="text-white/25" aria-hidden>
                 ·
