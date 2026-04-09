@@ -4,6 +4,7 @@ import Link from "next/link";
 export const metadata: Metadata = {
   title: "페이지를 찾을 수 없음 | 직꾸",
   description: "요청한 페이지를 찾을 수 없습니다.",
+  robots: { index: false, follow: true },
   openGraph: {
     title: "페이지를 찾을 수 없음 | 직꾸",
     description: "요청한 페이지를 찾을 수 없습니다.",
