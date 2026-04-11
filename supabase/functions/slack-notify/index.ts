@@ -37,8 +37,10 @@ interface GameLogRecord {
   away_team_id: number;
   home_team_score: number;
   away_team_score: number;
-  game_log_image: string | null;
+  game_log_images: string[] | null;
   created_at: string;
+  is_private: boolean;
+  memo: string | null;
 }
 
 function formatKstDate(isoDate: string): string {
@@ -47,7 +49,37 @@ function formatKstDate(isoDate: string): string {
   return `${kstTime.getUTCFullYear()}-${String(kstTime.getUTCMonth() + 1).padStart(2, "0")}-${String(kstTime.getUTCDate()).padStart(2, "0")} ${String(kstTime.getUTCHours()).padStart(2, "0")}:${String(kstTime.getUTCMinutes()).padStart(2, "0")}:${String(kstTime.getUTCSeconds()).padStart(2, "0")}`;
 }
 
-function buildSlackMessage(payload: WebhookPayload): object | null {
+/** `users.id`(웹훅 `user_id`)로 `public.users`에서 `nickname`만 조회합니다. */
+async function fetchUserNickname(userId: string): Promise<string | null> {
+  const supabaseUrl = Deno.env.get("SUPABASE_URL");
+  const serviceKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY");
+  if (!supabaseUrl || !serviceKey) {
+    console.error("SUPABASE_URL or SUPABASE_SERVICE_ROLE_KEY is not set");
+    return null;
+  }
+  const res = await fetch(
+    `${supabaseUrl}/rest/v1/users?id=eq.${encodeURIComponent(
+      userId,
+    )}&select=nickname`,
+    {
+      headers: {
+        apikey: serviceKey,
+        Authorization: `Bearer ${serviceKey}`,
+        Accept: "application/json",
+      },
+    },
+  );
+  if (!res.ok) {
+    console.error("fetchUserNickname failed:", await res.text());
+    return null;
+  }
+  const rows = (await res.json()) as { nickname: string }[];
+  return rows[0]?.nickname ?? null;
+}
+
+async function buildSlackMessage(
+  payload: WebhookPayload,
+): Promise<object | null> {
   if (payload.type !== "INSERT" || !payload.record) return null;
 
   if (payload.table === "users") {
@@ -83,11 +115,18 @@ function buildSlackMessage(payload: WebhookPayload): object | null {
 
   if (payload.table === "game_logs") {
     const record = payload.record as unknown as GameLogRecord;
+    const rawUserId = (payload.record as Record<string, unknown>).user_id;
+    const userId = typeof rawUserId === "string" ? rawUserId : null;
+    const nickname = userId ? await fetchUserNickname(userId) : null;
+    const nicknameText = nickname ?? "알 수 없음";
     const formattedDate = formatKstDate(record.created_at);
-    const scoreText = `${record.home_team_score} : ${record.away_team_score}`;
-    const hasImage = !!record.game_log_image;
+    const hasImage =
+      !!record.game_log_images && record.game_log_images.length > 0;
+    const headline = nickname
+      ? `⚾ 새 경기 기록: ${nickname}`
+      : "⚾ 새 경기 기록: 닉네임 알 수 없음";
     return {
-      text: `⚾ 새 경기 기록: ${record.match_date} (${scoreText})`,
+      text: headline,
       blocks: [
         {
           type: "header",
@@ -96,13 +135,14 @@ function buildSlackMessage(payload: WebhookPayload): object | null {
         {
           type: "section",
           fields: [
-            { type: "mrkdwn", text: `*경기일:*\n${record.match_date}` },
-            { type: "mrkdwn", text: `*스코어:*\n${scoreText}` },
+            { type: "mrkdwn", text: `*닉네임:*\n${nicknameText}` },
             { type: "mrkdwn", text: `*등록 시각:*\n${formattedDate}` },
+            { type: "mrkdwn", text: `*사진:*\n${hasImage ? "있음" : "없음"}` },
             {
               type: "mrkdwn",
-              text: `*사진:*\n${hasImage ? "있음 (인증 대기)" : "없음"}`,
+              text: `*비공개:*\n${record.is_private ? "예" : "아니오"}`,
             },
+            { type: "mrkdwn", text: `*메모:*\n${record.memo ?? "없음"}` },
           ],
         },
         {
@@ -122,6 +162,8 @@ function buildSlackMessage(payload: WebhookPayload): object | null {
   if (payload.table !== "inquiries") return null;
 
   const record = payload.record as unknown as InquiryRecord;
+  const inquiryNickname = await fetchUserNickname(record.user_id);
+  const inquiryNicknameText = inquiryNickname ?? "알 수 없음";
   const formattedDate = formatKstDate(record.created_at);
 
   const contentPreview =
@@ -140,6 +182,7 @@ function buildSlackMessage(payload: WebhookPayload): object | null {
         type: "section",
         fields: [
           { type: "mrkdwn", text: `*제목:*\n${record.title}` },
+          { type: "mrkdwn", text: `*닉네임:*\n${inquiryNicknameText}` },
           {
             type: "mrkdwn",
             text: `*등록 시각:*\n${formattedDate}`,
@@ -174,7 +217,7 @@ Deno.serve(async (req: Request) => {
 
   try {
     const payload = (await req.json()) as WebhookPayload;
-    const slackBody = buildSlackMessage(payload);
+    const slackBody = await buildSlackMessage(payload);
 
     if (!slackBody) {
       return new Response("OK", { status: 200 });
@@ -183,11 +226,11 @@ Deno.serve(async (req: Request) => {
     // 테이블별 webhook: 직관 생성, 회원가입은 별도 채널
     const webhookUrl =
       payload.table === "game_logs"
-        ? Deno.env.get("SLACK_WEBHOOK_URL_GAME_LOGS") ??
-          Deno.env.get("SLACK_WEBHOOK_URL")
+        ? (Deno.env.get("SLACK_WEBHOOK_URL_GAME_LOGS") ??
+          Deno.env.get("SLACK_WEBHOOK_URL"))
         : payload.table === "users"
-          ? Deno.env.get("SLACK_WEBHOOK_URL_USERS") ??
-            Deno.env.get("SLACK_WEBHOOK_URL")
+          ? (Deno.env.get("SLACK_WEBHOOK_URL_USERS") ??
+            Deno.env.get("SLACK_WEBHOOK_URL"))
           : Deno.env.get("SLACK_WEBHOOK_URL");
 
     if (!webhookUrl) {
