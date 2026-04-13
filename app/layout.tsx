@@ -1,12 +1,15 @@
 import { GoogleTagManager } from "@next/third-parties/google";
 import type { Metadata, Viewport } from "next";
 import localFont from "next/font/local";
-import { Suspense } from "react";
 import { Toaster } from "sonner";
 
-import { BottomNavigation, Providers } from "@/src/app";
-import { TeamSettingGuard } from "@/src/features";
-import { HOME_PAGE_DESCRIPTION, HOME_PAGE_TITLE } from "@/src/shared/lib/seo-home";
+import { Providers } from "@/src/app";
+import {
+  HOME_PAGE_DESCRIPTION,
+  HOME_PAGE_TITLE,
+  SITE_OG_IMAGE_PATH,
+} from "@/src/shared/lib/seo-home";
+import { softwareApplicationJsonLd } from "@/src/shared/lib/seo-jsonld";
 import { SITE_URL } from "@/src/shared/lib/site-url";
 import "./globals.css";
 
@@ -36,7 +39,7 @@ export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),
   title: {
     default: HOME_PAGE_TITLE,
-    template: "%s · 직꾸",
+    template: "%s | 직꾸",
   },
   description: HOME_PAGE_DESCRIPTION,
   icons: {
@@ -49,13 +52,20 @@ export const metadata: Metadata = {
     siteName: "직꾸",
     type: "website",
     locale: "ko_KR",
-    images: ["/icon.png"],
+    images: [
+      {
+        url: SITE_OG_IMAGE_PATH,
+        width: 512,
+        height: 512,
+        alt: "직꾸 앱 아이콘",
+      },
+    ],
   },
   twitter: {
     card: "summary_large_image",
     title: HOME_PAGE_TITLE,
     description: HOME_PAGE_DESCRIPTION,
-    images: ["/icon.png"],
+    images: [SITE_OG_IMAGE_PATH],
   },
 };
 
@@ -81,7 +91,9 @@ const RootLayout = ({
         name: "직꾸",
         description: HOME_PAGE_DESCRIPTION,
         publisher: { "@id": `${SITE_URL}/#organization` },
+        inLanguage: "ko-KR",
       },
+      softwareApplicationJsonLd(),
     ],
   };
 
@@ -106,9 +118,6 @@ const RootLayout = ({
         <Providers>
           <div className="min-h-dvh min-w-[360px]">
             {children}
-            {/* <Suspense fallback={null}>
-                  <BottomNavigation />
-                </Suspense> */}
           </div>
           <Toaster richColors position="top-center" />
         </Providers>
