@@ -30,11 +30,10 @@ export const MarketingSubpageLayout = ({
           >
             <Image
               src="/2.svg"
-              alt=""
+              alt="직꾸 로고"
               width={32}
               height={32}
               className="h-8 w-8 shrink-0"
-              aria-hidden
             />
             <span>직꾸</span>
           </Link>

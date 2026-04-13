@@ -85,11 +85,10 @@ const IntroductionPage = () => {
           >
             <Image
               src="/2.svg"
-              alt=""
+              alt="직꾸 로고"
               width={32}
               height={32}
               className="h-8 w-8 shrink-0"
-              aria-hidden
             />
             <span>직꾸</span>
           </Link>
@@ -303,7 +302,7 @@ const IntroductionPage = () => {
             <div className="relative aspect-[9/19] w-full overflow-hidden rounded-[2rem] border border-white/10 shadow-[0_24px_80px_-12px_rgba(0,0,0,0.7)]">
               <Image
                 src="/직관.jpg"
-                alt="직관 야구장"
+                alt="야구장에서 야구 경기를 관람하는 직관객"
                 fill
                 className="object-cover"
                 sizes="(max-width: 640px) 280px, (max-width: 1024px) 320px, 360px"
@@ -311,6 +310,34 @@ const IntroductionPage = () => {
               />
             </div>
           </div>
+        </div>
+      </section>
+
+      <section
+        id="about"
+        className="scroll-mt-[72px] border-t border-white/10 bg-[#0d0d0d] px-4 py-12 md:px-6 md:py-14 lg:px-8"
+      >
+        <div className="mx-auto max-w-3xl rounded-2xl border border-white/10 bg-white/4 p-6 md:p-8">
+          <p className="text-center text-[15px] font-medium leading-relaxed text-white/90 md:text-base">
+            직꾸는 야구 직관 기록, KBO 경기 일정, 경기 하이라이트를 한 흐름으로
+            이어 주는 야구 팬용 앱입니다.
+          </p>
+          <ul className="mt-6 space-y-3 text-[15px] leading-relaxed text-white/70">
+            <li>
+              <span className="font-semibold text-white/85">누구에게 — </span>
+              야구장에서 직관하거나 중계로 경기를 즐기며 그날을 남기고 싶은 팬
+            </li>
+            <li>
+              <span className="font-semibold text-white/85">무엇을 해결 — </span>
+              메모·검색·사진을 여러 앱으로 옮겨 다닐 필요를 줄여, 직관 다음
+              날에도 부담 없이 정리할 수 있게 합니다
+            </li>
+            <li>
+              <span className="font-semibold text-white/85">핵심 기능 — </span>
+              직관 기록, 응원팀 기준 경기 일정과 직관 승률, 사진·메모, 경기
+              하이라이트를 한 기록에 이어 보기
+            </li>
+          </ul>
         </div>
       </section>
 
@@ -328,8 +355,9 @@ const IntroductionPage = () => {
               야구 직관을 더 즐겁게
             </h2>
             <p className="mx-auto mt-3 max-w-2xl text-[15px] text-white/55 md:text-base">
-              야구 직관 기록을 중심으로 경기 일정·하이라이트·커뮤니티까지, 팬의
-              일상을 한곳에 모읍니다.
+              직관 기록을 중심으로 경기 일정·하이라이트·커뮤니티까지 묶어, 응원팀
+              일정을 보고 본 경기를 남기고 다시 보기까지 한 흐름으로 이어
+              줍니다.
             </p>
           </div>
 
@@ -374,7 +402,7 @@ const IntroductionPage = () => {
                 <div className="relative aspect-[9/19] w-full overflow-hidden rounded-xl border border-white/10 bg-black/20">
                   <Image
                     src="/ios_create1.png"
-                    alt="직관 기록 작성 화면"
+                    alt="직관 기록 작성 예시 화면"
                     fill
                     className="object-cover object-top"
                     sizes="(max-width: 1024px) 42vw, 280px"
@@ -383,7 +411,7 @@ const IntroductionPage = () => {
                 <div className="relative aspect-[9/19] w-full overflow-hidden rounded-xl border border-white/10 bg-black/20">
                   <Image
                     src="/ios_create2.png"
-                    alt="직관 기록 작성 화면 (2)"
+                    alt="직관 기록에서 사진과 메모를 추가하는 화면 예시"
                     fill
                     className="object-cover object-top"
                     sizes="(max-width: 1024px) 42vw, 280px"
@@ -484,7 +512,7 @@ const IntroductionPage = () => {
             <div className="relative hidden h-[420px] w-[200px] shrink-0 overflow-hidden rounded-3xl border border-white/10 md:block md:h-[380px] md:w-[180px] lg:h-[440px] lg:w-[200px]">
               <Image
                 src="/ios_home.png"
-                alt="홈 화면"
+                alt="야구 직관 기록 앱 홈 화면"
                 fill
                 className="object-cover object-top"
                 sizes="(min-width: 1024px) 200px, 180px"
@@ -494,7 +522,7 @@ const IntroductionPage = () => {
               <div className="relative aspect-[9/19] w-full overflow-hidden rounded-[2rem] border border-white/15 shadow-2xl">
                 <Image
                   src="/ios_feed.png"
-                  alt="피드"
+                  alt="직관 기록과 경기 하이라이트가 함께 보이는 피드 화면"
                   fill
                   className="object-cover object-top"
                   sizes="(max-width: 768px) 90vw, (max-width: 1024px) 300px, 320px"
@@ -504,7 +532,7 @@ const IntroductionPage = () => {
             <div className="relative hidden h-[420px] w-[200px] shrink-0 overflow-hidden rounded-3xl border border-white/10 md:block md:h-[380px] md:w-[180px] lg:h-[440px] lg:w-[200px]">
               <Image
                 src="/ios_calendar.png"
-                alt="캘린더"
+                alt="KBO 경기 일정을 팀별로 보는 달력 화면"
                 fill
                 className="object-cover object-top"
                 sizes="(min-width: 1024px) 200px, 180px"
@@ -627,50 +655,99 @@ const IntroductionPage = () => {
 
       {/* 푸터 */}
       <footer className="border-t border-white/10 px-4 py-10 md:px-6 lg:px-8">
-        <div className="mx-auto flex max-w-7xl flex-col items-center justify-between gap-6 text-center text-sm text-white/45 md:flex-row md:text-left">
-          <div className="flex flex-col items-center gap-4 md:flex-row md:items-center md:gap-8">
-            <div className="flex items-center gap-2">
-              <Image
-                src="/2.svg"
-                alt=""
-                width={32}
-                height={32}
-                className="h-8 w-8 shrink-0"
-                aria-hidden
-              />
-              <span className="font-semibold text-white/80">직꾸</span>
+        <div className="mx-auto flex max-w-7xl flex-col gap-8 text-sm text-white/45">
+          <div className="flex flex-col items-center justify-between gap-6 text-center md:flex-row md:items-start md:text-left">
+            <div className="flex flex-col items-center gap-4 md:flex-row md:items-center md:gap-8">
+              <div className="flex items-center gap-2">
+                <Image
+                  src="/2.svg"
+                  alt="직꾸 로고"
+                  width={32}
+                  height={32}
+                  className="h-8 w-8 shrink-0"
+                />
+                <span className="font-semibold text-white/80">직꾸</span>
+              </div>
+              <nav
+                className="flex flex-wrap items-center justify-center gap-x-4 gap-y-2 text-white/60"
+                aria-label="기능 소개"
+              >
+                <Link
+                  href="/easy-game-log"
+                  className="transition-colors hover:text-white"
+                >
+                  간편한 직관 기록 소개
+                </Link>
+                <span className="text-white/25" aria-hidden>
+                  ·
+                </span>
+                <Link
+                  href="/youtube-highlight"
+                  className="transition-colors hover:text-white"
+                >
+                  하이라이트 연동 소개
+                </Link>
+                <span className="text-white/25" aria-hidden>
+                  ·
+                </span>
+                <Link
+                  href="/kbo-calendar"
+                  className="transition-colors hover:text-white"
+                >
+                  KBO 경기 일정 소개
+                </Link>
+              </nav>
             </div>
+            <div className="flex flex-col items-center gap-2 md:items-end">
+              <p className="text-white/50">
+                문의: 앱 로그인 후 마이페이지의 문의하기
+              </p>
+              <div className="flex flex-wrap items-center justify-center gap-x-3 gap-y-1 md:justify-end">
+                <a
+                  href={APP_STORE_URL}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-orange-400/90 underline-offset-4 hover:underline"
+                >
+                  App Store에서 직꾸 받기
+                </a>
+                <span className="text-white/25" aria-hidden>
+                  ·
+                </span>
+                <a
+                  href={GOOGLE_PLAY_URL}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-orange-400/90 underline-offset-4 hover:underline"
+                >
+                  Google Play에서 직꾸 받기
+                </a>
+              </div>
+            </div>
+          </div>
+          <div className="flex flex-col items-center justify-between gap-4 border-t border-white/10 pt-6 md:flex-row">
             <nav
-              className="flex flex-wrap items-center justify-center gap-x-4 gap-y-2 text-white/60"
-              aria-label="기능 소개"
+              className="flex flex-wrap items-center justify-center gap-x-4 gap-y-2 text-white/55"
+              aria-label="약관 및 정책"
             >
               <Link
-                href="/easy-game-log"
+                href="/terms"
                 className="transition-colors hover:text-white"
               >
-                직관 기록
+                이용약관
               </Link>
               <span className="text-white/25" aria-hidden>
                 ·
               </span>
               <Link
-                href="/youtube-highlight"
+                href="/privacy"
                 className="transition-colors hover:text-white"
               >
-                야구 하이라이트
-              </Link>
-              <span className="text-white/25" aria-hidden>
-                ·
-              </span>
-              <Link
-                href="/kbo-calendar"
-                className="transition-colors hover:text-white"
-              >
-                KBO 일정
+                개인정보처리방침
               </Link>
             </nav>
+            <p>© {new Date().getFullYear()} 직꾸. All rights reserved.</p>
           </div>
-          <p>© {new Date().getFullYear()} 직꾸. All rights reserved.</p>
         </div>
       </footer>
     </div>

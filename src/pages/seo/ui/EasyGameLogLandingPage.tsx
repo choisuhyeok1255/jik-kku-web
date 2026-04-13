@@ -34,6 +34,39 @@ const EasyGameLogLandingPage = () => {
           줄였습니다.
         </p>
 
+        <section className="mt-10 space-y-3 rounded-2xl border border-white/10 bg-white/4 p-6">
+          <h2 className="text-lg font-semibold text-white">
+            이런 상황·이런 분께 맞춰 두었어요
+          </h2>
+          <p className="text-[15px] leading-relaxed text-white/65">
+            직관 직후나 다음 날, 그날 경기와 사진·메모를 한곳에 남기고 싶을 때
+            유용합니다. 메모 앱과 검색창을 오가며 팀명·날짜를 다시 찾는 수고를
+            줄이는 데 초점을 두었습니다.
+          </p>
+          <p className="text-[15px] leading-relaxed text-white/65">
+            야구장에서 직관한 팬부터, 집에서 중계를 보며 기록을 남기는 팬까지
+            응원팀·상대팀·구장·점수까지 한 기록에 묶을 수 있습니다.
+          </p>
+        </section>
+
+        <section className="mt-8 space-y-4">
+          <h2 className="text-xl font-semibold text-white">사용 흐름</h2>
+          <ol className="list-decimal space-y-2 pl-5 text-[15px] leading-relaxed text-white/70 marker:text-orange-400">
+            <li>날짜를 고르고 일정에서 본 경기를 선택합니다.</li>
+            <li>응원 팀을 정하고 사진·메모를 넣습니다.</li>
+            <li>공개 범위를 정한 뒤 저장하면 직관 승률에도 반영됩니다.</li>
+          </ol>
+        </section>
+
+        <section className="mt-8 space-y-3">
+          <h2 className="text-xl font-semibold text-white">기존 방식보다 편한 점</h2>
+          <p className="text-[15px] leading-relaxed text-white/65">
+            경기 정보를 직접 검색해 넣지 않아도, 일정에서 고른 경기에 맞춰
+            홈·원정·점수·경기장이 채워집니다. 사진·메모·직관 승률까지 같은 기록에
+            남아 나중에 찾기 쉽습니다.
+          </p>
+        </section>
+
         <div className="mt-10 grid gap-6 sm:grid-cols-2">
           <figure className="flex flex-col">
             <div className="relative mx-auto aspect-[9/19] w-full max-w-[220px] overflow-hidden rounded-2xl border border-white/10 shadow-lg sm:max-w-none">
@@ -121,14 +154,27 @@ const EasyGameLogLandingPage = () => {
           </p>
         </section>
 
-        <p className="mt-10 text-[15px]">
-          <Link
-            href="/youtube-highlight"
-            className="font-medium text-orange-400 underline-offset-4 hover:underline"
-          >
-            기록한 경기의 하이라이트 보기 →
-          </Link>
-        </p>
+        <nav
+          className="mt-10 space-y-3 text-[15px]"
+          aria-label="관련 기능 소개로 이동"
+        >
+          <p>
+            <Link
+              href="/youtube-highlight"
+              className="font-medium text-orange-400 underline-offset-4 hover:underline"
+            >
+              기록한 경기의 하이라이트를 다시 보는 방법
+            </Link>
+          </p>
+          <p>
+            <Link
+              href="/kbo-calendar"
+              className="font-medium text-orange-400/95 underline-offset-4 hover:underline"
+            >
+              응원팀 기준 KBO 경기 일정을 먼저 확인하기
+            </Link>
+          </p>
+        </nav>
 
         <ul className="mt-10 space-y-3 rounded-2xl border border-white/10 bg-white/4 p-6">
           {bullets.map((text) => (

@@ -68,6 +68,58 @@ const KboCalendarLandingPage = () => {
                 필요한 정보만 모아 볼 수 있습니다.
               </p>
             </section>
+            <section className="mx-auto mt-12 max-w-3xl space-y-3 rounded-2xl border border-white/10 bg-white/4 p-6">
+              <h2 className="text-lg font-semibold text-white">
+                이런 상황·이런 분께 맞춰 두었어요
+              </h2>
+              <p className="text-[15px] leading-relaxed text-white/65">
+                직관 예매를 하기 전에, 응원 팀 경기가 언제·어디서 열리는지 먼저
+                확인하고 싶을 때 쓰기 좋습니다. 달을 넘겨 가며 일정을 살펴보고,
+                날짜별로 상대팀과 경기 구장까지 한번에 볼 수 있습니다.
+              </p>
+            </section>
+
+            <section className="mx-auto mt-8 max-w-3xl space-y-4">
+              <h2 className="text-xl font-semibold text-white">사용 흐름</h2>
+              <ol className="list-decimal space-y-2 pl-5 text-[15px] leading-relaxed text-white/70 marker:text-orange-400">
+                <li>응원 팀을 고르면 그 팀이 나오는 경기가 달력에 보입니다.</li>
+                <li>월을 넘겨 가며 필요한 경기 일정을 확인합니다.</li>
+              </ol>
+            </section>
+
+            <section className="mx-auto mt-8 max-w-3xl space-y-3">
+              <h2 className="text-xl font-semibold text-white">
+                일정 확인 후 기록으로
+              </h2>
+              <p className="text-[15px] leading-relaxed text-white/65">
+                일정에서 경기를 확인한 뒤 직관 기록을 미리 등록해 두면, 나중에
+                점수를 다시 입력하지 않아도 됩니다. 홈·원정·점수·경기장처럼
+                경기에 맞는 정보는 일정에서 가져와 기록에 자동으로 맞춰
+                들어갑니다.
+              </p>
+            </section>
+
+            <nav
+              className="mx-auto mt-10 max-w-3xl space-y-3 text-[15px]"
+              aria-label="관련 기능 소개로 이동"
+            >
+              <p>
+                <Link
+                  href="/easy-game-log"
+                  className="font-medium text-orange-400 underline-offset-4 hover:underline"
+                >
+                  경기를 고른 뒤 직관 기록을 남기는 방법
+                </Link>
+              </p>
+              <p>
+                <Link
+                  href="/youtube-highlight"
+                  className="font-medium text-orange-400/95 underline-offset-4 hover:underline"
+                >
+                  기록한 경기의 하이라이트를 다시 보기
+                </Link>
+              </p>
+            </nav>
           </div>
           <div className="mx-auto w-full max-w-[280px] min-w-0 shrink-0 sm:max-w-[300px] md:mx-0 md:max-w-none">
             <figure className="w-full">
