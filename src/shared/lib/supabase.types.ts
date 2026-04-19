@@ -261,6 +261,30 @@ export type Database = {
         }
         Relationships: []
       }
+      notices: {
+        Row: {
+          content: string
+          created_at: string
+          id: number
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          content: string
+          created_at?: string
+          id?: number
+          title: string
+          updated_at?: string
+        }
+        Update: {
+          content?: string
+          created_at?: string
+          id?: number
+          title?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       share: {
         Row: {
           attendee_user_ids: Json
