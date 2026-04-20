@@ -340,7 +340,12 @@ const GameRecordsPage = () => {
 
   useEffect(() => {
     if (fetchedEditRows) {
-      setEditRows(fetchedEditRows.map((r) => ({ ...r, status: "경기 종료" })));
+      // "경기 전"이면 "경기 종료"로 기본값을 제안하고, 그 외 상태는 서버 값을 그대로 유지합니다.
+      setEditRows(
+        fetchedEditRows.map((r) =>
+          r.status === "경기 전" ? { ...r, status: "경기 종료" } : r,
+        ),
+      );
     }
   }, [fetchedEditRows]);
 
