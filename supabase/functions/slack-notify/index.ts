@@ -150,8 +150,8 @@ async function buildSlackMessage(
           elements: [
             {
               type: "button",
-              text: { type: "plain_text", text: "직관 인증", emoji: true },
-              url: `${ADMIN_BASE_URL}/admin/certify`,
+              text: { type: "plain_text", text: "어드민", emoji: true },
+              url: `${ADMIN_BASE_URL}/admin`,
             },
           ],
         },
