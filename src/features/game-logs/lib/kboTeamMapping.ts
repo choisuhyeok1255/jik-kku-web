@@ -2,7 +2,7 @@
  * KBO(The Sports DB) 팀명 → Supabase teams 매칭용
  * team_name 또는 short_team_name으로 매칭
  */
-export const KBO_TEAM_NAME_ALIASES: Record<string, string[]> = {
+const KBO_TEAM_NAME_ALIASES: Record<string, string[]> = {
   "Kia Tigers": ["KIA 타이거즈", "Kia Tigers", "KIA"],
   "SSG Landers": ["SSG 랜더스", "SSG Landers", "SSG"],
   "LG Twins": ["LG 트윈스", "LG Twins", "LG"],
