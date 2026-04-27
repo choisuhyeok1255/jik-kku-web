@@ -2,6 +2,8 @@
 
 # dependencies
 /node_modules
+# pnpm 사용 — package-lock만 갱신되면 Vercel(pnpm frozen-lockfile)과 불일치함
+/package-lock.json
 /.pnp
 .pnp.*
 .yarn/*
