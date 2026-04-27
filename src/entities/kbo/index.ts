@@ -1,16 +1,5 @@
-export {
-  getKboEventsByDate,
-  getKboTeams,
-  useGetKboEventsByDate,
-  useGetKboTeams,
-  useGetKboEventsByDay,
-  useAddKboEvent,
-} from "./api/kbo";
-export type {
-  GetKboEventsQueryModel,
-  KboEventRow,
-  KboTeamRow,
-} from "./model/types/api";
+export { useGetKboEventsByDay } from "./api/kbo";
+export type { KboEventRow } from "./model/types/api";
 export type {
   KboGameListItem,
   KboGameListResponse,

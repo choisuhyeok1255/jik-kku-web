@@ -1,7 +1,3 @@
-export interface GetKboEventsQueryModel {
-  date: string;
-}
-
 export interface KboEventRow {
   idEvent: string;
   idHomeTeam: string;
@@ -51,19 +47,6 @@ export interface KboEventRow {
   strLocked: string;
 }
 
-export interface KboTeamRow {
-  idTeam: string;
-  strTeam: string;
-  strTeamShort: string;
-  strBadge: string | null;
-  strLogo: string | null;
-  strStadium: string | null;
-}
-
 export interface GetKboEventsByDayQueryModel {
   day: string;
-}
-
-export interface AddKboEventQueryModel {
-  body: { id: string; data: KboEventRow[] };
 }
