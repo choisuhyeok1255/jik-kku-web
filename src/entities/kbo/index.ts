@@ -11,3 +11,8 @@ export type {
   KboEventRow,
   KboTeamRow,
 } from "./model/types/api";
+export type {
+  KboGameListItem,
+  KboGameListResponse,
+  KboGameScore,
+} from "./model/types/kbo-game";
