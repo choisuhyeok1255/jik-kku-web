@@ -7,7 +7,8 @@ import { toast } from "sonner";
 
 import {
   getStadiums,
-  useGetKboEventsByDate,
+  type KboGameListItem,
+  type KboGameListResponse,
   useGetTeams,
 } from "@/src/entities";
 import { Header, supabase } from "@/src/shared";
@@ -15,7 +16,7 @@ import type { Database } from "@/src/shared/lib/supabase.types";
 
 import {
   buildGameRecordId,
-  buildPreviewRows,
+  buildPreviewRowsFromKboGame,
   type PreviewRow,
 } from "../lib/gameRecordsAdmin";
 
@@ -35,7 +36,6 @@ const GameRecordsPage = () => {
   const [dateInput, setDateInput] = useState(() =>
     dayjs().format("YYYY-MM-DD"),
   );
-  const [apiDateForQuery, setApiDateForQuery] = useState<string | null>(null);
   const [manualMatchDate, setManualMatchDate] = useState(() =>
     dayjs().format("YYYY-MM-DD"),
   );
@@ -51,13 +51,57 @@ const GameRecordsPage = () => {
     dayjs().format("YYYY-MM-DD"),
   );
   const [editRows, setEditRows] = useState<GameRecordRow[]>([]);
+  const [scheduleFetchLoading, setScheduleFetchLoading] = useState(false);
+  /** kbo-game(`/api/kbo/kbo-game`)로 불러온 일정, `null`이면 아직 조회 전 */
+  const [kboGamePreview, setKboGamePreview] = useState<KboGameListItem[] | null>(
+    null,
+  );
+  const [kboGamePreviewDate, setKboGamePreviewDate] = useState<string | null>(
+    null,
+  );
 
   const handleDateChange = (value: string) => {
     setDateInput(value);
   };
 
-  const handleFetchApi = () => {
-    setApiDateForQuery(dateInput);
+  /**
+   * KBO 일정은 `kbo-game` → 서버 `GET /api/kbo/kbo-game`(CORS 없음)만 사용합니다.
+   * @see `app/api/kbo/kbo-game/route.ts`
+   */
+  const handleFetchApi = async () => {
+    setScheduleFetchLoading(true);
+    try {
+      const res = await fetch(
+        `/api/kbo/kbo-game?date=${encodeURIComponent(dateInput)}`,
+      );
+      const body: unknown = await res.json();
+      if (res.ok) {
+        const list = body as KboGameListResponse;
+        const items = list === null ? [] : list;
+        setKboGamePreview(items);
+        setKboGamePreviewDate(dateInput);
+      } else {
+        setKboGamePreview(null);
+        setKboGamePreviewDate(null);
+        toast.error("일정 API 오류", {
+          description:
+            typeof body === "object" &&
+            body !== null &&
+            "error" in body &&
+            typeof (body as { error: string }).error === "string"
+              ? (body as { error: string }).error
+              : res.statusText,
+        });
+      }
+    } catch (e) {
+      setKboGamePreview(null);
+      setKboGamePreviewDate(null);
+      toast.error("일정 요청 실패", {
+        description: e instanceof Error ? e.message : String(e),
+      });
+    } finally {
+      setScheduleFetchLoading(false);
+    }
   };
 
   const { data: teams, isLoading: loadingTeams } = useGetTeams();
@@ -97,17 +141,16 @@ const GameRecordsPage = () => {
     );
   };
 
-  const {
-    data: events,
-    isLoading: loadingEvents,
-    isError: eventsError,
-    error: eventsErrorObj,
-  } = useGetKboEventsByDate({ date: apiDateForQuery ?? "" });
-
   const previewRows: PreviewRow[] = useMemo(() => {
-    if (!apiDateForQuery || !events?.length || !teams?.length) return [];
-    return buildPreviewRows(events, teams, apiDateForQuery);
-  }, [apiDateForQuery, events, teams]);
+    if (!teams?.length) return [];
+    if (kboGamePreview == null || !kboGamePreviewDate) return [];
+    if (kboGamePreview.length === 0) return [];
+    return buildPreviewRowsFromKboGame(
+      kboGamePreview,
+      teams,
+      kboGamePreviewDate,
+    );
+  }, [kboGamePreview, kboGamePreviewDate, teams]);
 
   const teamLabelById = useMemo(() => {
     const map = new Map<number, string>();
@@ -188,10 +231,10 @@ const GameRecordsPage = () => {
   });
 
   const handleDbApply = () => {
-    if (apiDateForQuery && dateInput !== apiDateForQuery) {
+    if (kboGamePreviewDate && dateInput !== kboGamePreviewDate) {
       toast.message("참고", {
         description:
-          "상단 「경기 날짜」와 API 조회 날짜가 다릅니다. 아래 목록(2번)은 상단 날짜 기준이니, 확인 후 날짜를 맞추세요.",
+          "상단 「경기 날짜」와 미리보기 조회 날짜가 다릅니다. 아래 목록(2번)은 상단 날짜 기준이니, 확인 후 날짜를 맞추세요.",
       });
     }
     applyPreviewMutation.mutate();
@@ -350,7 +393,7 @@ const GameRecordsPage = () => {
   }, [fetchedEditRows]);
 
   const shouldHighlightApiButton =
-    apiDateForQuery !== null && dateInput !== apiDateForQuery;
+    kboGamePreviewDate != null && dateInput !== kboGamePreviewDate;
 
   return (
     <div className="flex h-dvh flex-col">
@@ -359,13 +402,22 @@ const GameRecordsPage = () => {
         title={{ text: "경기 기록", position: "left" }}
         prevPage={{ href: "/admin" }}
       />
-
       <div className="flex min-h-0 flex-1 flex-col gap-4 overflow-y-auto px-4 pb-6">
         <section className="rounded-[16px] border border-white/10 bg-white/4 p-4">
           <p className="mb-3 text-[12px] leading-relaxed text-white/55">
-            날짜를 고른 뒤 API로 해당 일정을 불러옵니다. 아래 미리보기는{" "}
-            <span className="text-white/80">id·팀·구장만 계산한 값</span>
-            이고, 「DB 반영」으로 저장합니다. 동일 id는{" "}
+            일정은 kbo-game 기반{" "}
+            <code className="text-white/70">/api/kbo/kbo-game</code>(
+            <a
+              href="https://github.com/NomaDamas/k-skill/blob/main/docs/features/kbo-results.md"
+              target="_blank"
+              rel="noreferrer"
+              className="text-violet-200/90 underline decoration-violet-400/50 underline-offset-2 hover:text-violet-100"
+            >
+              k-skill 가이드
+            </a>
+            )로만 불러옵니다. 아래 미리보기는{" "}
+            <span className="text-white/80">id·팀·구장만 계산한 값</span>이고,
+            「DB 반영」으로 저장합니다. 동일 id는{" "}
             <span className="text-amber-200/90">upsert(덮어쓰기)</span>입니다.
           </p>
           <div className="flex flex-wrap items-end gap-3">
@@ -380,19 +432,22 @@ const GameRecordsPage = () => {
             </label>
             <button
               type="button"
-              onClick={handleFetchApi}
+              onClick={() => {
+                void handleFetchApi();
+              }}
+              disabled={scheduleFetchLoading}
               className={
                 shouldHighlightApiButton
-                  ? "rounded-[12px] bg-amber-500/25 px-4 py-2 text-[14px] font-semibold text-amber-100 ring-2 ring-amber-400/60 ring-offset-2 ring-offset-[#181818] transition-opacity hover:bg-amber-500/35"
-                  : "rounded-[12px] bg-white/15 px-4 py-2 text-[14px] font-medium text-white transition-opacity hover:opacity-90"
+                  ? "rounded-[12px] bg-amber-500/25 px-4 py-2 text-[14px] font-semibold text-amber-100 ring-2 ring-amber-400/60 ring-offset-2 ring-offset-[#181818] transition-opacity hover:bg-amber-500/35 disabled:opacity-50"
+                  : "rounded-[12px] bg-white/15 px-4 py-2 text-[14px] font-medium text-white transition-opacity hover:opacity-90 disabled:opacity-50"
               }
             >
-              API 불러오기
+              {scheduleFetchLoading ? "불러오는 중…" : "API 불러오기"}
             </button>
           </div>
-          {apiDateForQuery && apiDateForQuery !== dateInput && (
+          {kboGamePreviewDate && kboGamePreviewDate !== dateInput && (
             <p className="mt-2 text-[11px] text-amber-200/80">
-              표시 중인 API 데이터 날짜: {apiDateForQuery} (날짜만 바꾼 경우
+              표시 중인 API 데이터 날짜: {kboGamePreviewDate} (날짜만 바꾼 경우
               다시 「API 불러오기」)
             </p>
           )}
@@ -400,36 +455,33 @@ const GameRecordsPage = () => {
 
         <section className="rounded-[16px] border border-white/10 bg-white/4 p-4">
           <h2 className="mb-2 text-[15px] font-semibold text-white">
-            1. API 미리보기 (TheSportsDB → 생성 예정 행)
+            1. API 미리보기 (kbo-game → 생성 예정 행)
           </h2>
           <p className="mb-3 text-[12px] text-white/50">
             정렬: 같은 날 기준 경기 시각 최신순 · 점수/유튜브는 미경기 가정으로
             비워 두고 &quot;경기 전&quot; 상태로 두면 됩니다.
           </p>
-          {!apiDateForQuery && (
-            <p className="text-[13px] text-white/45">
-              날짜 선택 후 「API 불러오기」를 누르세요.
+          {scheduleFetchLoading && (
+            <p className="mb-1 text-[12px] text-violet-200/80">
+              kbo-game 일정 불러오는 중…
             </p>
           )}
-          {apiDateForQuery && loadingTeams && (
+          {kboGamePreview == null && !scheduleFetchLoading && (
+            <p className="text-[13px] text-white/45">
+              날짜 선택 후 「API 불러오기」로 일정을 불러오세요.
+            </p>
+          )}
+          {loadingTeams && kboGamePreview != null && (
             <p className="text-[13px] text-white/55">팀 목록 로딩…</p>
           )}
-          {apiDateForQuery && !loadingTeams && loadingEvents && (
-            <p className="text-[13px] text-white/55">경기 일정 로딩…</p>
-          )}
-          {eventsError && (
-            <p className="text-[13px] text-red-300/90">
-              API 오류: {eventsErrorObj?.message ?? "unknown"}
+          {kboGamePreview != null &&
+            kboGamePreview.length === 0 &&
+            kboGamePreviewDate &&
+            !loadingTeams && (
+            <p className="text-[13px] text-white/55">
+              해당 날짜에 조회된 경기가 없습니다.
             </p>
           )}
-          {apiDateForQuery &&
-            !loadingEvents &&
-            !eventsError &&
-            events?.length === 0 && (
-              <p className="text-[13px] text-white/55">
-                해당 날짜에 반환된 경기가 없습니다.
-              </p>
-            )}
           {previewRows.length > 0 && (
             <div className="overflow-x-auto">
               <table className={previewTableShell}>

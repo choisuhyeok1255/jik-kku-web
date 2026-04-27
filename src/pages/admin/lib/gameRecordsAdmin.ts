@@ -1,6 +1,6 @@
 import dayjs from "dayjs";
 
-import type { KboEventRow } from "@/src/entities/kbo/model/types/api";
+import type { KboGameListItem } from "@/src/entities/kbo/model/types/kbo-game";
 import type { TeamServerModel } from "@/src/entities/team/model/types/api";
 
 export const pad2 = (n: number) => String(n).padStart(2, "0");
@@ -45,28 +45,35 @@ export type PreviewRow = {
   issues: string[];
 };
 
-export const buildPreviewRows = (
-  events: KboEventRow[],
+/** kbo-game `startTime`(HH:mm) + 경기일 → 정렬에 쓰는 `strTimestamp`용 epoch ms 문자열 */
+const kboStartToTimestampStr = (matchDateYmd: string, startTime: string) => {
+  const t = startTime.trim();
+  const hms = t.split(":").length === 2 ? `${t}:00` : t;
+  return String(dayjs(`${matchDateYmd}T${hms}+09:00`).valueOf());
+};
+
+/** kbo-game(`/api/kbo/kbo-game`) 응답을 `PreviewRow`로 변환합니다. 팀 매칭은 `matchTeamId` */
+export const buildPreviewRowsFromKboGame = (
+  games: KboGameListItem[],
   teams: TeamServerModel[],
   matchDateYmd: string,
 ): PreviewRow[] => {
   const yymmdd = dayjs(matchDateYmd).format("YYMMDD");
-  /** 같은 날 같은 대전의 01·02 부여용 — 경기 시작이 빠른 순 */
-  const chronological = [...events].sort(
+  const chronological = [...games].sort(
     (a, b) =>
-      (Number.parseInt(a.strTimestamp, 10) || 0) -
-      (Number.parseInt(b.strTimestamp, 10) || 0),
+      Number(kboStartToTimestampStr(matchDateYmd, a.startTime)) -
+      Number(kboStartToTimestampStr(matchDateYmd, b.startTime)),
   );
 
   const pairCounters = new Map<string, number>();
   const rows: PreviewRow[] = [];
 
-  for (const event of chronological) {
-    const homeId = matchTeamId(teams, event.strHomeTeam);
-    const awayId = matchTeamId(teams, event.strAwayTeam);
+  for (const g of chronological) {
+    const homeId = matchTeamId(teams, g.homeTeam);
+    const awayId = matchTeamId(teams, g.awayTeam);
     const issues: string[] = [];
-    if (homeId === null) issues.push(`홈팀 미매칭: ${event.strHomeTeam}`);
-    if (awayId === null) issues.push(`원정 미매칭: ${event.strAwayTeam}`);
+    if (homeId === null) issues.push(`홈팀 미매칭: ${g.homeTeam}`);
+    if (awayId === null) issues.push(`원정 미매칭: ${g.awayTeam}`);
 
     let seq = 1;
     if (homeId !== null && awayId !== null) {
@@ -84,6 +91,12 @@ export const buildPreviewRows = (
       issues.push("홈팀에 stadium_id 없음");
     }
 
+    const strTimestamp = kboStartToTimestampStr(matchDateYmd, g.startTime);
+    const strTime =
+      g.startTime.split(":").length === 2
+        ? `${g.startTime}:00`
+        : g.startTime;
+
     let id = "";
     if (homeId !== null && awayId !== null) {
       id = buildGameRecordId(yymmdd, homeId, awayId, seq);
@@ -91,12 +104,12 @@ export const buildPreviewRows = (
 
     rows.push({
       id,
-      idEvent: event.idEvent,
-      strTime: event.strTime,
-      strTimestamp: event.strTimestamp,
+      idEvent: g.id,
+      strTime,
+      strTimestamp,
       matchDate: matchDateYmd,
-      homeTeamName: event.strHomeTeam,
-      awayTeamName: event.strAwayTeam,
+      homeTeamName: g.homeTeam,
+      awayTeamName: g.awayTeam,
       homeTeamId: homeId,
       awayTeamId: awayId,
       stadiumId,
