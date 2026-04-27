@@ -13,13 +13,6 @@ const AdminIndexPage = () => {
       />
       <div className="flex flex-1 flex-col gap-[12px] px-[16px]">
         <Link
-          href="/admin/certify"
-          className="flex items-center justify-between rounded-[20px] border border-white/10 bg-white/4 p-[20px] text-white transition-opacity hover:opacity-90"
-        >
-          <span className="text-[16px] font-medium">직관 인증</span>
-          <span className="text-white/60">→</span>
-        </Link>
-        <Link
           href="/admin/inquiries"
           className="flex items-center justify-between rounded-[20px] border border-white/10 bg-white/4 p-[20px] text-white transition-opacity hover:opacity-90"
         >

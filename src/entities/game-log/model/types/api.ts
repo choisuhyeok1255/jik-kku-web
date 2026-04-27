@@ -9,10 +9,6 @@ export type UpdateGameLogQueryModel = {
   body: Database["public"]["Tables"]["game_logs"]["Update"];
 };
 
-export interface CertifyGameLogQueryModel {
-  query: { gameLogId: Database["public"]["Tables"]["game_logs"]["Row"]["id"] };
-}
-
 export type GameLogServerModel =
   Database["public"]["Tables"]["game_logs"]["Row"];
 
@@ -26,19 +22,6 @@ export interface GetGameLogsInfiniteQueryModel {
     pageSize?: number;
   };
 }
-
-export interface GetNotCertifyGameLogsQueryModel {
-  query: { userId: Database["public"]["Tables"]["users"]["Row"]["id"] };
-}
-
-export type GetNotCertifyGameLogsServerModel =
-  Database["public"]["Tables"]["game_logs"]["Row"];
-
-export interface GetCertifyGameLogsQueryModel {
-  query: { userId: Database["public"]["Tables"]["users"]["Row"]["id"] };
-}
-
-export type GetCertifyGameLogsServerModel = GetNotCertifyGameLogsServerModel;
 
 export interface GetGameLogDetailQueryModel {
   query: { gameLogId: Database["public"]["Tables"]["game_logs"]["Row"]["id"] };
