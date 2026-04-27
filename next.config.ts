@@ -1,6 +1,9 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
+  // kbo-game은 ESM·서버 전용 fetch 조합이라 Vercel 번들에서 깨지는 경우가 있어 외부 모듈로 둡니다.
+  serverExternalPackages: ["kbo-game"],
+
   images: {
     remotePatterns: [
       {
