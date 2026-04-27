@@ -1,7 +1,7 @@
 import { useMutation, useQuery } from "@tanstack/react-query";
+import dayjs from "dayjs";
 
 import { supabase } from "@/src/shared";
-import { SITE_URL } from "@/src/shared/lib/site-url";
 import type { Json } from "@/src/shared/lib/supabase.types";
 
 import type {
@@ -12,7 +12,16 @@ import type {
   KboTeamRow,
 } from "../model/types/api";
 
-const THE_SPORTS_DB_BASE = "https://www.thesportsdb.com/api/v1/json/123";
+const THE_SPORTS_DB_BASE =
+  process.env.NEXT_PUBLIC_THE_SPORTS_DB_BASE ??
+  "https://www.thesportsdb.com/api/v1/json/123";
+/**
+ * TheSportsDB `idLeague`(Korean KBO League). `eventsday`의 `l`에 이름 대신 id 사용(문서도 id 예: 4424).
+ * @see https://www.thesportsdb.com/documentation#schedule_v1 — Schedule Day
+ */
+const KBO_LEAGUE_ID = process.env.NEXT_PUBLIC_KBO_LEAGUE_ID ?? "4830";
+/** Schedule Day 옵션 `s`(문서 예: `s=Baseball`). KBO는 야구 리그. */
+const KBO_STR_SPORT = "Baseball";
 const KBO_LEAGUE = "Korean%20KBO%20League";
 
 export const getKboTeams = async (): Promise<KboTeamRow[]> => {
@@ -32,16 +41,31 @@ export const useGetKboTeams = () => {
   });
 };
 
+/**
+ * v1 API Schedule — Schedule Day: `eventsday.php?d&[s]&[l]`
+ * (Search `searchevents`가 아님)
+ */
 export const getKboEventsByDate = async (
   date: string,
 ): Promise<KboEventRow[]> => {
-  const baseUrl =
-    typeof window !== "undefined" ? window.location.origin : SITE_URL;
+  const d = dayjs(date).format("YYYY-MM-DD");
+  const q = new URLSearchParams();
+  q.set("d", d);
+  q.set("s", KBO_STR_SPORT);
+  q.set("l", KBO_LEAGUE_ID);
   const res = await fetch(
-    `${baseUrl}/api/kbo/events/date?date=${encodeURIComponent(date)}`,
+    `${THE_SPORTS_DB_BASE}/eventsday.php?${q.toString()}`,
   );
-  const data = await res.json();
-  return (data ?? []) as KboEventRow[];
+  if (!res.ok) {
+    throw new Error(
+      `TheSportsDB eventsday 실패: HTTP ${res.status} (${d}, l=${KBO_LEAGUE_ID})`,
+    );
+  }
+  const data = (await res.json()) as {
+    events?: KboEventRow[];
+    Message?: string;
+  };
+  return (data.events ?? []) as KboEventRow[];
 };
 
 export const useGetKboEventsByDate = (req: GetKboEventsQueryModel) => {
