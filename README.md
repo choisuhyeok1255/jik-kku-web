@@ -5,6 +5,7 @@
 ## 주요 기능
 
 ### 직관 (홈)
+
 - **승률** - 직관 승률 통계
 - **직관 기록** - 경기 예측 기록 관리
   - 무한 스크롤 목록
@@ -15,14 +16,17 @@
   - 인증 완료 표시
 
 ### 나눔
+
 - **진행 중 / 마감됨** 탭 구분
 - 나눔 등록 (제목, 내용, 마감일, 경기장, 인원)
 - 나눔 상세·수정
 
 ### 랭킹
+
 - 직관 승률 랭킹
 
 ### 경기 일정
+
 - **구단별 KBO 경기 일정** 달력
   - 팀 선택 (Select)
   - 월 네비게이션 (이전/다음 버튼), 스와이프로 월 이동
@@ -31,10 +35,12 @@
   - 로딩 시 Skeleton UI, 접근성(aria-label) 지원
 
 ### 마이페이지
+
 - 프로필, 닉네임 수정, 팀 설정, 문의하기, 로그아웃
 - **문의하기** - 1:1 문의 등록 및 아코디언 UI로 내역 확인
 
 ### 관리자
+
 - **어드민** (`/admin`) — 1:1 문의, 경기 기록(메뉴상 「직관 기록」), 공지로 이동
 - **경기 기록** (`/admin/game-logs`) — KBO 경기·스코어·일정(`game_records`) 관리
 - **문의** (`/admin/inquiries`) — 문의 목록·답변
@@ -52,11 +58,11 @@
 
 ## Next.js 렌더링 전략
 
-| 전략 | 적용 페이지 | 설명 |
-|------|-------------|------|
-| **SSR** | `/share`, `/ranking` | 서버에서 데이터 fetch 후 클라이언트에 `initialData`로 전달. 첫 화면 로딩 시 데이터 포함 |
-| **ISR** | `/ranking` | `revalidate = 60` — 60초마다 백그라운드에서 페이지 재생성. 랭킹 데이터 주기적 갱신 |
-| **CSR** | `/`, `/calendar`, `/share/[id]`, `/share/create`, `/my-page`, `/my-page/inquiry`, `/game-logs/*`, `/admin/*` | 클라이언트에서 React Query로 데이터 fetch. `"use client"` 컴포넌트 |
+| 전략    | 적용 페이지                                                                                                  | 설명                                                                                    |
+| ------- | ------------------------------------------------------------------------------------------------------------ | --------------------------------------------------------------------------------------- |
+| **SSR** | `/share`, `/ranking`                                                                                         | 서버에서 데이터 fetch 후 클라이언트에 `initialData`로 전달. 첫 화면 로딩 시 데이터 포함 |
+| **ISR** | `/ranking`                                                                                                   | `revalidate = 60` — 60초마다 백그라운드에서 페이지 재생성. 랭킹 데이터 주기적 갱신      |
+| **CSR** | `/`, `/calendar`, `/share/[id]`, `/share/create`, `/my-page`, `/my-page/inquiry`, `/game-logs/*`, `/admin/*` | 클라이언트에서 React Query로 데이터 fetch. `"use client"` 컴포넌트                      |
 
 ### 상세
 
@@ -103,36 +109,37 @@ src/
 
 ## 라우트 구조
 
-| 경로 | 설명 |
-|------|------|
-| `/` | 홈 (직관 / 직관 기록 탭) |
-| `/game-logs/create` | 직관 등록 |
-| `/game-logs/create/finish` | 직관 등록 완료 |
-| `/game-logs/[id]/edit` | 직관 수정·삭제 |
-| `/share` | 나눔 (진행 중 / 마감됨 탭) |
-| `/share/create` | 나눔 등록 |
-| `/share/[id]` | 나눔 상세 |
-| `/share/[id]/edit` | 나눔 수정 |
-| `/ranking` | 직관 랭킹 |
-| `/calendar` | 경기 일정 (구단별 KBO 일정) |
-| `/my-page` | 마이페이지 |
-| `/my-page/nickname` | 닉네임 수정 |
-| `/my-page/team` | 팀 설정 |
-| `/my-page/inquiry` | 문의하기 (아코디언 목록) |
-| `/my-page/inquiry/create` | 문의 작성 |
-| `/admin` | 어드민 홈 (관리자) |
-| `/admin/game-logs` | 경기 기록 — KBO 경기·스코어·일정 관리 (관리자) |
-| `/admin/inquiries` | 문의 관리 (관리자) |
-| `/admin/notices` | 공지 관리 (관리자) |
-| `/admin/notices/new` | 공지 등록 (관리자) |
-| `/admin/notices/[id]` | 공지 상세·수정 (관리자) |
-| `/auth/callback` | OAuth 콜백 |
+| 경로                       | 설명                                           |
+| -------------------------- | ---------------------------------------------- |
+| `/`                        | 홈 (직관 / 직관 기록 탭)                       |
+| `/game-logs/create`        | 직관 등록                                      |
+| `/game-logs/create/finish` | 직관 등록 완료                                 |
+| `/game-logs/[id]/edit`     | 직관 수정·삭제                                 |
+| `/share`                   | 나눔 (진행 중 / 마감됨 탭)                     |
+| `/share/create`            | 나눔 등록                                      |
+| `/share/[id]`              | 나눔 상세                                      |
+| `/share/[id]/edit`         | 나눔 수정                                      |
+| `/ranking`                 | 직관 랭킹                                      |
+| `/calendar`                | 경기 일정 (구단별 KBO 일정)                    |
+| `/my-page`                 | 마이페이지                                     |
+| `/my-page/nickname`        | 닉네임 수정                                    |
+| `/my-page/team`            | 팀 설정                                        |
+| `/my-page/inquiry`         | 문의하기 (아코디언 목록)                       |
+| `/my-page/inquiry/create`  | 문의 작성                                      |
+| `/admin`                   | 어드민 홈 (관리자)                             |
+| `/admin/game-logs`         | 경기 기록 — KBO 경기·스코어·일정 관리 (관리자) |
+| `/admin/inquiries`         | 문의 관리 (관리자)                             |
+| `/admin/notices`           | 공지 관리 (관리자)                             |
+| `/admin/notices/new`       | 공지 등록 (관리자)                             |
+| `/admin/notices/[id]`      | 공지 상세·수정 (관리자)                        |
+| `/auth/callback`           | OAuth 콜백                                     |
 
 ## Cursor 자동화
 
 이 프로젝트는 [Cursor](https://cursor.com) IDE를 활용한 AI 기반 개발 워크플로우를 사용합니다.
 
 ### 커스텀 커맨드: `/commit`
+
 - **목적**: Git 워크플로우 자동화 (스테이징 → 커밋 → 검증 → 푸시)
 - **동작**:
   1. 변경사항을 기능별로 **작은 단위 커밋**으로 분리
@@ -142,6 +149,7 @@ src/
 - **설정**: `.cursor/commands/commit.md`
 
 ### AI 코딩 어시스턴트 활용
+
 - 코드 리팩터링, 버그 수정, 신규 기능 구현 시 AI 지원
 - 컨텍스트 기반 코드 제안 및 자동 완성
 - 규칙 기반 개발 (`.cursor/rules`, User Rules)
@@ -186,13 +194,13 @@ pnpm start
 
 ### 스크립트
 
-| 명령어 | 설명 |
-|--------|------|
-| `pnpm dev` | 개발 서버 실행 |
-| `pnpm build` | 프로덕션 빌드 |
-| `pnpm start` | 프로덕션 서버 실행 |
-| `pnpm lint` | ESLint 실행 |
-| `pnpm test` | Vitest 테스트 실행 |
+| 명령어                | 설명               |
+| --------------------- | ------------------ |
+| `pnpm dev`            | 개발 서버 실행     |
+| `pnpm build`          | 프로덕션 빌드      |
+| `pnpm start`          | 프로덕션 서버 실행 |
+| `pnpm lint`           | ESLint 실행        |
+| `pnpm test`           | Vitest 테스트 실행 |
 | `pnpm supabase:types` | Supabase 타입 생성 |
 
 ## 인증
@@ -215,20 +223,20 @@ supabase functions deploy slack-notify --no-verify-jwt
 
 Supabase Dashboard → Edge Functions → Secrets에서 추가:
 
-| 이름 | 값 |
-|------|-----|
-| `SLACK_WEBHOOK_URL` | Slack Incoming Webhook URL (1대1 문의 기본) |
+| 이름                          | 값                                                     |
+| ----------------------------- | ------------------------------------------------------ |
+| `SLACK_WEBHOOK_URL`           | Slack Incoming Webhook URL (1대1 문의 기본)            |
 | `SLACK_WEBHOOK_URL_GAME_LOGS` | (선택) 직관 생성 전용. 없으면 `SLACK_WEBHOOK_URL` 사용 |
-| `SLACK_WEBHOOK_URL_USERS` | (선택) 회원가입 전용. 없으면 `SLACK_WEBHOOK_URL` 사용 |
+| `SLACK_WEBHOOK_URL_USERS`     | (선택) 회원가입 전용. 없으면 `SLACK_WEBHOOK_URL` 사용  |
 
 ### 3. Database Webhook 설정
 
 Supabase Dashboard → Database → Webhooks에서 생성:
 
-| 이름 | 테이블 | 이벤트 | URL |
-|------|--------|--------|-----|
+| 이름            | 테이블             | 이벤트 | URL                                                           |
+| --------------- | ------------------ | ------ | ------------------------------------------------------------- |
 | inquiries-slack | `public.inquiries` | INSERT | `https://<project-ref>.supabase.co/functions/v1/slack-notify` |
-| users-slack | `public.users` | INSERT | `https://<project-ref>.supabase.co/functions/v1/slack-notify` |
+| users-slack     | `public.users`     | INSERT | `https://<project-ref>.supabase.co/functions/v1/slack-notify` |
 | game-logs-slack | `public.game_logs` | INSERT | `https://<project-ref>.supabase.co/functions/v1/slack-notify` |
 
 - `<project-ref>`는 Supabase Dashboard URL의 프로젝트 ID입니다.
