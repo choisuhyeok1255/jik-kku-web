@@ -50,8 +50,8 @@ export type TheSportsDbScheduleStatus =
  *   "idEvent": "2400229",
  *   "homeTeam": "Doosan Bears",
  *   "awayTeam": "KT Wiz",
- *   "homeScore": "2",
- *   "awayScore": "6",
+ *   "homeScore": 2,
+ *   "awayScore": 6,
  *   "status": "FT",
  *   "dateEvent": "2026-06-16",
  *   "eventTime": null
@@ -61,10 +61,10 @@ export type KboTodayGameResult = {
   idEvent: TheSportsDbEventId;
   homeTeam: string;
   awayTeam: string;
-  /** TheSportsDB `intHomeScore` 문자열. 없으면 `null` */
-  homeScore: string | null;
-  /** TheSportsDB `intAwayScore` 문자열. 없으면 `null` */
-  awayScore: string | null;
+  /** TheSportsDB `intHomeScore`. `0` 포함 숫자, 없으면 `null` */
+  homeScore: number | null;
+  /** TheSportsDB `intAwayScore`. `0` 포함 숫자, 없으면 `null` */
+  awayScore: number | null;
   status: TheSportsDbScheduleStatus;
   /** TheSportsDB `dateEvent` (`YYYY-MM-DD`) */
   dateEvent: string;
@@ -143,9 +143,13 @@ function isKboLeagueRow(row: unknown, leagueId: number): boolean {
   );
 }
 
-function toScore(value: unknown): string | null {
+function parseApiScore(value: unknown): number | null {
   if (value == null || value === "") return null;
-  return String(value);
+  if (typeof value === "number") return Number.isFinite(value) ? value : null;
+  const trimmed = String(value).trim();
+  if (trimmed === "") return null;
+  const n = Number(trimmed);
+  return Number.isFinite(n) ? n : null;
 }
 
 /** schedule `strVideo` → YouTube URL. 빈 문자열이면 `null` */
@@ -180,8 +184,8 @@ function parseTodayGameResult(row: unknown): KboTodayGameResult | null {
     idEvent,
     homeTeam,
     awayTeam,
-    homeScore: toScore(event.intHomeScore),
-    awayScore: toScore(event.intAwayScore),
+    homeScore: parseApiScore(event.intHomeScore),
+    awayScore: parseApiScore(event.intAwayScore),
     status:
       typeof event.strStatus === "string" && event.strStatus.trim()
         ? (event.strStatus.trim() as TheSportsDbScheduleStatus)
