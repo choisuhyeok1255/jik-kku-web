@@ -18,6 +18,7 @@ import {
   buildGameRecordId,
   buildPreviewRowsFromKboGame,
   buildPreviewRowsFromTheSportsDb,
+  formatPreviewScore,
   isValidTheSportsDbPreviewForInsert,
   resolveTheSportsDbDbGameFields,
   type PreviewRow,
@@ -1429,8 +1430,8 @@ function TheSportsDbDatePreviewBlock({
                       id {row.homeTeamId ?? "?"} · {row.awayTeamId ?? "?"}
                     </div>
                   </td>
-                  <td className={td}>{row.homeScore ?? "—"}</td>
-                  <td className={td}>{row.awayScore ?? "—"}</td>
+                  <td className={td}>{formatPreviewScore(row.homeScore)}</td>
+                  <td className={td}>{formatPreviewScore(row.awayScore)}</td>
                   <td className={td}>{row.status}</td>
                   <td className={td}>
                     {row.stadiumId != null ? (

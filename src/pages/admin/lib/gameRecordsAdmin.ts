@@ -153,9 +153,13 @@ export type TheSportsDbPreviewRow = {
 export const isTheSportsDbFinishedStatus = (apiStatus: string): boolean =>
   apiStatus.trim().toUpperCase() === "FT";
 
+/** FT 경기 — API가 `null`로 준 점수는 0득점으로 간주 */
+const normalizeTheSportsDbFtScore = (score: number | null): number =>
+  score ?? 0;
+
 /**
  * TheSportsDB → `game_records` upsert용 점수·status·youtube.
- * FT만 API 점수·youtube 반영. 그 외는 점수·youtube null, status는 API 코드별 매핑.
+ * FT만 점수·youtube 반영( null 점수 → 0 ). 그 외는 점수·youtube null.
  */
 export const resolveTheSportsDbDbGameFields = (input: {
   apiStatus: string;
@@ -169,8 +173,8 @@ export const resolveTheSportsDbDbGameFields = (input: {
   const status = mapTheSportsDbStatusToDbStatus(input.apiStatus);
   if (isTheSportsDbFinishedStatus(input.apiStatus)) {
     return {
-      homeScore: input.homeScore,
-      awayScore: input.awayScore,
+      homeScore: normalizeTheSportsDbFtScore(input.homeScore),
+      awayScore: normalizeTheSportsDbFtScore(input.awayScore),
       status,
       youtubeUrl: input.youtubeUrl,
     };
@@ -192,11 +196,9 @@ export const mapTheSportsDbStatusToDbStatus = (apiStatus: string): string => {
   return "경기 전";
 };
 
-const parseTheSportsDbScore = (value: string | null): number | null => {
-  if (value == null || value.trim() === "") return null;
-  const n = Number(value);
-  return Number.isFinite(n) ? n : null;
-};
+/** 미리보기 테이블 점수 — `0`은 `"0"`, null/undefined만 `—` */
+export const formatPreviewScore = (score: number | null | undefined): string =>
+  score === null || score === undefined ? "—" : String(score);
 
 /**
  * `fetchKboTodayGameResults`의 `games`를 DB upsert용 미리보기 행으로 변환합니다.
@@ -244,12 +246,10 @@ export const buildPreviewRowsFromTheSportsDb = (
       id = buildGameRecordId(yymmdd, homeId, awayId, seq);
     }
 
-    const parsedHomeScore = parseTheSportsDbScore(g.homeScore);
-    const parsedAwayScore = parseTheSportsDbScore(g.awayScore);
     const dbFields = resolveTheSportsDbDbGameFields({
       apiStatus: g.status,
-      homeScore: parsedHomeScore,
-      awayScore: parsedAwayScore,
+      homeScore: g.homeScore,
+      awayScore: g.awayScore,
       youtubeUrl: g.youtubeUrl,
     });
 
