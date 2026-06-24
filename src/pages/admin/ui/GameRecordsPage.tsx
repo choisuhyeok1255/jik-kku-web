@@ -26,10 +26,25 @@ import {
 } from "../lib/gameRecordsAdmin";
 import {
   fetchKboGameResultsByDate,
+  fetchKboGameResultsForMonth,
   logKboRecentGameResults,
   type KboDateGameResults,
   type KboTodayGameResults,
 } from "../lib/theSportDb";
+import {
+  buildYoutubeAuditMonthGrid,
+  enrichMissingByDateWithTheSportsDb,
+  fetchYoutubeAuditGameRecords,
+  groupYoutubeMissingByMatchDate,
+  WEEKDAY_LABELS,
+  type TheSportsDbYoutubeMark,
+  type YoutubeAuditCalendarCell,
+} from "../lib/youtubeMissingCalendar";
+
+const YOUTUBE_AUDIT_QUERY_KEY = ["admin-game-records-youtube-audit"] as const;
+const YOUTUBE_AUDIT_THESPORTSDB_QUERY_KEY = [
+  "admin-game-records-youtube-audit-thesportsdb",
+] as const;
 
 type GameRecordRow = Database["public"]["Tables"]["game_records"]["Row"];
 type GameRecordInsert = Database["public"]["Tables"]["game_records"]["Insert"];
@@ -79,6 +94,10 @@ const GameRecordsPage = () => {
   const [theSportsDbPickResults, setTheSportsDbPickResults] =
     useState<KboDateGameResults | null>(null);
   const [theSportsDbPickLoading, setTheSportsDbPickLoading] = useState(false);
+  /** 7번 — 유튜브 누락 달력 표시 월 (`YYYY-MM`) */
+  const [youtubeAuditMonth, setYoutubeAuditMonth] = useState(() =>
+    dayjs().format("YYYY-MM"),
+  );
 
   const handleDateChange = (value: string) => {
     setDateInput(value);
@@ -161,6 +180,18 @@ const GameRecordsPage = () => {
 
   const handleTheSportsDbPickDateChange = (value: string) => {
     setTheSportsDbPickDate(value);
+  };
+
+  const handleYoutubeAuditPrevMonth = () => {
+    setYoutubeAuditMonth((prev) =>
+      dayjs(`${prev}-01`).subtract(1, "month").format("YYYY-MM"),
+    );
+  };
+
+  const handleYoutubeAuditNextMonth = () => {
+    setYoutubeAuditMonth((prev) =>
+      dayjs(`${prev}-01`).add(1, "month").format("YYYY-MM"),
+    );
   };
 
   const { data: teams, isLoading: loadingTeams } = useGetTeams();
@@ -264,6 +295,44 @@ const GameRecordsPage = () => {
     return map;
   }, [stadiumsForManual]);
 
+  const { data: youtubeAuditRecords, isLoading: loadingYoutubeAudit } =
+    useQuery({
+      queryKey: [...YOUTUBE_AUDIT_QUERY_KEY, youtubeAuditMonth],
+      queryFn: () => fetchYoutubeAuditGameRecords(youtubeAuditMonth),
+    });
+
+  const {
+    data: youtubeAuditTheSportsDbGames,
+    isLoading: loadingYoutubeAuditTheSportsDb,
+  } = useQuery({
+    queryKey: [...YOUTUBE_AUDIT_THESPORTSDB_QUERY_KEY, youtubeAuditMonth],
+    queryFn: () => fetchKboGameResultsForMonth(youtubeAuditMonth),
+    enabled: !!teams?.length,
+  });
+
+  const youtubeMissingByDate = useMemo(() => {
+    const base = groupYoutubeMissingByMatchDate(
+      youtubeAuditRecords ?? [],
+      teamLabelById,
+    );
+    if (!teams?.length) return base;
+    return enrichMissingByDateWithTheSportsDb(
+      base,
+      youtubeAuditTheSportsDbGames ?? [],
+      teams,
+    );
+  }, [
+    youtubeAuditRecords,
+    teamLabelById,
+    teams,
+    youtubeAuditTheSportsDbGames,
+  ]);
+
+  const youtubeAuditMonthGrid = useMemo(
+    () => buildYoutubeAuditMonthGrid(youtubeAuditMonth, youtubeMissingByDate),
+    [youtubeAuditMonth, youtubeMissingByDate],
+  );
+
   const computedManualId = useMemo(() => {
     if (
       !manualMatchDate ||
@@ -309,6 +378,7 @@ const GameRecordsPage = () => {
     },
     onSuccess: (count) => {
       void queryClient.invalidateQueries({ queryKey: ["admin-game-records"] });
+      void queryClient.invalidateQueries({ queryKey: [...YOUTUBE_AUDIT_QUERY_KEY] });
       toast.success(`${count}건을 DB에 반영했습니다.`);
     },
     onError: (e: unknown) => {
@@ -370,6 +440,7 @@ const GameRecordsPage = () => {
       void queryClient.invalidateQueries({
         queryKey: ["admin-game-records-edit-batch"],
       });
+      void queryClient.invalidateQueries({ queryKey: [...YOUTUBE_AUDIT_QUERY_KEY] });
       toast.success(`TheSportsDB ${label} ${count}건을 DB에 반영했습니다.`);
     },
     onError: (e: unknown) => {
@@ -442,6 +513,7 @@ const GameRecordsPage = () => {
     },
     onSuccess: () => {
       void queryClient.invalidateQueries({ queryKey: ["admin-game-records"] });
+      void queryClient.invalidateQueries({ queryKey: [...YOUTUBE_AUDIT_QUERY_KEY] });
       toast.success("수기 입력한 경기를 저장했습니다.");
     },
     onError: (e: unknown) => {
@@ -524,6 +596,7 @@ const GameRecordsPage = () => {
       void queryClient.invalidateQueries({
         queryKey: ["admin-game-records-edit-batch"],
       });
+      void queryClient.invalidateQueries({ queryKey: [...YOUTUBE_AUDIT_QUERY_KEY] });
       toast.success("선택한 날짜의 수정 사항을 저장했습니다.");
     },
     onError: (e: unknown) => {
@@ -1357,6 +1430,33 @@ const GameRecordsPage = () => {
             </div>
           )}
         </section>
+
+        <section className="rounded-[16px] border border-white/10 bg-white/4 p-4">
+          <h2 className="mb-2 text-[15px] font-semibold text-white">
+            7. 유튜브 누락 달력
+          </h2>
+          <p className="mb-3 text-[12px] leading-relaxed text-white/50">
+            DB{" "}
+            <span className="text-white/75">경기 종료</span> 기록 중{" "}
+            <span className="text-white/75">youtube_url</span>이 비어 있는
+            날짜를 표시합니다. 각 경기 옆{" "}
+            <span className="text-emerald-300/90">O</span>/
+            <span className="text-rose-300/90">X</span>는 TheSportsDB{" "}
+            <span className="text-white/75">strVideo</span> 존재 여부(O=있음,
+            X=없음, —=미매칭)입니다.
+          </p>
+          <YoutubeMissingCalendarBlock
+            monthYmd={youtubeAuditMonth}
+            grid={youtubeAuditMonthGrid}
+            loading={
+              loadingYoutubeAudit ||
+              loadingTeams ||
+              loadingYoutubeAuditTheSportsDb
+            }
+            onPrevMonth={handleYoutubeAuditPrevMonth}
+            onNextMonth={handleYoutubeAuditNextMonth}
+          />
+        </section>
       </div>
     </div>
   );
@@ -1481,6 +1581,128 @@ function TheSportsDbDatePreviewBlock({
           비고(매핑 오류)가 있는 행은 제외됩니다.
         </span>
       </div>
+    </div>
+  );
+}
+
+/** TheSportsDB youtube O/X/— 표시 */
+function TheSportsDbYoutubeMarkBadge({ mark }: { mark: TheSportsDbYoutubeMark }) {
+  const className =
+    mark === "O"
+      ? "text-emerald-300/95"
+      : mark === "X"
+        ? "text-rose-300/95"
+        : "text-white/35";
+  return (
+    <span className={`font-semibold ${className}`} title="TheSportsDB youtube">
+      {mark}
+    </span>
+  );
+}
+
+/** 7번 — 유튜브 누락 달력 (TheSportsDB O/X 표시) */
+function YoutubeMissingCalendarBlock({
+  monthYmd,
+  grid,
+  loading,
+  onPrevMonth,
+  onNextMonth,
+}: {
+  monthYmd: string;
+  grid: YoutubeAuditCalendarCell[];
+  loading: boolean;
+  onPrevMonth: () => void;
+  onNextMonth: () => void;
+}) {
+  const monthLabel = dayjs(`${monthYmd}-01`).format("YYYY년 M월");
+  const missingCells = grid.filter((cell) => cell.missingGames.length > 0);
+  const totalMissingInMonth = missingCells.reduce(
+    (sum, cell) => sum + cell.missingGames.length,
+    0,
+  );
+
+  return (
+    <div className={loading ? "opacity-70" : undefined}>
+      <div className="mb-4 flex flex-wrap items-center gap-3">
+        <button
+          type="button"
+          onClick={onPrevMonth}
+          disabled={loading}
+          className="rounded-[8px] border border-white/20 bg-white/5 px-3 py-1.5 text-[14px] text-white/85 hover:bg-white/10 disabled:opacity-40"
+          aria-label="이전 달"
+        >
+          ‹
+        </button>
+        <span className="min-w-[120px] text-center text-[15px] font-medium text-white">
+          {monthLabel}
+        </span>
+        <button
+          type="button"
+          onClick={onNextMonth}
+          disabled={loading}
+          className="rounded-[8px] border border-white/20 bg-white/5 px-3 py-1.5 text-[14px] text-white/85 hover:bg-white/10 disabled:opacity-40"
+          aria-label="다음 달"
+        >
+          ›
+        </button>
+        <span className="text-[11px] text-white/45">
+          {loading
+            ? "DB·TheSportsDB 불러오는 중…"
+            : `이번 달 youtube 누락 ${totalMissingInMonth}경기 · ${missingCells.length}일`}
+        </span>
+      </div>
+
+      <div className="grid grid-cols-7 gap-1 text-[12px]">
+        {WEEKDAY_LABELS.map((label) => (
+          <div
+            key={label}
+            className="py-1 text-center text-[11px] font-medium text-white/50"
+          >
+            {label}
+          </div>
+        ))}
+        {grid.map((cell, index) => {
+          const hasMissing = cell.missingGames.length > 0;
+          const cellClassName = `min-h-[88px] rounded-[8px] border p-1.5 ${
+            cell.dateYmd == null
+              ? "border-transparent bg-transparent"
+              : hasMissing
+                ? "border-amber-400/45 bg-amber-500/10"
+                : "border-white/8 bg-white/3"
+          }`;
+
+          return (
+            <div key={`${cell.dateYmd ?? "pad"}-${index}`} className={cellClassName}>
+              <div
+                className={`mb-1 text-[12px] font-medium ${
+                  hasMissing ? "text-amber-100" : "text-white/70"
+                }`}
+              >
+                {cell.dayOfMonth}
+              </div>
+              {hasMissing && (
+                <div className="flex flex-wrap gap-1">
+                  {cell.missingGames.map((g) => (
+                    <span
+                      key={g.id}
+                      className="inline-flex max-w-full items-center gap-0.5 rounded-[4px] bg-amber-950/35 px-1 py-0.5 text-[10px] leading-snug text-amber-100/90"
+                    >
+                      <span className="truncate">{g.matchupLabel}</span>
+                      <TheSportsDbYoutubeMarkBadge mark={g.theSportsDbYoutube} />
+                    </span>
+                  ))}
+                </div>
+              )}
+            </div>
+          );
+        })}
+      </div>
+
+      {!loading && missingCells.length === 0 && (
+        <p className="mt-4 text-[13px] text-white/55">
+          {monthLabel}에는 youtube가 비어 있는 경기 종료 경기가 없습니다.
+        </p>
+      )}
     </div>
   );
 }
