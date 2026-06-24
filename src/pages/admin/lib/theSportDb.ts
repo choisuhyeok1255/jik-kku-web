@@ -4,6 +4,8 @@
  * @see https://www.thesportsdb.com/documentation
  */
 
+import dayjs from "dayjs";
+
 const THESPORTSDB_PROXY_BASE = "/api/thesportsdb";
 
 /** TheSportsDB `Korean KBO League` (`idLeague`) */
@@ -331,6 +333,28 @@ export async function fetchKboGameResultsByDate(
     leagueId,
     games: grouped.get(matchDate) ?? [],
   };
+}
+
+/**
+ * KBO 시즌 schedule에서 **해당 월(`YYYY-MM`)** 경기만 조회합니다.
+ * 7번 유튜브 누락 달력 TheSportsDB O/X 표시용.
+ */
+export async function fetchKboGameResultsForMonth(
+  monthYmd: string,
+): Promise<KboTodayGameResult[]> {
+  const leagueId = THESPORTSDB_KBO_LEAGUE_ID;
+  const seasonYear = monthYmd.slice(0, 4);
+  const monthStart = dayjs(`${monthYmd}-01`).startOf("month");
+  const monthDates = new Set<string>();
+  for (let i = 0; i < monthStart.daysInMonth(); i += 1) {
+    monthDates.add(monthStart.add(i, "day").format("YYYY-MM-DD"));
+  }
+
+  const rows = await fetchTheSportsDbSchedule(
+    `/schedule/league/${leagueId}/${seasonYear}`,
+  );
+  const grouped = collectGamesForDates(rows, leagueId, monthDates);
+  return [...grouped.values()].flat();
 }
 
 /** KBO 오늘·어제 경기 결과를 브라우저 콘솔에 출력합니다. */
