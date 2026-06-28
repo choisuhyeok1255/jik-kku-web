@@ -1,6 +1,7 @@
 /**
  * TheSportsDB v2 KBO **오늘 경기 결과** — `schedule/previous`·`schedule/next`에서
- * KST 오늘(`dateEvent`) 경기만 모읍니다. 클라이언트는 `/api/thesportsdb/*` 프록시만 호출.
+ * KST 오늘(`dateEvent`) 경기만 모읍니다. 기본은 `/api/thesportsdb/*` 프록시로 호출하고,
+ * 서버(크론)에서는 `ScheduleHttpClient`를 주입해 TheSportsDB를 직접 호출합니다.
  * @see https://www.thesportsdb.com/documentation
  */
 
@@ -204,21 +205,38 @@ function parseTodayGameResult(row: unknown): KboTodayGameResult | null {
   };
 }
 
-async function fetchTheSportsDbSchedule(path: string): Promise<unknown[]> {
+/** schedule 요청 1건의 응답(상태·본문). `ScheduleHttpClient`가 반환한다. */
+export type ScheduleHttpResult = { status: number; ok: boolean; json: unknown };
+
+/**
+ * schedule 경로를 받아 raw 응답을 돌려주는 HTTP 전송 함수.
+ * 기본(클라이언트)은 `/api/thesportsdb` 프록시, 서버(크론)는 TheSportsDB 직접 호출 버전을 주입한다.
+ */
+export type ScheduleHttpClient = (path: string) => Promise<ScheduleHttpResult>;
+
+/** 기본 전송 — `/api/thesportsdb` 프록시 (브라우저용). */
+const proxyScheduleHttpClient: ScheduleHttpClient = async (path) => {
   const normalized = path.startsWith("/") ? path.slice(1) : path;
   const response = await fetch(`${THESPORTSDB_PROXY_BASE}/${normalized}`, {
     headers: { Accept: "application/json" },
   });
-
   const json = (await response.json()) as unknown;
+  return { status: response.status, ok: response.ok, json };
+};
 
-  if (response.status === 429) {
+async function fetchTheSportsDbSchedule(
+  path: string,
+  httpClient: ScheduleHttpClient = proxyScheduleHttpClient,
+): Promise<unknown[]> {
+  const { status, ok, json } = await httpClient(path);
+
+  if (status === 429) {
     throw new Error(
       "TheSportsDB 요청 한도(429)를 초과했습니다. 잠시 후 다시 시도해 주세요.",
     );
   }
 
-  if (!response.ok) {
+  if (!ok) {
     const proxyError =
       json &&
       typeof json === "object" &&
@@ -227,9 +245,7 @@ async function fetchTheSportsDbSchedule(path: string): Promise<unknown[]> {
         ? (json as { error: string }).error
         : null;
     const message =
-      proxyError ??
-      isEmptyTheSportsDbPayload(json) ??
-      `HTTP ${response.status}`;
+      proxyError ?? isEmptyTheSportsDbPayload(json) ?? `HTTP ${status}`;
     throw new Error(`TheSportsDB v2 요청 실패: ${message}`);
   }
 
@@ -277,15 +293,17 @@ function collectGamesForDates(
 /**
  * KBO **오늘·어제(KST) 경기 결과**를 schedule API에서 한 번에 조회합니다.
  */
-export async function fetchKboRecentGameResults(): Promise<KboTodayGameResults> {
+export async function fetchKboRecentGameResults(
+  httpClient?: ScheduleHttpClient,
+): Promise<KboTodayGameResults> {
   const todayKst = getKstDateString();
   const yesterdayKst = getKstYesterdayDateString();
   const leagueId = THESPORTSDB_KBO_LEAGUE_ID;
   const targetDates = new Set([todayKst, yesterdayKst]);
 
   const [previousRows, nextRows] = await Promise.all([
-    fetchTheSportsDbSchedule(`/schedule/previous/league/${leagueId}`),
-    fetchTheSportsDbSchedule(`/schedule/next/league/${leagueId}`),
+    fetchTheSportsDbSchedule(`/schedule/previous/league/${leagueId}`, httpClient),
+    fetchTheSportsDbSchedule(`/schedule/next/league/${leagueId}`, httpClient),
   ]);
 
   const grouped = collectGamesForDates(
