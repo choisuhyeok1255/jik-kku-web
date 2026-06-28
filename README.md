@@ -248,6 +248,35 @@ Supabase Dashboard → Database → Webhooks에서 생성:
 - **회원가입**: `users` 테이블에 새 행 INSERT 시
 - **경기 기록**: `game_logs` 테이블에 새 행 INSERT 시
 
+## 경기 데이터 자동 동기화 (크론)
+
+TheSportsDB의 KBO 경기 결과(점수·상태·유튜브)를 일정 시각마다 자동으로 `game_records`에 반영합니다.
+
+- 엔드포인트: `POST /api/cron/sync-games` (`Authorization: Bearer <CRON_SECRET>` 필요)
+- 동작: 매 호출마다 어제·오늘(KST) 경기를 upsert. 유튜브 URL은 새 값이 있을 때만 갱신(수기 입력 보존)
+- 알림: 실제 변경이 있을 때만 Slack 요약, 실패 시 Slack 실패 알림 (`SLACK_WEBHOOK_URL` 재사용)
+
+### 1. 환경변수 (Vercel)
+
+| 이름                        | 값                                                         |
+| --------------------------- | ---------------------------------------------------------- |
+| `CRON_SECRET`               | 크론 엔드포인트 보호 토큰 (pg_cron SQL과 같은 값)          |
+| `SUPABASE_SERVICE_ROLE_KEY` | Supabase → Settings → API 의 `service_role` 키 (서버 전용) |
+| `SLACK_WEBHOOK_URL`         | 기존 Slack Incoming Webhook URL (동기화 알림도 같은 채널)  |
+| `THESPORTSDB_KEY`           | TheSportsDB API 키 (없으면 `NEXT_PUBLIC_THESPORTSDB_KEY`)  |
+
+### 2. 스케줄 등록 (Supabase pg_cron)
+
+`supabase/cron/sync_game_records.sql`의 `<CRON_SECRET>`를 실제 값으로 치환 후 Supabase SQL Editor에서 실행합니다. 스케줄(KST):
+
+| 구분        | 시간대            | 횟수 |
+| ----------- | ----------------- | ---- |
+| 화~금       | 20:00 ~ 01:00     | 21   |
+| 토·일       | 16:00 ~ 00:00     | 33   |
+| 월          | 제외              | 0    |
+
+15분 간격, 주 150회. (pg_cron은 UTC 기준이며 SQL에 변환되어 있음)
+
 ## 라이선스
 
 Private
