@@ -77,6 +77,39 @@ async function fetchUserNickname(userId: string): Promise<string | null> {
   return rows[0]?.nickname ?? null;
 }
 
+/**
+ * `game_records.id`로 `public.game_records`에서 `match_date`(경기일)만 조회합니다.
+ * `game_logs`에는 경기일 컬럼이 없고 `game_record_id`로 경기를 참조하므로 여기서 가져온다.
+ */
+async function fetchMatchDateByGameRecordId(
+  gameRecordId: number,
+): Promise<string | null> {
+  const supabaseUrl = Deno.env.get("SUPABASE_URL");
+  const serviceKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY");
+  if (!supabaseUrl || !serviceKey) {
+    console.error("SUPABASE_URL or SUPABASE_SERVICE_ROLE_KEY is not set");
+    return null;
+  }
+  const res = await fetch(
+    `${supabaseUrl}/rest/v1/game_records?id=eq.${encodeURIComponent(
+      String(gameRecordId),
+    )}&select=match_date`,
+    {
+      headers: {
+        apikey: serviceKey,
+        Authorization: `Bearer ${serviceKey}`,
+        Accept: "application/json",
+      },
+    },
+  );
+  if (!res.ok) {
+    console.error("fetchMatchDateByGameRecordId failed:", await res.text());
+    return null;
+  }
+  const rows = (await res.json()) as { match_date: string }[];
+  return rows[0]?.match_date ?? null;
+}
+
 async function buildSlackMessage(
   payload: WebhookPayload,
 ): Promise<object | null> {
@@ -120,6 +153,14 @@ async function buildSlackMessage(
     const nickname = userId ? await fetchUserNickname(userId) : null;
     const nicknameText = nickname ?? "알 수 없음";
     const formattedDate = formatKstDate(record.created_at);
+    // 경기일: game_logs엔 날짜가 없고 game_record_id로 game_records를 참조하므로 거기서 조회
+    const rawGameRecordId = (payload.record as Record<string, unknown>)
+      .game_record_id;
+    const gameRecordId =
+      typeof rawGameRecordId === "number" ? rawGameRecordId : null;
+    const matchDate = gameRecordId
+      ? await fetchMatchDateByGameRecordId(gameRecordId)
+      : null;
     const hasImage =
       !!record.game_log_images && record.game_log_images.length > 0;
     const headline = nickname
@@ -136,6 +177,7 @@ async function buildSlackMessage(
           type: "section",
           fields: [
             { type: "mrkdwn", text: `*닉네임:*\n${nicknameText}` },
+            { type: "mrkdwn", text: `*경기일:*\n${matchDate ?? "미상"}` },
             { type: "mrkdwn", text: `*등록 시각:*\n${formattedDate}` },
             { type: "mrkdwn", text: `*사진:*\n${hasImage ? "있음" : "없음"}` },
             {
@@ -143,16 +185,6 @@ async function buildSlackMessage(
               text: `*비공개:*\n${record.is_private ? "예" : "아니오"}`,
             },
             { type: "mrkdwn", text: `*메모:*\n${record.memo ?? "없음"}` },
-          ],
-        },
-        {
-          type: "actions",
-          elements: [
-            {
-              type: "button",
-              text: { type: "plain_text", text: "어드민", emoji: true },
-              url: `${ADMIN_BASE_URL}/admin`,
-            },
           ],
         },
       ],
