@@ -191,7 +191,8 @@ export const resolveTheSportsDbDbGameFields = (input: {
 export const mapTheSportsDbStatusToDbStatus = (apiStatus: string): string => {
   const code = apiStatus.trim().toUpperCase();
   if (code === "FT") return "경기 종료";
-  if (code === "POST" || code === "PST") return "우천 취소";
+  // POST/PST(연기)·ABD(몰수·우천취소) → 우천 취소
+  if (code === "POST" || code === "PST" || code === "ABD") return "우천 취소";
   // NS 및 그 외(IN1~9, CANC 등) 전부 경기 전
   return "경기 전";
 };
