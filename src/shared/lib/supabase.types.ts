@@ -39,6 +39,36 @@ export type Database = {
   }
   public: {
     Tables: {
+      checklist_items: {
+        Row: {
+          created_at: string
+          created_by: string | null
+          id: string
+          kind: Database["public"]["Enums"]["checklist_item_kind"]
+          label: string
+          normalized_label: string
+          usage_count: number
+        }
+        Insert: {
+          created_at?: string
+          created_by?: string | null
+          id?: string
+          kind?: Database["public"]["Enums"]["checklist_item_kind"]
+          label: string
+          normalized_label: string
+          usage_count?: number
+        }
+        Update: {
+          created_at?: string
+          created_by?: string | null
+          id?: string
+          kind?: Database["public"]["Enums"]["checklist_item_kind"]
+          label?: string
+          normalized_label?: string
+          usage_count?: number
+        }
+        Relationships: []
+      }
       game_logs: {
         Row: {
           away_team_id: number
@@ -458,8 +488,10 @@ export type Database = {
     }
     Functions: {
       generate_random_nickname: { Args: never; Returns: string }
+      promote_checklist_item: { Args: { target_id: string }; Returns: string }
     }
     Enums: {
+      checklist_item_kind: "official" | "unofficial"
       league_level_enum: "first" | "second"
     }
     CompositeTypes: {

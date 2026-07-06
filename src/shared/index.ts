@@ -1,5 +1,6 @@
 export * from "./api/file";
 export * from "./api/file.types";
+export * from "./lib/formatNumber";
 export * from "./lib/image-compression";
 export * from "./lib/supabase";
 export * from "./lib/supabase.types";

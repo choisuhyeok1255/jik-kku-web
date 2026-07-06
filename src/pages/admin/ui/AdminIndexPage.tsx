@@ -33,6 +33,13 @@ const AdminIndexPage = () => {
           <span className="text-[16px] font-medium">공지사항</span>
           <span className="text-white/60">→</span>
         </Link>
+        <Link
+          href="/admin/recommend-checklist"
+          className="flex items-center justify-between rounded-[20px] border border-white/10 bg-white/4 p-[20px] text-white transition-opacity hover:opacity-90"
+        >
+          <span className="text-[16px] font-medium">추천 준비물</span>
+          <span className="text-white/60">→</span>
+        </Link>
       </div>
     </div>
   );
