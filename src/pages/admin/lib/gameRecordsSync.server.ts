@@ -18,6 +18,7 @@ import {
  * 크론용 경기 기록 자동 동기화 (서버 전용).
  * - TheSportsDB 어제·오늘(KST) 경기 → `game_records` upsert.
  * - 유튜브 URL은 새 값이 있을 때만 갱신하고 기존 값(수기 입력 포함)은 보존한다.
+ * - 이미 확정된 경기("경기 종료"/"우천 취소")는 "경기 전"으로 되돌리지 않는다(결과·점수 보호).
  * - 실제 변경(신규/점수·상태·유튜브 변동)이 있는 행만 저장하고, 변경 내역을 Slack 메시지로 만든다.
  */
 
@@ -167,6 +168,17 @@ export async function syncGameRecordsFromTheSportsDb(): Promise<GameSyncResult> 
       status: dbFields.status,
       youtube_url: youtubeUrl,
     };
+
+    // 확정된 경기("경기 종료"/"우천 취소")를 "경기 전"으로 되돌리지 않는다.
+    // TheSportsDB가 끝난 경기를 일시적으로 FT가 아닌 상태(빈 값·NS·경기중 등)로 주더라도
+    // 이미 확정된 결과·점수가 날아가지 않도록 방어한다.
+    if (
+      existing &&
+      (existing.status === "경기 종료" || existing.status === "우천 취소") &&
+      next.status === "경기 전"
+    ) {
+      continue;
+    }
 
     if (!hasMeaningfulChange(existing, next)) continue;
 
