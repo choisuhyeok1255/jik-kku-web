@@ -4,10 +4,6 @@ import { Database } from "@/src/shared";
 export type ChecklistItemServerModel =
   Database["public"]["Tables"]["checklist_items"]["Row"];
 
-/** 준비물 항목 종류. `official`=관리자 추천, `unofficial`=유저가 직접 추가. */
-export type ChecklistItemKind =
-  Database["public"]["Enums"]["checklist_item_kind"];
-
 /** 추천(official) 항목 추가 요청. `label`만 받고 나머지는 서버/기본값. */
 export interface CreateOfficialChecklistItemQueryModel {
   body: { label: string };

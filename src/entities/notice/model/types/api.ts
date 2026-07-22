@@ -1,8 +1,5 @@
 import { Database } from "@/src/shared";
 
-/** Supabase `notices` 테이블 한 행의 타입. */
-export type NoticeServerModel = Database["public"]["Tables"]["notices"]["Row"];
-
 /** 공지 작성 요청 모델. `title`, `content`만 클라이언트가 전달합니다. */
 export interface CreateNoticeQueryModel {
   body: Pick<

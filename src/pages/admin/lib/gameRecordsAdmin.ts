@@ -202,7 +202,7 @@ export const formatPreviewScore = (score: number | null | undefined): string =>
   score === null || score === undefined ? "—" : String(score);
 
 /**
- * `fetchKboTodayGameResults`의 `games`를 DB upsert용 미리보기 행으로 변환합니다.
+ * `fetchKboRecentGameResults`의 `games`를 DB upsert용 미리보기 행으로 변환합니다.
  * 팀 매칭은 TheSportsDB 영문 팀명(`strHomeTeam` 등) → `matchTeamId`.
  */
 export const buildPreviewRowsFromTheSportsDb = (

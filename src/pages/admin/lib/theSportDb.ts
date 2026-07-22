@@ -46,7 +46,7 @@ export type TheSportsDbScheduleStatus =
   | (string & {});
 
 /**
- * 오늘 KBO 경기 1건 — `fetchKboTodayGameResults`의 `games` 항목.
+ * 오늘 KBO 경기 1건 — `fetchKboRecentGameResults`의 `todayGames`/`yesterdayGames` 항목.
  *
  * @example
  * {
@@ -103,9 +103,6 @@ export type KboTodayGameResults = {
   todayGames: KboTodayGameResult[];
   yesterdayGames: KboTodayGameResult[];
 };
-
-/** @deprecated `KboTodayGameResults` 사용 */
-export type KboRecentGameResults = KboTodayGameResults;
 
 /** KST 기준 `YYYY-MM-DD` */
 export function getKstDateString(now: Date = new Date()): string {
@@ -322,11 +319,6 @@ export async function fetchKboRecentGameResults(
   };
 }
 
-/** @deprecated `fetchKboRecentGameResults` 사용 */
-export async function fetchKboTodayGameResults(): Promise<KboTodayGameResults> {
-  return fetchKboRecentGameResults();
-}
-
 /**
  * KBO 시즌 schedule에서 **지정 날짜(`dateEvent`)** 경기만 조회합니다.
  * @see `/schedule/league/{leagueId}/{seasonYear}`
@@ -380,9 +372,4 @@ export async function logKboRecentGameResults(): Promise<KboTodayGameResults> {
   const result = await fetchKboRecentGameResults();
   console.log(result);
   return result;
-}
-
-/** @deprecated `logKboRecentGameResults` 사용 */
-export async function logKboTodayGameResults(): Promise<KboTodayGameResults> {
-  return logKboRecentGameResults();
 }
