@@ -13,13 +13,14 @@ import {
   fetchKboRecentGameResults,
   type ScheduleHttpClient,
 } from "./theSportDb";
+import type { YoutubeFillResult } from "./youtubeHighlightSync.server";
 
 /**
  * 크론용 경기 기록 자동 동기화 (서버 전용).
- * - TheSportsDB 어제·오늘(KST) 경기 → `game_records` upsert.
- * - 유튜브 URL은 새 값이 있을 때만 갱신하고 기존 값(수기 입력 포함)은 보존한다.
+ * - TheSportsDB 어제·오늘(KST) 경기 → `game_records` upsert (점수·상태).
+ * - 유튜브 URL은 KBO 하이라이트 RSS(별도 단계)가 채우며, 여기선 기존 값만 보존한다.
  * - 이미 확정된 경기("경기 종료"/"우천 취소")는 "경기 전"으로 되돌리지 않는다(결과·점수 보호).
- * - 실제 변경(신규/점수·상태·유튜브 변동)이 있는 행만 저장하고, 변경 내역을 Slack 메시지로 만든다.
+ * - 실제 변경(신규/점수·상태 변동)이 있는 행만 저장하고, 변경 내역을 Slack 메시지로 만든다.
  */
 
 type GameRecordRow = Database["public"]["Tables"]["game_records"]["Row"];
@@ -37,7 +38,6 @@ export type GameSyncChange = {
   homeScore: number | null;
   awayScore: number | null;
   status: string;
-  youtubeAdded: boolean;
   reason: "created" | "updated";
 };
 
@@ -159,8 +159,8 @@ export async function syncGameRecordsFromTheSportsDb(): Promise<GameSyncResult> 
       youtubeUrl: r.youtubeUrl,
     });
 
-    // 유튜브: 새 값(FT의 strVideo)이 있을 때만 갱신, 없으면 기존 값 보존
-    const youtubeUrl = dbFields.youtubeUrl ?? existing?.youtube_url ?? null;
+    // 유튜브는 KBO 하이라이트 RSS(별도 단계)가 채운다. 여기선 기존 값만 보존한다.
+    const youtubeUrl = existing?.youtube_url ?? null;
 
     const next = {
       home_team_score: dbFields.homeScore,
@@ -202,9 +202,6 @@ export async function syncGameRecordsFromTheSportsDb(): Promise<GameSyncResult> 
       homeScore: next.home_team_score,
       awayScore: next.away_team_score,
       status: next.status,
-      youtubeAdded:
-        !!dbFields.youtubeUrl &&
-        (existing?.youtube_url ?? null) !== dbFields.youtubeUrl,
       reason: existing ? "updated" : "created",
     });
   }
@@ -236,48 +233,86 @@ function formatScore(score: number | null): string {
   return score === null ? "—" : String(score);
 }
 
-/** 변경 내역 → Slack Block Kit 메시지. */
-export function buildSyncSlackMessage(result: GameSyncResult): object {
-  const lines = result.changed.map((c) => {
+/**
+ * 변경 내역(점수·상태) + 하이라이트 채우기 결과 → Slack Block Kit 메시지.
+ * @param youtube 하이라이트 채우기 결과 (실패로 못 돌렸으면 `null`)
+ */
+export function buildSyncSlackMessage(
+  result: GameSyncResult,
+  youtube: YoutubeFillResult | null,
+): object {
+  const changeLines = result.changed.map((c) => {
     const tag = c.reason === "created" ? "신규" : "변경";
-    const video = c.youtubeAdded ? " 🎥" : "";
-    return `• [${tag}] ${c.matchDate} ${c.homeTeamName} ${formatScore(c.homeScore)} : ${formatScore(c.awayScore)} ${c.awayTeamName} (${c.status})${video}`;
+    return `• [${tag}] ${c.matchDate} ${c.homeTeamName} ${formatScore(c.homeScore)} : ${formatScore(c.awayScore)} ${c.awayTeamName} (${c.status})`;
   });
 
+  const filledCount = youtube?.filled.length ?? 0;
   const fields = [
     { type: "mrkdwn", text: `*동기화 시각:*\n${formatKst(result.ranAt)}` },
-    { type: "mrkdwn", text: `*변경 건수:*\n${result.changed.length}건` },
-    { type: "mrkdwn", text: `*검토 경기:*\n${result.checked}건` },
+    { type: "mrkdwn", text: `*점수·상태 변경:*\n${result.changed.length}건` },
+    {
+      type: "mrkdwn",
+      text: `*하이라이트 채움:*\n${youtube ? `${filledCount}건` : "실패"}`,
+    },
     { type: "mrkdwn", text: `*매핑 실패:*\n${result.skipped}건` },
   ];
 
-  return {
-    text: `⚾ 경기 데이터 자동 동기화: ${result.changed.length}건 변경`,
-    blocks: [
-      {
-        type: "header",
-        text: {
-          type: "plain_text",
-          text: "⚾ 경기 데이터 자동 동기화",
-          emoji: true,
-        },
+  const blocks: object[] = [
+    {
+      type: "header",
+      text: {
+        type: "plain_text",
+        text: "⚾ 경기 데이터 자동 동기화",
+        emoji: true,
       },
-      { type: "section", fields },
-      {
-        type: "section",
-        text: { type: "mrkdwn", text: lines.join("\n") || "변경 없음" },
+    },
+    { type: "section", fields },
+    {
+      type: "section",
+      text: {
+        type: "mrkdwn",
+        text: changeLines.join("\n") || "점수·상태 변경 없음",
       },
+    },
+  ];
+
+  if (filledCount > 0 && youtube) {
+    const filledLines = youtube.filled.map(
+      (f) => `• 🎥 ${f.matchDate} ${f.matchup}`,
+    );
+    blocks.push({
+      type: "section",
+      text: { type: "mrkdwn", text: `*🎥 하이라이트 채움*\n${filledLines.join("\n")}` },
+    });
+  }
+
+  if (youtube && youtube.skippedDoubleHeader.length > 0) {
+    const dhLines = youtube.skippedDoubleHeader.map(
+      (d) => `• ${d.matchDate} ${d.matchup} (${d.count}경기)`,
+    );
+    blocks.push({
+      type: "section",
+      text: {
+        type: "mrkdwn",
+        text: `*⚠️ 더블헤더 건너뜀 (수동 확인 필요)*\n${dhLines.join("\n")}`,
+      },
+    });
+  }
+
+  blocks.push({
+    type: "actions",
+    elements: [
       {
-        type: "actions",
-        elements: [
-          {
-            type: "button",
-            text: { type: "plain_text", text: "어드민", emoji: true },
-            url: `${ADMIN_BASE_URL}/admin`,
-          },
-        ],
+        type: "button",
+        text: { type: "plain_text", text: "어드민", emoji: true },
+        url: `${ADMIN_BASE_URL}/admin`,
       },
     ],
+  });
+
+  return {
+    text: `⚾ 경기 동기화: 변경 ${result.changed.length}건, 하이라이트 ${filledCount}건`,
+    blocks,
   };
 }
 
