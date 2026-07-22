@@ -39,6 +39,68 @@ export type Database = {
   }
   public: {
     Tables: {
+      android_live_score_tokens: {
+        Row: {
+          last_started_game_id: string | null
+          team_id: number | null
+          token: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          last_started_game_id?: string | null
+          team_id?: number | null
+          token: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          last_started_game_id?: string | null
+          team_id?: number | null
+          token?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "android_live_score_tokens_team_id_fkey"
+            columns: ["team_id"]
+            isOneToOne: false
+            referencedRelation: "teams"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      app_version_requirement: {
+        Row: {
+          android_play_store_url: string | null
+          body_message: string | null
+          id: number
+          ios_app_store_url: string | null
+          min_android_version: string | null
+          min_ios_version: string | null
+          updated_at: string
+        }
+        Insert: {
+          android_play_store_url?: string | null
+          body_message?: string | null
+          id?: number
+          ios_app_store_url?: string | null
+          min_android_version?: string | null
+          min_ios_version?: string | null
+          updated_at?: string
+        }
+        Update: {
+          android_play_store_url?: string | null
+          body_message?: string | null
+          id?: number
+          ios_app_store_url?: string | null
+          min_android_version?: string | null
+          min_ios_version?: string | null
+          updated_at?: string
+        }
+        Relationships: []
+      }
       checklist_items: {
         Row: {
           created_at: string
@@ -69,78 +131,86 @@ export type Database = {
         }
         Relationships: []
       }
-      game_logs: {
+      error_logs: {
         Row: {
-          away_team_id: number
-          away_team_score: number
+          app_version: string | null
+          breadcrumbs: Json | null
+          context: Json | null
           created_at: string
-          game_log_image: string | null
-          game_log_image_thumbnail: string | null
-          game_log_images: string[]
-          game_record_id: number | null
-          home_team_id: number
-          home_team_score: number
-          id: number
-          is_admin_certified: boolean
-          is_certified: boolean
-          is_private: boolean
-          match_date: string
-          note: string | null
-          stadium_id: number
-          support_team_id: number
-          user_id: string
-          youtube_url: string | null
+          fingerprint: string | null
+          id: string
+          level: string
+          message: string
+          platform: string | null
+          source: string | null
+          stack: string | null
+          user_id: string | null
         }
         Insert: {
-          away_team_id: number
-          away_team_score: number
+          app_version?: string | null
+          breadcrumbs?: Json | null
+          context?: Json | null
           created_at?: string
-          game_log_image?: string | null
-          game_log_image_thumbnail?: string | null
-          game_log_images?: string[]
-          game_record_id?: number | null
-          home_team_id: number
-          home_team_score: number
-          id?: number
-          is_admin_certified?: boolean
-          is_certified?: boolean
-          is_private?: boolean
-          match_date: string
-          note?: string | null
-          stadium_id: number
-          support_team_id: number
-          user_id?: string
-          youtube_url?: string | null
+          fingerprint?: string | null
+          id?: string
+          level?: string
+          message: string
+          platform?: string | null
+          source?: string | null
+          stack?: string | null
+          user_id?: string | null
         }
         Update: {
-          away_team_id?: number
-          away_team_score?: number
+          app_version?: string | null
+          breadcrumbs?: Json | null
+          context?: Json | null
           created_at?: string
-          game_log_image?: string | null
-          game_log_image_thumbnail?: string | null
+          fingerprint?: string | null
+          id?: string
+          level?: string
+          message?: string
+          platform?: string | null
+          source?: string | null
+          stack?: string | null
+          user_id?: string | null
+        }
+        Relationships: []
+      }
+      game_logs: {
+        Row: {
+          created_at: string
+          game_log_images: string[]
+          game_record_id: number
+          id: number
+          is_private: boolean
+          note: string | null
+          seat: string | null
+          support_team_id: number
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
           game_log_images?: string[]
-          game_record_id?: number | null
-          home_team_id?: number
-          home_team_score?: number
+          game_record_id: number
           id?: number
-          is_admin_certified?: boolean
-          is_certified?: boolean
           is_private?: boolean
-          match_date?: string
           note?: string | null
-          stadium_id?: number
+          seat?: string | null
+          support_team_id: number
+          user_id?: string
+        }
+        Update: {
+          created_at?: string
+          game_log_images?: string[]
+          game_record_id?: number
+          id?: number
+          is_private?: boolean
+          note?: string | null
+          seat?: string | null
           support_team_id?: number
           user_id?: string
-          youtube_url?: string | null
         }
         Relationships: [
-          {
-            foreignKeyName: "game_logs_away_team_id_fkey"
-            columns: ["away_team_id"]
-            isOneToOne: false
-            referencedRelation: "teams"
-            referencedColumns: ["id"]
-          },
           {
             foreignKeyName: "game_logs_game_record_id_fkey"
             columns: ["game_record_id"]
@@ -149,32 +219,11 @@ export type Database = {
             referencedColumns: ["id"]
           },
           {
-            foreignKeyName: "game_logs_home_team_id_fkey"
-            columns: ["home_team_id"]
-            isOneToOne: false
-            referencedRelation: "teams"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "game_logs_stadium_id_fkey"
-            columns: ["stadium_id"]
-            isOneToOne: false
-            referencedRelation: "stadium"
-            referencedColumns: ["id"]
-          },
-          {
             foreignKeyName: "game_logs_support_team_id_fkey"
             columns: ["support_team_id"]
             isOneToOne: false
             referencedRelation: "teams"
             referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "game_logs_user_id_fkey2"
-            columns: ["user_id"]
-            isOneToOne: false
-            referencedRelation: "user_win_stats"
-            referencedColumns: ["user_id"]
           },
           {
             foreignKeyName: "game_logs_user_id_fkey2"
@@ -291,6 +340,95 @@ export type Database = {
         }
         Relationships: []
       }
+      live_activities: {
+        Row: {
+          created_at: string
+          game_id: string | null
+          id: string
+          push_token: string
+          status: string
+          team_id: number | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          game_id?: string | null
+          id?: string
+          push_token: string
+          status?: string
+          team_id?: number | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          game_id?: string | null
+          id?: string
+          push_token?: string
+          status?: string
+          team_id?: number | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "live_activities_team_id_fkey"
+            columns: ["team_id"]
+            isOneToOne: false
+            referencedRelation: "teams"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      live_score_source_state: {
+        Row: {
+          consecutive_naver_failures: number
+          id: number
+          updated_at: string
+        }
+        Insert: {
+          consecutive_naver_failures?: number
+          id: number
+          updated_at?: string
+        }
+        Update: {
+          consecutive_naver_failures?: number
+          id?: number
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      login_logs: {
+        Row: {
+          app_version: string | null
+          created_at: string
+          event: string
+          id: string
+          platform: string | null
+          provider: string | null
+          user_id: string
+        }
+        Insert: {
+          app_version?: string | null
+          created_at?: string
+          event: string
+          id?: string
+          platform?: string | null
+          provider?: string | null
+          user_id: string
+        }
+        Update: {
+          app_version?: string | null
+          created_at?: string
+          event?: string
+          id?: string
+          platform?: string | null
+          provider?: string | null
+          user_id?: string
+        }
+        Relationships: []
+      }
       notices: {
         Row: {
           content: string
@@ -314,6 +452,38 @@ export type Database = {
           updated_at?: string
         }
         Relationships: []
+      }
+      push_to_start_tokens: {
+        Row: {
+          last_started_game_id: string | null
+          team_id: number | null
+          token: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          last_started_game_id?: string | null
+          team_id?: number | null
+          token: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          last_started_game_id?: string | null
+          team_id?: number | null
+          token?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "push_to_start_tokens_team_id_fkey"
+            columns: ["team_id"]
+            isOneToOne: false
+            referencedRelation: "teams"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       share: {
         Row: {
@@ -388,6 +558,7 @@ export type Database = {
           team_logo: string | null
           team_name: string | null
           team_name_en: string | null
+          thesportsdb_team_id: string
         }
         Insert: {
           id?: number
@@ -396,6 +567,7 @@ export type Database = {
           team_logo?: string | null
           team_name?: string | null
           team_name_en?: string | null
+          thesportsdb_team_id: string
         }
         Update: {
           id?: number
@@ -404,6 +576,7 @@ export type Database = {
           team_logo?: string | null
           team_name?: string | null
           team_name_en?: string | null
+          thesportsdb_team_id?: string
         }
         Relationships: [
           {
@@ -411,6 +584,41 @@ export type Database = {
             columns: ["stadium_id"]
             isOneToOne: false
             referencedRelation: "stadium"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      user_checklist_entries: {
+        Row: {
+          created_at: string
+          id: string
+          is_checked: boolean
+          item_id: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          is_checked?: boolean
+          item_id: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          is_checked?: boolean
+          item_id?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "user_checklist_entries_item_id_fkey"
+            columns: ["item_id"]
+            isOneToOne: false
+            referencedRelation: "checklist_items"
             referencedColumns: ["id"]
           },
         ]
@@ -449,42 +657,7 @@ export type Database = {
       }
     }
     Views: {
-      user_win_stats: {
-        Row: {
-          avatar: string | null
-          draws: number | null
-          losses: number | null
-          nickname: string | null
-          total_games: number | null
-          user_id: string | null
-          win_rate: number | null
-          wins: number | null
-        }
-        Relationships: []
-      }
-      user_win_stats_summary: {
-        Row: {
-          total: number | null
-          user_id: string | null
-          wins: number | null
-        }
-        Relationships: [
-          {
-            foreignKeyName: "game_logs_user_id_fkey2"
-            columns: ["user_id"]
-            isOneToOne: false
-            referencedRelation: "user_win_stats"
-            referencedColumns: ["user_id"]
-          },
-          {
-            foreignKeyName: "game_logs_user_id_fkey2"
-            columns: ["user_id"]
-            isOneToOne: false
-            referencedRelation: "users"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
+      [_ in never]: never
     }
     Functions: {
       generate_random_nickname: { Args: never; Returns: string }
@@ -623,6 +796,7 @@ export const Constants = {
   },
   public: {
     Enums: {
+      checklist_item_kind: ["official", "unofficial"],
       league_level_enum: ["first", "second"],
     },
   },
