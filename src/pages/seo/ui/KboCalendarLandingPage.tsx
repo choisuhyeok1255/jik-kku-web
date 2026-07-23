@@ -1,3 +1,8 @@
+/**
+ * KBO 경기 일정 소개 랜딩 페이지 (SEO).
+ * - 팀별 경기 일정·상대팀·구장 확인 기능을 소개한다.
+ * - 예매 맥락에서 자매 서비스 "직꾸 티켓(예매 서버시간)"로 이동하는 CTA를 노출한다.
+ */
 "use client";
 
 import { Check } from "lucide-react";
@@ -12,6 +17,7 @@ const APP_STORE_URL =
   "https://apps.apple.com/kr/app/%EC%A7%81%EA%BE%B8/id6761379053";
 const GOOGLE_PLAY_URL =
   "https://play.google.com/store/apps/details?id=com.jikkku.app&pcampaignid=web_share";
+const TICKET_URL = "https://ticket.jik-kku.com";
 
 const bullets = [
   "응원하는 KBO 팀을 고르면 그 팀이 나오는 경기만 달력에 모아 볼 수 있습니다.",
@@ -77,6 +83,21 @@ const KboCalendarLandingPage = () => {
                 확인하고 싶을 때 쓰기 좋습니다. 달을 넘겨 가며 일정을 살펴보고,
                 날짜별로 상대팀과 경기 구장까지 한번에 볼 수 있습니다.
               </p>
+              <p className="text-[15px] leading-relaxed text-white/65">
+                일정을 확인했다면 예매는{" "}
+                <span className="font-semibold text-orange-400">직꾸 티켓</span>
+                에서 이어서 하세요. KBO 구단별 예매처 바로가기와 예매처
+                서버시간(초 단위)을 한 화면에서 보여 주어, 티켓 오픈 시간에 맞춰
+                예매를 준비하기 좋습니다.
+              </p>
+              <a
+                href={TICKET_URL}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex min-h-[44px] items-center justify-center gap-2 rounded-full bg-orange-500/20 px-5 text-sm font-semibold text-orange-400 transition-colors hover:bg-orange-500/30"
+              >
+                🎟 예매 서버시간 열기
+              </a>
             </section>
 
             <section className="mx-auto mt-8 max-w-3xl space-y-4">

@@ -15,6 +15,8 @@ const SEO_LANDING_NAV = [
   { href: "/kbo-calendar", label: "KBO 일정" },
 ] as const;
 
+const TICKET_URL = "https://ticket.jik-kku.com";
+
 export const MarketingSubpageLayout = ({
   children,
 }: MarketingSubpageLayoutProps) => {
@@ -64,6 +66,17 @@ export const MarketingSubpageLayout = ({
                 </span>
               );
             })}
+            <span className="text-white/25" aria-hidden>
+              ·
+            </span>
+            <a
+              href={TICKET_URL}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="transition-colors hover:text-white"
+            >
+              예매 서버시간
+            </a>
             <span className="text-white/25" aria-hidden>
               ·
             </span>

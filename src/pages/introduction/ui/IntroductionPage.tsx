@@ -11,6 +11,7 @@ const APP_STORE_URL =
   "https://apps.apple.com/kr/app/%EC%A7%81%EA%BE%B8/id6761379053";
 const GOOGLE_PLAY_URL =
   "https://play.google.com/store/apps/details?id=com.jikkku.app&pcampaignid=web_share";
+const TICKET_URL = "https://ticket.jik-kku.com";
 
 const featureChecks = [
   "달력에 경기 일정이 정리되어 있어, 내가 본 경기만 선택하면 됩니다",
@@ -149,6 +150,17 @@ const IntroductionPage = () => {
               >
                 경기 일정
               </Link>
+              <span className="text-white/25" aria-hidden>
+                ·
+              </span>
+              <a
+                href={TICKET_URL}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="transition-colors hover:text-white"
+              >
+                예매 서버시간
+              </a>
             </nav>
             <button
               type="button"
@@ -244,6 +256,15 @@ const IntroductionPage = () => {
               >
                 경기 일정
               </Link>
+              <a
+                href={TICKET_URL}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="py-2 text-white/75"
+                onClick={handleCloseMobile}
+              >
+                예매 서버시간
+              </a>
               {/* <a
                 href="#insights"
                 className="py-2 text-white/90"
@@ -696,6 +717,17 @@ const IntroductionPage = () => {
                 >
                   KBO 경기 일정 소개
                 </Link>
+                <span className="text-white/25" aria-hidden>
+                  ·
+                </span>
+                <a
+                  href={TICKET_URL}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="transition-colors hover:text-white"
+                >
+                  직꾸 티켓 · 예매 서버시간
+                </a>
               </nav>
             </div>
             <div className="flex flex-col items-center gap-2 md:items-end">
