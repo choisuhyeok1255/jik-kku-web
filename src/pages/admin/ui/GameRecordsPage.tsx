@@ -17,34 +17,18 @@ import type { Database } from "@/src/shared/lib/supabase.types";
 import {
   buildGameRecordId,
   buildPreviewRowsFromKboGame,
-  buildPreviewRowsFromTheSportsDb,
-  formatPreviewScore,
-  isValidTheSportsDbPreviewForInsert,
-  resolveTheSportsDbDbGameFields,
+  isValidPreviewForInsert,
   type PreviewRow,
-  type TheSportsDbPreviewRow,
 } from "../lib/gameRecordsAdmin";
 import {
-  fetchKboGameResultsByDate,
-  fetchKboGameResultsForMonth,
-  logKboRecentGameResults,
-  type KboDateGameResults,
-  type KboTodayGameResults,
-} from "../lib/theSportDb";
-import {
   buildYoutubeAuditMonthGrid,
-  enrichMissingByDateWithTheSportsDb,
   fetchYoutubeAuditGameRecords,
   groupYoutubeMissingByMatchDate,
   WEEKDAY_LABELS,
-  type TheSportsDbYoutubeMark,
   type YoutubeAuditCalendarCell,
 } from "../lib/youtubeMissingCalendar";
 
 const YOUTUBE_AUDIT_QUERY_KEY = ["admin-game-records-youtube-audit"] as const;
-const YOUTUBE_AUDIT_THESPORTSDB_QUERY_KEY = [
-  "admin-game-records-youtube-audit-thesportsdb",
-] as const;
 
 type GameRecordRow = Database["public"]["Tables"]["game_records"]["Row"];
 type GameRecordInsert = Database["public"]["Tables"]["game_records"]["Insert"];
@@ -85,16 +69,7 @@ const GameRecordsPage = () => {
   const [kboGamePreviewDate, setKboGamePreviewDate] = useState<string | null>(
     null,
   );
-  const [theSportsDbResults, setTheSportsDbResults] =
-    useState<KboTodayGameResults | null>(null);
-  const [theSportsDbFetchLoading, setTheSportsDbFetchLoading] = useState(false);
-  const [theSportsDbPickDate, setTheSportsDbPickDate] = useState(() =>
-    dayjs().format("YYYY-MM-DD"),
-  );
-  const [theSportsDbPickResults, setTheSportsDbPickResults] =
-    useState<KboDateGameResults | null>(null);
-  const [theSportsDbPickLoading, setTheSportsDbPickLoading] = useState(false);
-  /** 7번 — 유튜브 누락 달력 표시 월 (`YYYY-MM`) */
+  /** 유튜브 누락 달력 표시 월 (`YYYY-MM`) */
   const [youtubeAuditMonth, setYoutubeAuditMonth] = useState(() =>
     dayjs().format("YYYY-MM"),
   );
@@ -141,45 +116,6 @@ const GameRecordsPage = () => {
     } finally {
       setScheduleFetchLoading(false);
     }
-  };
-
-  /** TheSportsDB 오늘·어제(KST) 경기 결과 — `logKboRecentGameResults`로 조회 */
-  const handleFetchTheSportsDbResults = async () => {
-    setTheSportsDbFetchLoading(true);
-    try {
-      const result = await logKboRecentGameResults();
-      setTheSportsDbResults(result);
-    } catch (e) {
-      // 새로 고침 실패 시에도 기존 표 데이터를 유지해 UI가 흔들리지 않게 함
-      toast.error("TheSportsDB 조회 실패", {
-        description: e instanceof Error ? e.message : String(e),
-      });
-    } finally {
-      setTheSportsDbFetchLoading(false);
-    }
-  };
-
-  const handleTheSportsDbRefresh = () => {
-    void handleFetchTheSportsDbResults();
-  };
-
-  /** 6번: TheSportsDB 지정 날짜 경기 결과 조회 */
-  const handleFetchTheSportsDbByDate = async () => {
-    setTheSportsDbPickLoading(true);
-    try {
-      const result = await fetchKboGameResultsByDate(theSportsDbPickDate);
-      setTheSportsDbPickResults(result);
-    } catch (e) {
-      toast.error("TheSportsDB 조회 실패", {
-        description: e instanceof Error ? e.message : String(e),
-      });
-    } finally {
-      setTheSportsDbPickLoading(false);
-    }
-  };
-
-  const handleTheSportsDbPickDateChange = (value: string) => {
-    setTheSportsDbPickDate(value);
   };
 
   const handleYoutubeAuditPrevMonth = () => {
@@ -242,24 +178,6 @@ const GameRecordsPage = () => {
     );
   }, [kboGamePreview, kboGamePreviewDate, teams]);
 
-  const theSportsDbYesterdayPreviewRows: TheSportsDbPreviewRow[] = useMemo(() => {
-    if (!teams?.length || !theSportsDbResults) return [];
-    return buildPreviewRowsFromTheSportsDb(
-      theSportsDbResults.yesterdayGames,
-      teams,
-    );
-  }, [theSportsDbResults, teams]);
-
-  const theSportsDbTodayPreviewRows: TheSportsDbPreviewRow[] = useMemo(() => {
-    if (!teams?.length || !theSportsDbResults) return [];
-    return buildPreviewRowsFromTheSportsDb(theSportsDbResults.todayGames, teams);
-  }, [theSportsDbResults, teams]);
-
-  const theSportsDbPickPreviewRows: TheSportsDbPreviewRow[] = useMemo(() => {
-    if (!teams?.length || !theSportsDbPickResults) return [];
-    return buildPreviewRowsFromTheSportsDb(theSportsDbPickResults.games, teams);
-  }, [theSportsDbPickResults, teams]);
-
   const teamLabelById = useMemo(() => {
     const map = new Map<number, string>();
     teams?.forEach((t) => {
@@ -286,47 +204,16 @@ const GameRecordsPage = () => {
     );
   }, [stadiumsForManual]);
 
-  const stadiumLabelById = useMemo(() => {
-    const map = new Map<number, string>();
-    stadiumsForManual?.forEach((s) => {
-      const label = s.name?.trim() || `#${s.id}`;
-      map.set(s.id, label);
-    });
-    return map;
-  }, [stadiumsForManual]);
-
   const { data: youtubeAuditRecords, isLoading: loadingYoutubeAudit } =
     useQuery({
       queryKey: [...YOUTUBE_AUDIT_QUERY_KEY, youtubeAuditMonth],
       queryFn: () => fetchYoutubeAuditGameRecords(youtubeAuditMonth),
     });
 
-  const {
-    data: youtubeAuditTheSportsDbGames,
-    isLoading: loadingYoutubeAuditTheSportsDb,
-  } = useQuery({
-    queryKey: [...YOUTUBE_AUDIT_THESPORTSDB_QUERY_KEY, youtubeAuditMonth],
-    queryFn: () => fetchKboGameResultsForMonth(youtubeAuditMonth),
-    enabled: !!teams?.length,
-  });
-
-  const youtubeMissingByDate = useMemo(() => {
-    const base = groupYoutubeMissingByMatchDate(
-      youtubeAuditRecords ?? [],
-      teamLabelById,
-    );
-    if (!teams?.length) return base;
-    return enrichMissingByDateWithTheSportsDb(
-      base,
-      youtubeAuditTheSportsDbGames ?? [],
-      teams,
-    );
-  }, [
-    youtubeAuditRecords,
-    teamLabelById,
-    teams,
-    youtubeAuditTheSportsDbGames,
-  ]);
+  const youtubeMissingByDate = useMemo(
+    () => groupYoutubeMissingByMatchDate(youtubeAuditRecords ?? [], teamLabelById),
+    [youtubeAuditRecords, teamLabelById],
+  );
 
   const youtubeAuditMonthGrid = useMemo(
     () => buildYoutubeAuditMonthGrid(youtubeAuditMonth, youtubeMissingByDate),
@@ -394,79 +281,6 @@ const GameRecordsPage = () => {
       });
     }
     applyPreviewMutation.mutate();
-  };
-
-  const applyTheSportsDbMutation = useMutation({
-    mutationFn: async ({
-      rows,
-      label,
-    }: {
-      rows: TheSportsDbPreviewRow[];
-      label: string;
-    }) => {
-      const valid = rows.filter(isValidTheSportsDbPreviewForInsert);
-      if (valid.length === 0) {
-        throw new Error(
-          "반영할 수 있는 행이 없습니다. 팀·구장 매핑과 비고를 확인하세요.",
-        );
-      }
-      const payload: GameRecordInsert[] = valid.map((r) => {
-        const dbFields = resolveTheSportsDbDbGameFields({
-          apiStatus: r.apiStatus,
-          homeScore: r.homeScore,
-          awayScore: r.awayScore,
-          youtubeUrl: r.youtubeUrl,
-        });
-        return {
-          id: Number(r.id),
-          home_team_id: r.homeTeamId!,
-          away_team_id: r.awayTeamId!,
-          home_team_score: dbFields.homeScore,
-          away_team_score: dbFields.awayScore,
-          status: dbFields.status,
-          match_date: r.matchDate,
-          stadium_id: r.stadiumId!,
-          youtube_url: dbFields.youtubeUrl,
-        };
-      });
-      const { error } = await supabase
-        .from("game_records")
-        .upsert(payload, { onConflict: "id" });
-      if (error) throw error;
-      return { count: valid.length, label };
-    },
-    onSuccess: ({ count, label }) => {
-      void queryClient.invalidateQueries({ queryKey: ["admin-game-records"] });
-      void queryClient.invalidateQueries({
-        queryKey: ["admin-game-records-edit-batch"],
-      });
-      void queryClient.invalidateQueries({ queryKey: [...YOUTUBE_AUDIT_QUERY_KEY] });
-      toast.success(`TheSportsDB ${label} ${count}건을 DB에 반영했습니다.`);
-    },
-    onError: (e: unknown) => {
-      toast.error(e instanceof Error ? e.message : "DB 반영에 실패했습니다.");
-    },
-  });
-
-  const handleTheSportsDbSaveYesterday = () => {
-    applyTheSportsDbMutation.mutate({
-      rows: theSportsDbYesterdayPreviewRows,
-      label: `어제(${theSportsDbResults?.yesterdayKst ?? ""})`,
-    });
-  };
-
-  const handleTheSportsDbSaveToday = () => {
-    applyTheSportsDbMutation.mutate({
-      rows: theSportsDbTodayPreviewRows,
-      label: `오늘(${theSportsDbResults?.todayKst ?? ""})`,
-    });
-  };
-
-  const handleTheSportsDbSavePickDate = () => {
-    applyTheSportsDbMutation.mutate({
-      rows: theSportsDbPickPreviewRows,
-      label: `날짜 지정(${theSportsDbPickDate})`,
-    });
   };
 
   const insertManualMutation = useMutation({
@@ -622,11 +436,6 @@ const GameRecordsPage = () => {
       );
     }
   }, [fetchedEditRows]);
-
-  // 5번: 페이지 진입 시 TheSportsDB 오늘 경기 결과 자동 조회
-  useEffect(() => {
-    void handleFetchTheSportsDbResults();
-  }, []);
 
   const shouldHighlightApiButton =
     kboGamePreviewDate != null && dateInput !== kboGamePreviewDate;
@@ -1265,194 +1074,19 @@ const GameRecordsPage = () => {
 
         <section className="rounded-[16px] border border-white/10 bg-white/4 p-4">
           <h2 className="mb-2 text-[15px] font-semibold text-white">
-            5. TheSportsDB 경기 결과 (어제·오늘)
-          </h2>
-          <p className="mb-3 text-[12px] leading-relaxed text-white/50">
-            페이지를 열면 TheSportsDB에서{" "}
-            <span className="text-white/75">어제·오늘(KST) KBO 경기 결과</span>
-            를 자동으로 불러옵니다. 날짜별로 확인 후 「저장」으로 DB에
-            반영하세요. 동일 id는{" "}
-            <span className="text-amber-200/90">upsert(덮어쓰기)</span>
-            입니다.
-          </p>
-          <div className="mb-4 flex min-h-[36px] flex-wrap items-center gap-3">
-            <button
-              type="button"
-              onClick={handleTheSportsDbRefresh}
-              disabled={theSportsDbFetchLoading}
-              className="rounded-[12px] border border-white/20 bg-white/5 px-4 py-2 text-[14px] font-medium text-white/85 transition-opacity hover:bg-white/10 disabled:cursor-not-allowed disabled:opacity-40"
-            >
-              {theSportsDbFetchLoading ? "불러오는 중…" : "새로 고침"}
-            </button>
-            <span className="text-[11px] text-white/45">
-              {theSportsDbResults ? (
-                <>
-                  어제 {theSportsDbResults.yesterdayKst} ·{" "}
-                  {theSportsDbResults.yesterdayGames.length}경기 · 오늘{" "}
-                  {theSportsDbResults.todayKst} ·{" "}
-                  {theSportsDbResults.todayGames.length}경기
-                  {theSportsDbFetchLoading ? " · 갱신 중…" : ""}
-                </>
-              ) : theSportsDbFetchLoading ? (
-                "TheSportsDB 경기 결과 불러오는 중…"
-              ) : (
-                "경기 결과를 불러오지 못했습니다. 새로 고침해 주세요."
-              )}
-            </span>
-          </div>
-          {loadingTeams && theSportsDbResults != null && (
-            <p className="mb-3 text-[13px] text-white/55">팀 목록 로딩…</p>
-          )}
-          {theSportsDbResults != null && !loadingTeams && (
-            <div
-              className={
-                theSportsDbFetchLoading ? "space-y-6 opacity-70" : "space-y-6"
-              }
-            >
-              <TheSportsDbDatePreviewBlock
-                title={`어제 (${theSportsDbResults.yesterdayKst})`}
-                rows={theSportsDbYesterdayPreviewRows}
-                emptyMessage={`어제(${theSportsDbResults.yesterdayKst}) 조회된 KBO 경기가 없습니다.`}
-                teamLabelById={teamLabelById}
-                stadiumLabelById={stadiumLabelById}
-                saveLabel={`어제(${theSportsDbResults.yesterdayKst}) 저장`}
-                savePending={
-                  applyTheSportsDbMutation.isPending &&
-                  applyTheSportsDbMutation.variables?.label.startsWith("어제")
-                }
-                saveDisabled={
-                  applyTheSportsDbMutation.isPending ||
-                  theSportsDbFetchLoading ||
-                  !theSportsDbYesterdayPreviewRows.some(
-                    isValidTheSportsDbPreviewForInsert,
-                  )
-                }
-                onSave={handleTheSportsDbSaveYesterday}
-              />
-              <TheSportsDbDatePreviewBlock
-                title={`오늘 (${theSportsDbResults.todayKst})`}
-                rows={theSportsDbTodayPreviewRows}
-                emptyMessage={`오늘(${theSportsDbResults.todayKst}) 조회된 KBO 경기가 없습니다.`}
-                teamLabelById={teamLabelById}
-                stadiumLabelById={stadiumLabelById}
-                saveLabel={`오늘(${theSportsDbResults.todayKst}) 저장`}
-                savePending={
-                  applyTheSportsDbMutation.isPending &&
-                  applyTheSportsDbMutation.variables?.label.startsWith("오늘")
-                }
-                saveDisabled={
-                  applyTheSportsDbMutation.isPending ||
-                  theSportsDbFetchLoading ||
-                  !theSportsDbTodayPreviewRows.some(
-                    isValidTheSportsDbPreviewForInsert,
-                  )
-                }
-                onSave={handleTheSportsDbSaveToday}
-              />
-            </div>
-          )}
-        </section>
-
-        <section className="rounded-[16px] border border-white/10 bg-white/4 p-4">
-          <h2 className="mb-2 text-[15px] font-semibold text-white">
-            6. TheSportsDB 경기 결과 (날짜 지정)
-          </h2>
-          <p className="mb-3 text-[12px] leading-relaxed text-white/50">
-            원하는{" "}
-            <span className="text-white/75">경기 날짜(YYYY-MM-DD)</span>를
-            고른 뒤 「조회」로 TheSportsDB 시즌 일정에서 해당일 KBO 경기를
-            불러옵니다. 미리보기 확인 후 「저장」으로 DB에 반영하세요. status·
-            점수·youtube 규칙은 5번과 동일합니다.
-          </p>
-          <div className="mb-4 flex min-h-[36px] flex-wrap items-center gap-3">
-            <label className="flex items-center gap-2 text-[13px] text-white/70">
-              경기 날짜
-              <input
-                type="date"
-                value={theSportsDbPickDate}
-                onChange={(e) => handleTheSportsDbPickDateChange(e.target.value)}
-                className="rounded-[8px] border border-white/15 bg-[#232323] px-2 py-1.5 text-[14px] text-white"
-              />
-            </label>
-            <button
-              type="button"
-              onClick={() => void handleFetchTheSportsDbByDate()}
-              disabled={theSportsDbPickLoading || !theSportsDbPickDate}
-              className="rounded-[12px] border border-white/20 bg-white/5 px-4 py-2 text-[14px] font-medium text-white/85 transition-opacity hover:bg-white/10 disabled:cursor-not-allowed disabled:opacity-40"
-            >
-              {theSportsDbPickLoading ? "불러오는 중…" : "조회"}
-            </button>
-            <span className="text-[11px] text-white/45">
-              {theSportsDbPickResults ? (
-                <>
-                  {theSportsDbPickResults.matchDate} ·{" "}
-                  {theSportsDbPickResults.games.length}경기
-                  {theSportsDbPickLoading ? " · 갱신 중…" : ""}
-                </>
-              ) : theSportsDbPickLoading ? (
-                "TheSportsDB 경기 결과 불러오는 중…"
-              ) : (
-                "날짜를 선택하고 조회해 주세요."
-              )}
-            </span>
-          </div>
-          {loadingTeams && theSportsDbPickResults != null && (
-            <p className="mb-3 text-[13px] text-white/55">팀 목록 로딩…</p>
-          )}
-          {theSportsDbPickResults != null && !loadingTeams && (
-            <div
-              className={
-                theSportsDbPickLoading ? "space-y-6 opacity-70" : "space-y-6"
-              }
-            >
-              <TheSportsDbDatePreviewBlock
-                title={`${theSportsDbPickResults.matchDate}`}
-                rows={theSportsDbPickPreviewRows}
-                emptyMessage={`${theSportsDbPickResults.matchDate} 조회된 KBO 경기가 없습니다.`}
-                teamLabelById={teamLabelById}
-                stadiumLabelById={stadiumLabelById}
-                saveLabel={`${theSportsDbPickResults.matchDate} 저장`}
-                savePending={
-                  applyTheSportsDbMutation.isPending &&
-                  applyTheSportsDbMutation.variables?.label.startsWith(
-                    "날짜 지정",
-                  )
-                }
-                saveDisabled={
-                  applyTheSportsDbMutation.isPending ||
-                  theSportsDbPickLoading ||
-                  !theSportsDbPickPreviewRows.some(
-                    isValidTheSportsDbPreviewForInsert,
-                  )
-                }
-                onSave={handleTheSportsDbSavePickDate}
-              />
-            </div>
-          )}
-        </section>
-
-        <section className="rounded-[16px] border border-white/10 bg-white/4 p-4">
-          <h2 className="mb-2 text-[15px] font-semibold text-white">
-            7. 유튜브 누락 달력
+            5. 유튜브 누락 달력
           </h2>
           <p className="mb-3 text-[12px] leading-relaxed text-white/50">
             DB{" "}
             <span className="text-white/75">경기 종료</span> 기록 중{" "}
             <span className="text-white/75">youtube_url</span>이 비어 있는
-            날짜를 표시합니다. 각 경기 옆{" "}
-            <span className="text-emerald-300/90">O</span>/
-            <span className="text-rose-300/90">X</span>는 TheSportsDB{" "}
-            <span className="text-white/75">strVideo</span> 존재 여부(O=있음,
-            X=없음, —=미매칭)입니다.
+            경기를 날짜별로 표시합니다. 하이라이트는 KBO 재생목록(RSS) 크론이
+            자동으로 채웁니다.
           </p>
           <YoutubeMissingCalendarBlock
             monthYmd={youtubeAuditMonth}
             grid={youtubeAuditMonthGrid}
-            loading={
-              loadingYoutubeAudit ||
-              loadingTeams ||
-              loadingYoutubeAuditTheSportsDb
-            }
+            loading={loadingYoutubeAudit || loadingTeams}
             onPrevMonth={handleYoutubeAuditPrevMonth}
             onNextMonth={handleYoutubeAuditNextMonth}
           />
@@ -1466,141 +1100,7 @@ function pad2Display(n: number) {
   return String(n).padStart(2, "0");
 }
 
-/** 5·6번 — 날짜별 TheSportsDB 미리보기 테이블 + 저장 */
-function TheSportsDbDatePreviewBlock({
-  title,
-  rows,
-  emptyMessage,
-  teamLabelById,
-  stadiumLabelById,
-  saveLabel,
-  savePending,
-  saveDisabled,
-  onSave,
-}: {
-  title: string;
-  rows: TheSportsDbPreviewRow[];
-  emptyMessage: string;
-  teamLabelById: Map<number, string>;
-  /** 저장은 stadium_id 숫자, 테이블에는 구장명 표시용 */
-  stadiumLabelById: Map<number, string>;
-  saveLabel: string;
-  savePending: boolean;
-  saveDisabled: boolean;
-  onSave: () => void;
-}) {
-  return (
-    <div>
-      <h3 className="mb-2 text-[14px] font-medium text-white/90">{title}</h3>
-      {rows.length === 0 ? (
-        <p className="mb-3 text-[13px] text-white/55">{emptyMessage}</p>
-      ) : (
-        <div className="overflow-x-auto">
-          <table className={`${dbTableShell} min-w-[960px]`}>
-            <thead>
-              <tr>
-                <th className={th}>id</th>
-                <th className={th}>홈·원정</th>
-                <th className={th}>홈 점수</th>
-                <th className={th}>원정 점수</th>
-                <th className={th}>status</th>
-                <th className={th}>경기장</th>
-                <th className={th}>youtube</th>
-                <th className={th}>seq</th>
-                <th className={th}>비고</th>
-              </tr>
-            </thead>
-            <tbody>
-              {rows.map((row) => (
-                <tr key={row.idEvent}>
-                  <td className={`${td} font-mono text-[11px]`}>
-                    {row.id || "—"}
-                  </td>
-                  <td className={td}>
-                    <div>
-                      {row.homeTeamId != null
-                        ? (teamLabelById.get(row.homeTeamId) ?? row.homeTeamId)
-                        : row.homeTeamName}{" "}
-                      vs{" "}
-                      {row.awayTeamId != null
-                        ? (teamLabelById.get(row.awayTeamId) ?? row.awayTeamId)
-                        : row.awayTeamName}
-                    </div>
-                    <div className="mt-1 text-[11px] text-white/40">
-                      id {row.homeTeamId ?? "?"} · {row.awayTeamId ?? "?"}
-                    </div>
-                  </td>
-                  <td className={td}>{formatPreviewScore(row.homeScore)}</td>
-                  <td className={td}>{formatPreviewScore(row.awayScore)}</td>
-                  <td className={td}>{row.status}</td>
-                  <td className={td}>
-                    {row.stadiumId != null ? (
-                      <>
-                        <div>
-                          {stadiumLabelById.get(row.stadiumId) ?? row.stadiumId}
-                        </div>
-                        <div className="mt-1 text-[11px] text-white/40">
-                          id {row.stadiumId}
-                        </div>
-                      </>
-                    ) : (
-                      "—"
-                    )}
-                  </td>
-                  <td className={`${td} max-w-[120px] truncate`}>
-                    {row.youtubeUrl ?? "—"}
-                  </td>
-                  <td className={td}>{pad2Display(row.sequence)}</td>
-                  <td className={td}>
-                    {row.issues.length > 0 ? (
-                      <ul className="list-inside list-disc text-amber-200/90">
-                        {row.issues.map((m) => (
-                          <li key={m}>{m}</li>
-                        ))}
-                      </ul>
-                    ) : (
-                      <span className="text-white/35">—</span>
-                    )}
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-      )}
-      <div className="mt-3 flex flex-wrap items-center gap-3">
-        <button
-          type="button"
-          onClick={onSave}
-          disabled={saveDisabled}
-          className="rounded-[12px] bg-emerald-600/90 px-4 py-2 text-[14px] font-medium text-white transition-opacity hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-40"
-        >
-          {savePending ? "저장 중…" : saveLabel}
-        </button>
-        <span className="text-[11px] text-white/45">
-          비고(매핑 오류)가 있는 행은 제외됩니다.
-        </span>
-      </div>
-    </div>
-  );
-}
-
-/** TheSportsDB youtube O/X/— 표시 */
-function TheSportsDbYoutubeMarkBadge({ mark }: { mark: TheSportsDbYoutubeMark }) {
-  const className =
-    mark === "O"
-      ? "text-emerald-300/95"
-      : mark === "X"
-        ? "text-rose-300/95"
-        : "text-white/35";
-  return (
-    <span className={`font-semibold ${className}`} title="TheSportsDB youtube">
-      {mark}
-    </span>
-  );
-}
-
-/** 7번 — 유튜브 누락 달력 (TheSportsDB O/X 표시) */
+/** 유튜브 누락 달력 — DB에서 youtube_url이 빈 경기 종료 경기를 날짜별로 표시 */
 function YoutubeMissingCalendarBlock({
   monthYmd,
   grid,
@@ -1647,7 +1147,7 @@ function YoutubeMissingCalendarBlock({
         </button>
         <span className="text-[11px] text-white/45">
           {loading
-            ? "DB·TheSportsDB 불러오는 중…"
+            ? "DB 불러오는 중…"
             : `이번 달 youtube 누락 ${totalMissingInMonth}경기 · ${missingCells.length}일`}
         </span>
       </div>
@@ -1688,7 +1188,6 @@ function YoutubeMissingCalendarBlock({
                       className="inline-flex max-w-full items-center gap-0.5 rounded-[4px] bg-amber-950/35 px-1 py-0.5 text-[10px] leading-snug text-amber-100/90"
                     >
                       <span className="truncate">{g.matchupLabel}</span>
-                      <TheSportsDbYoutubeMarkBadge mark={g.theSportsDbYoutube} />
                     </span>
                   ))}
                 </div>
@@ -1704,16 +1203,6 @@ function YoutubeMissingCalendarBlock({
         </p>
       )}
     </div>
-  );
-}
-
-function isValidPreviewForInsert(row: PreviewRow): boolean {
-  return (
-    !!row.id &&
-    row.homeTeamId != null &&
-    row.awayTeamId != null &&
-    row.stadiumId != null &&
-    row.issues.length === 0
   );
 }
 

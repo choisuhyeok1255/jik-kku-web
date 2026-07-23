@@ -1,16 +1,9 @@
 import dayjs from "dayjs";
 
-import type { TeamServerModel } from "@/src/entities/team/model/types/api";
 import { supabase } from "@/src/shared";
-
-import { matchTeamId } from "./gameRecordsAdmin";
-import type { KboTodayGameResult } from "./theSportDb";
 
 /** `game_records.status` — youtube 점검 대상 */
 export const GAME_RECORD_STATUS_FINISHED = "경기 종료";
-
-/** TheSportsDB `strVideo` 존재 여부 — O/X/— 표시 */
-export type TheSportsDbYoutubeMark = "O" | "X" | "—";
 
 /** `game_records` 1건 — 유튜브 누락 점검용 최소 필드 */
 export type YoutubeAuditGameRecord = {
@@ -30,17 +23,11 @@ export type YoutubeMissingGameItem = {
   awayTeamId: number;
   /** 홈·원정 팀명 라벨 */
   matchupLabel: string;
-  /** TheSportsDB youtube: O=있음, X=없음, —=매칭 실패 */
-  theSportsDbYoutube: TheSportsDbYoutubeMark;
 };
 
 /** `youtube_url` 미입력 여부 (null·빈 문자열·공백만) */
 export const isMissingYoutubeUrl = (youtubeUrl: string | null): boolean =>
   youtubeUrl == null || youtubeUrl.trim() === "";
-
-/** TheSportsDB `strVideo` 존재 여부 */
-const hasTheSportsDbYoutubeUrl = (youtubeUrl: string | null): boolean =>
-  !isMissingYoutubeUrl(youtubeUrl);
 
 /**
  * 해당 월(`YYYY-MM`)의 경기 종료 레코드만 조회합니다.
@@ -74,7 +61,6 @@ export async function fetchYoutubeAuditGameRecords(
 export const groupYoutubeMissingByMatchDate = (
   records: YoutubeAuditGameRecord[],
   teamLabelById: Map<number, string>,
-  defaultMark: TheSportsDbYoutubeMark = "—",
 ): Map<string, YoutubeMissingGameItem[]> => {
   const byDate = new Map<string, YoutubeMissingGameItem[]>();
 
@@ -93,7 +79,6 @@ export const groupYoutubeMissingByMatchDate = (
       homeTeamId: r.home_team_id,
       awayTeamId: r.away_team_id,
       matchupLabel: `${homeLabel} vs ${awayLabel}`,
-      theSportsDbYoutube: defaultMark,
     };
 
     const list = byDate.get(r.match_date) ?? [];
@@ -106,45 +91,6 @@ export const groupYoutubeMissingByMatchDate = (
   }
 
   return byDate;
-};
-
-/**
- * DB youtube 누락 경기에 TheSportsDB 해당 월 schedule를 매칭해 O/X/—를 채웁니다.
- */
-export const enrichMissingByDateWithTheSportsDb = (
-  missingByDate: Map<string, YoutubeMissingGameItem[]>,
-  apiGames: KboTodayGameResult[],
-  teams: TeamServerModel[],
-): Map<string, YoutubeMissingGameItem[]> => {
-  const apiByDateAndPair = new Map<string, KboTodayGameResult>();
-  for (const g of apiGames) {
-    const homeId = matchTeamId(teams, g.homeTeam);
-    const awayId = matchTeamId(teams, g.awayTeam);
-    if (homeId == null || awayId == null) continue;
-    apiByDateAndPair.set(`${g.dateEvent}:${homeId}-${awayId}`, g);
-  }
-
-  const enriched = new Map<string, YoutubeMissingGameItem[]>();
-  for (const [dateYmd, games] of missingByDate) {
-    enriched.set(
-      dateYmd,
-      games.map((m) => {
-        const api = apiByDateAndPair.get(
-          `${dateYmd}:${m.homeTeamId}-${m.awayTeamId}`,
-        );
-        if (!api) {
-          return { ...m, theSportsDbYoutube: "—" as const };
-        }
-        return {
-          ...m,
-          theSportsDbYoutube: hasTheSportsDbYoutubeUrl(api.youtubeUrl)
-            ? ("O" as const)
-            : ("X" as const),
-        };
-      }),
-    );
-  }
-  return enriched;
 };
 
 const WEEKDAY_LABELS = ["일", "월", "화", "수", "목", "금", "토"] as const;

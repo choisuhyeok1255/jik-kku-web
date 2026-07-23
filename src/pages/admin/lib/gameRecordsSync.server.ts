@@ -1,23 +1,20 @@
 import "server-only";
 
+import { getGame } from "kbo-game";
+
 import type { TeamServerModel } from "@/src/entities/team/model/types/api";
 import { createAdminClient } from "@/src/shared/lib/supabase/admin";
 import type { Database } from "@/src/shared/lib/supabase.types";
 
 import {
-  buildPreviewRowsFromTheSportsDb,
-  isValidTheSportsDbPreviewForInsert,
-  resolveTheSportsDbDbGameFields,
+  buildPreviewRowsFromKboGame,
+  isValidPreviewForInsert,
 } from "./gameRecordsAdmin";
-import {
-  fetchKboRecentGameResults,
-  type ScheduleHttpClient,
-} from "./theSportDb";
 import type { YoutubeFillResult } from "./youtubeHighlightSync.server";
 
 /**
  * 크론용 경기 기록 자동 동기화 (서버 전용).
- * - TheSportsDB 어제·오늘(KST) 경기 → `game_records` upsert (점수·상태).
+ * - kbo-game(KBO 공식 사이트) 어제·오늘(KST) 경기 → `game_records` upsert (점수·상태).
  * - 유튜브 URL은 KBO 하이라이트 RSS(별도 단계)가 채우며, 여기선 기존 값만 보존한다.
  * - 이미 확정된 경기("경기 종료"/"우천 취소")는 "경기 전"으로 되돌리지 않는다(결과·점수 보호).
  * - 실제 변경(신규/점수·상태 변동)이 있는 행만 저장하고, 변경 내역을 Slack 메시지로 만든다.
@@ -26,8 +23,16 @@ import type { YoutubeFillResult } from "./youtubeHighlightSync.server";
 type GameRecordRow = Database["public"]["Tables"]["game_records"]["Row"];
 type GameRecordInsert = Database["public"]["Tables"]["game_records"]["Insert"];
 
-const THESPORTSDB_V2_BASE = "https://www.thesportsdb.com/api/v2/json";
 const ADMIN_BASE_URL = "https://www.jik-kku.com";
+
+/** 지금 UTC를 KST(+9)로 보정하고 offsetDays 만큼 이동한 날짜의 `YYYY-MM-DD`. */
+function kstDateString(offsetDays: number): string {
+  const kst = new Date(
+    Date.now() + 9 * 60 * 60 * 1000 + offsetDays * 24 * 60 * 60 * 1000,
+  );
+  const p = (n: number) => String(n).padStart(2, "0");
+  return `${kst.getUTCFullYear()}-${p(kst.getUTCMonth() + 1)}-${p(kst.getUTCDate())}`;
+}
 
 /** 변경된 경기 1건 요약 (Slack 표시용). */
 export type GameSyncChange = {
@@ -55,32 +60,6 @@ export type GameSyncResult = {
   skippedIssues: string[];
 };
 
-function getTheSportsDbApiKey(): string {
-  const key =
-    process.env.THESPORTSDB_KEY?.trim() ??
-    process.env.NEXT_PUBLIC_THESPORTSDB_KEY?.trim();
-  if (!key) {
-    throw new Error(
-      "THESPORTSDB_KEY(또는 NEXT_PUBLIC_THESPORTSDB_KEY)가 설정되지 않았습니다.",
-    );
-  }
-  return key;
-}
-
-/** 서버 전용 전송 — TheSportsDB v2를 `X-API-KEY`로 직접 호출한다. */
-const directScheduleHttpClient: ScheduleHttpClient = async (path) => {
-  const normalized = path.startsWith("/") ? path.slice(1) : path;
-  const response = await fetch(`${THESPORTSDB_V2_BASE}/${normalized}`, {
-    headers: {
-      "X-API-KEY": getTheSportsDbApiKey(),
-      Accept: "application/json",
-    },
-    cache: "no-store",
-  });
-  const json = await response.json().catch(() => null);
-  return { status: response.status, ok: response.ok, json };
-};
-
 /** 점수·상태·유튜브가 기존 행과 달라졌는지 (신규는 항상 변경). */
 function hasMeaningfulChange(
   existing: GameRecordRow | undefined,
@@ -98,7 +77,7 @@ function hasMeaningfulChange(
   );
 }
 
-export async function syncGameRecordsFromTheSportsDb(): Promise<GameSyncResult> {
+export async function syncGameRecordsFromKboGame(): Promise<GameSyncResult> {
   const ranAt = new Date().toISOString();
   const supabaseAdmin = createAdminClient();
 
@@ -108,17 +87,20 @@ export async function syncGameRecordsFromTheSportsDb(): Promise<GameSyncResult> 
   if (teamsError) throw teamsError;
   const teams = (teamsData ?? []) as TeamServerModel[];
 
-  const recent = await fetchKboRecentGameResults(directScheduleHttpClient);
+  const todayYmd = kstDateString(0);
+  const yesterdayYmd = kstDateString(-1);
+  const [yesterdayGames, todayGames] = await Promise.all([
+    getGame(new Date(`${yesterdayYmd}T00:00:00+09:00`)),
+    getGame(new Date(`${todayYmd}T00:00:00+09:00`)),
+  ]);
   // seq(더블헤더 순번)는 날짜별로 계산되므로 어제·오늘을 따로 변환한다.
   const allRows = [
-    ...buildPreviewRowsFromTheSportsDb(recent.yesterdayGames, teams),
-    ...buildPreviewRowsFromTheSportsDb(recent.todayGames, teams),
+    ...buildPreviewRowsFromKboGame(yesterdayGames ?? [], teams, yesterdayYmd),
+    ...buildPreviewRowsFromKboGame(todayGames ?? [], teams, todayYmd),
   ];
 
-  const validRows = allRows.filter(isValidTheSportsDbPreviewForInsert);
-  const invalidRows = allRows.filter(
-    (r) => !isValidTheSportsDbPreviewForInsert(r),
-  );
+  const validRows = allRows.filter(isValidPreviewForInsert);
+  const invalidRows = allRows.filter((r) => !isValidPreviewForInsert(r));
   const skippedIssues = invalidRows.flatMap((r) => r.issues);
 
   if (validRows.length === 0) {
@@ -152,25 +134,19 @@ export async function syncGameRecordsFromTheSportsDb(): Promise<GameSyncResult> 
   for (const r of validRows) {
     const id = Number(r.id);
     const existing = existingById.get(id);
-    const dbFields = resolveTheSportsDbDbGameFields({
-      apiStatus: r.apiStatus,
-      homeScore: r.homeScore,
-      awayScore: r.awayScore,
-      youtubeUrl: r.youtubeUrl,
-    });
 
     // 유튜브는 KBO 하이라이트 RSS(별도 단계)가 채운다. 여기선 기존 값만 보존한다.
     const youtubeUrl = existing?.youtube_url ?? null;
 
     const next = {
-      home_team_score: dbFields.homeScore,
-      away_team_score: dbFields.awayScore,
-      status: dbFields.status,
+      home_team_score: r.homeScore,
+      away_team_score: r.awayScore,
+      status: r.status,
       youtube_url: youtubeUrl,
     };
 
     // 확정된 경기("경기 종료"/"우천 취소")를 "경기 전"으로 되돌리지 않는다.
-    // TheSportsDB가 끝난 경기를 일시적으로 FT가 아닌 상태(빈 값·NS·경기중 등)로 주더라도
+    // kbo-game이 끝난 경기를 일시적으로 SCHEDULED/IN_PROGRESS로 주더라도
     // 이미 확정된 결과·점수가 날아가지 않도록 방어한다.
     if (
       existing &&

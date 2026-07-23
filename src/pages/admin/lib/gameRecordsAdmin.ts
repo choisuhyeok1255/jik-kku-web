@@ -1,11 +1,16 @@
 import dayjs from "dayjs";
+import type { Game, GameStatus } from "kbo-game";
 
-import type { KboGameListItem } from "@/src/entities/kbo/model/types/kbo-game";
 import type { TeamServerModel } from "@/src/entities/team/model/types/api";
 
-import type { KboTodayGameResult } from "./theSportDb";
-
 export const pad2 = (n: number) => String(n).padStart(2, "0");
+
+/** kbo-game 상태 → game_records.status(한글). 끝났으면 종료, 취소면 우천취소, 그 외 경기 전. */
+export const mapKboGameStatusToDbStatus = (status: GameStatus): string => {
+  if (status === "FINISHED") return "경기 종료";
+  if (status === "CANCELED") return "우천 취소";
+  return "경기 전";
+};
 
 /** `YYMMDD`(6) + 홈 team_id(2) + 원정 team_id(2) + 같은 날 같은 대전 순번(2) = 총 12자리 숫자 id */
 export const buildGameRecordId = (
@@ -45,7 +50,20 @@ export type PreviewRow = {
   stadiumId: number | null;
   sequence: number;
   issues: string[];
+  /** kbo-game 결과 — FINISHED일 때만 점수, 그 외 null */
+  homeScore: number | null;
+  awayScore: number | null;
+  /** game_records.status(한글): 경기 종료 / 우천 취소 / 경기 전 */
+  status: string;
 };
+
+/** 미리보기 행이 DB upsert 가능한지 (id·팀·구장 매핑 완료 + 이슈 없음). */
+export const isValidPreviewForInsert = (row: PreviewRow): boolean =>
+  !!row.id &&
+  row.homeTeamId != null &&
+  row.awayTeamId != null &&
+  row.stadiumId != null &&
+  row.issues.length === 0;
 
 /** kbo-game `startTime`(HH:mm) + 경기일 → 정렬에 쓰는 `strTimestamp`용 epoch ms 문자열 */
 const kboStartToTimestampStr = (matchDateYmd: string, startTime: string) => {
@@ -54,9 +72,16 @@ const kboStartToTimestampStr = (matchDateYmd: string, startTime: string) => {
   return String(dayjs(`${matchDateYmd}T${hms}+09:00`).valueOf());
 };
 
-/** kbo-game(`/api/kbo/kbo-game`) 응답을 `PreviewRow`로 변환합니다. 팀 매칭은 `matchTeamId` */
+/**
+ * kbo-game 경기를 `PreviewRow`로 변환합니다. 팀 매칭은 `matchTeamId`, 상태·점수도 함께 담습니다.
+ * 서버의 `Game`(날짜 `Date`)과 클라이언트 JSON `KboGameListItem`(날짜 문자열)을 모두 받도록
+ * 실제로 쓰는 필드만 구조적으로 요구합니다.
+ */
 export const buildPreviewRowsFromKboGame = (
-  games: KboGameListItem[],
+  games: Pick<
+    Game,
+    "id" | "startTime" | "homeTeam" | "awayTeam" | "status" | "score"
+  >[],
   teams: TeamServerModel[],
   matchDateYmd: string,
 ): PreviewRow[] => {
@@ -104,6 +129,8 @@ export const buildPreviewRowsFromKboGame = (
       id = buildGameRecordId(yymmdd, homeId, awayId, seq);
     }
 
+    const finished = g.status === "FINISHED";
+
     rows.push({
       id,
       idEvent: g.id,
@@ -117,6 +144,9 @@ export const buildPreviewRowsFromKboGame = (
       stadiumId,
       sequence: seq,
       issues,
+      homeScore: finished ? (g.score?.home ?? null) : null,
+      awayScore: finished ? (g.score?.away ?? null) : null,
+      status: mapKboGameStatusToDbStatus(g.status),
     });
   }
 
@@ -126,164 +156,3 @@ export const buildPreviewRowsFromKboGame = (
       (Number.parseInt(a.strTimestamp, 10) || 0),
   );
 };
-
-/** TheSportsDB 오늘 경기 → DB upsert 미리보기 1행 */
-export type TheSportsDbPreviewRow = {
-  id: string;
-  idEvent: string;
-  matchDate: string;
-  homeTeamName: string;
-  awayTeamName: string;
-  homeTeamId: number | null;
-  awayTeamId: number | null;
-  stadiumId: number | null;
-  sequence: number;
-  homeScore: number | null;
-  awayScore: number | null;
-  /** `game_records.status`에 넣을 한국어 상태 */
-  status: string;
-  /** TheSportsDB `strStatus` 원본 */
-  apiStatus: string;
-  /** TheSportsDB `strVideo` → `game_records.youtube_url` */
-  youtubeUrl: string | null;
-  issues: string[];
-};
-
-/** TheSportsDB `strStatus`가 경기 종료(FT)인지 */
-export const isTheSportsDbFinishedStatus = (apiStatus: string): boolean =>
-  apiStatus.trim().toUpperCase() === "FT";
-
-/** FT 경기 — API가 `null`로 준 점수는 0득점으로 간주 */
-const normalizeTheSportsDbFtScore = (score: number | null): number =>
-  score ?? 0;
-
-/**
- * TheSportsDB → `game_records` upsert용 점수·status·youtube.
- * FT만 점수·youtube 반영( null 점수 → 0 ). 그 외는 점수·youtube null.
- */
-export const resolveTheSportsDbDbGameFields = (input: {
-  apiStatus: string;
-  homeScore: number | null;
-  awayScore: number | null;
-  youtubeUrl: string | null;
-}): Pick<
-  TheSportsDbPreviewRow,
-  "homeScore" | "awayScore" | "status" | "youtubeUrl"
-> => {
-  const status = mapTheSportsDbStatusToDbStatus(input.apiStatus);
-  if (isTheSportsDbFinishedStatus(input.apiStatus)) {
-    return {
-      homeScore: normalizeTheSportsDbFtScore(input.homeScore),
-      awayScore: normalizeTheSportsDbFtScore(input.awayScore),
-      status,
-      youtubeUrl: input.youtubeUrl,
-    };
-  }
-  return {
-    homeScore: null,
-    awayScore: null,
-    status,
-    youtubeUrl: null,
-  };
-};
-
-/** 5번 TheSportsDB `strStatus` → `game_records.status` */
-export const mapTheSportsDbStatusToDbStatus = (apiStatus: string): string => {
-  const code = apiStatus.trim().toUpperCase();
-  if (code === "FT") return "경기 종료";
-  // POST/PST(연기)·ABD(몰수·우천취소) → 우천 취소
-  if (code === "POST" || code === "PST" || code === "ABD") return "우천 취소";
-  // NS 및 그 외(IN1~9, CANC 등) 전부 경기 전
-  return "경기 전";
-};
-
-/** 미리보기 테이블 점수 — `0`은 `"0"`, null/undefined만 `—` */
-export const formatPreviewScore = (score: number | null | undefined): string =>
-  score === null || score === undefined ? "—" : String(score);
-
-/**
- * `fetchKboRecentGameResults`의 `games`를 DB upsert용 미리보기 행으로 변환합니다.
- * 팀 매칭은 TheSportsDB 영문 팀명(`strHomeTeam` 등) → `matchTeamId`.
- */
-export const buildPreviewRowsFromTheSportsDb = (
-  games: KboTodayGameResult[],
-  teams: TeamServerModel[],
-): TheSportsDbPreviewRow[] => {
-  const chronological = [...games].sort((a, b) => {
-    const timeA = a.eventTime ?? "";
-    const timeB = b.eventTime ?? "";
-    return timeA.localeCompare(timeB) || a.idEvent.localeCompare(b.idEvent);
-  });
-
-  const pairCounters = new Map<string, number>();
-  const rows: TheSportsDbPreviewRow[] = [];
-
-  for (const g of chronological) {
-    const homeId = matchTeamId(teams, g.homeTeam);
-    const awayId = matchTeamId(teams, g.awayTeam);
-    const issues: string[] = [];
-    if (homeId === null) issues.push(`홈팀 미매칭: ${g.homeTeam}`);
-    if (awayId === null) issues.push(`원정 미매칭: ${g.awayTeam}`);
-
-    let seq = 1;
-    if (homeId !== null && awayId !== null) {
-      const key = `${homeId}-${awayId}`;
-      const next = (pairCounters.get(key) ?? 0) + 1;
-      pairCounters.set(key, next);
-      seq = next;
-    }
-
-    const stadiumId =
-      homeId !== null
-        ? (teams.find((t) => t.id === homeId)?.stadium_id ?? null)
-        : null;
-    if (homeId !== null && stadiumId === null) {
-      issues.push("홈팀에 stadium_id 없음");
-    }
-
-    const yymmdd = dayjs(g.dateEvent).format("YYMMDD");
-    let id = "";
-    if (homeId !== null && awayId !== null) {
-      id = buildGameRecordId(yymmdd, homeId, awayId, seq);
-    }
-
-    const dbFields = resolveTheSportsDbDbGameFields({
-      apiStatus: g.status,
-      homeScore: g.homeScore,
-      awayScore: g.awayScore,
-      youtubeUrl: g.youtubeUrl,
-    });
-
-    rows.push({
-      id,
-      idEvent: g.idEvent,
-      matchDate: g.dateEvent,
-      homeTeamName: g.homeTeam,
-      awayTeamName: g.awayTeam,
-      homeTeamId: homeId,
-      awayTeamId: awayId,
-      stadiumId,
-      sequence: seq,
-      homeScore: dbFields.homeScore,
-      awayScore: dbFields.awayScore,
-      status: dbFields.status,
-      apiStatus: g.status,
-      youtubeUrl: dbFields.youtubeUrl,
-      issues,
-    });
-  }
-
-  return rows.sort(
-    (a, b) => (Number(a.id) || 0) - (Number(b.id) || 0) || a.idEvent.localeCompare(b.idEvent),
-  );
-};
-
-/** TheSportsDB 미리보기 행이 DB upsert 가능한지 확인 */
-export const isValidTheSportsDbPreviewForInsert = (
-  row: TheSportsDbPreviewRow,
-): boolean =>
-  !!row.id &&
-  row.homeTeamId != null &&
-  row.awayTeamId != null &&
-  row.stadiumId != null &&
-  row.issues.length === 0;
