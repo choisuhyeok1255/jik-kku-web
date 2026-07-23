@@ -69,6 +69,14 @@ const GameRecordsPage = () => {
   const [kboGamePreviewDate, setKboGamePreviewDate] = useState<string | null>(
     null,
   );
+  /** 월 일괄 추가 — 조회 월(`YYYY-MM`)과 불러온 일별 일정 */
+  const [monthInput, setMonthInput] = useState(() =>
+    dayjs().format("YYYY-MM"),
+  );
+  const [monthPreviewDays, setMonthPreviewDays] = useState<
+    { date: string; games: KboGameListItem[] }[] | null
+  >(null);
+  const [monthFetchLoading, setMonthFetchLoading] = useState(false);
   /** 유튜브 누락 달력 표시 월 (`YYYY-MM`) */
   const [youtubeAuditMonth, setYoutubeAuditMonth] = useState(() =>
     dayjs().format("YYYY-MM"),
@@ -115,6 +123,40 @@ const GameRecordsPage = () => {
       });
     } finally {
       setScheduleFetchLoading(false);
+    }
+  };
+
+  /** 월 일괄 조회 — `/api/kbo/kbo-game-month`로 그 달 일정을 한 번에 불러온다. */
+  const handleFetchMonth = async () => {
+    setMonthFetchLoading(true);
+    try {
+      const res = await fetch(
+        `/api/kbo/kbo-game-month?month=${encodeURIComponent(monthInput)}`,
+      );
+      const body: unknown = await res.json();
+      if (res.ok) {
+        setMonthPreviewDays(
+          body as { date: string; games: KboGameListItem[] }[],
+        );
+      } else {
+        setMonthPreviewDays(null);
+        toast.error("월 일정 API 오류", {
+          description:
+            typeof body === "object" &&
+            body !== null &&
+            "error" in body &&
+            typeof (body as { error: string }).error === "string"
+              ? (body as { error: string }).error
+              : res.statusText,
+        });
+      }
+    } catch (e) {
+      setMonthPreviewDays(null);
+      toast.error("월 일정 요청 실패", {
+        description: e instanceof Error ? e.message : String(e),
+      });
+    } finally {
+      setMonthFetchLoading(false);
     }
   };
 
@@ -178,6 +220,14 @@ const GameRecordsPage = () => {
     );
   }, [kboGamePreview, kboGamePreviewDate, teams]);
 
+  /** 월 일괄 — 일별 일정을 날짜별로 변환해 합친 미리보기 행 (seq는 날짜별 계산). */
+  const monthPreviewRows: PreviewRow[] = useMemo(() => {
+    if (!teams?.length || monthPreviewDays == null) return [];
+    return monthPreviewDays.flatMap((day) =>
+      buildPreviewRowsFromKboGame(day.games, teams, day.date),
+    );
+  }, [monthPreviewDays, teams]);
+
   const teamLabelById = useMemo(() => {
     const map = new Map<number, string>();
     teams?.forEach((t) => {
@@ -203,6 +253,38 @@ const GameRecordsPage = () => {
       (a.name ?? "").localeCompare(b.name ?? ""),
     );
   }, [stadiumsForManual]);
+
+  /** 월 일괄 — 그 달에 이미 있는 game_records id 집합 (없는 경기만 추가하려고 조회). */
+  const { data: monthExistingIds } = useQuery({
+    queryKey: ["admin-game-records-month-ids", monthInput],
+    queryFn: async (): Promise<Set<number>> => {
+      const start = dayjs(`${monthInput}-01`).startOf("month");
+      const from = start.format("YYYY-MM-DD");
+      const to = start.endOf("month").format("YYYY-MM-DD");
+      const { data, error } = await supabase
+        .from("game_records")
+        .select("id")
+        .gte("match_date", from)
+        .lte("match_date", to);
+      if (error) throw error;
+      return new Set((data ?? []).map((r) => r.id));
+    },
+    enabled: monthPreviewDays != null,
+  });
+
+  /** 월 일괄 요약 — 유효/신규(없는것)/이미있음/매핑실패 집계. */
+  const monthSummary = useMemo(() => {
+    const valid = monthPreviewRows.filter(isValidPreviewForInsert);
+    const existing = monthExistingIds ?? new Set<number>();
+    const newRows = valid.filter((r) => !existing.has(Number(r.id)));
+    return {
+      total: monthPreviewRows.length,
+      valid: valid.length,
+      newRows,
+      alreadyHave: valid.length - newRows.length,
+      invalid: monthPreviewRows.length - valid.length,
+    };
+  }, [monthPreviewRows, monthExistingIds]);
 
   const { data: youtubeAuditRecords, isLoading: loadingYoutubeAudit } =
     useQuery({
@@ -282,6 +364,44 @@ const GameRecordsPage = () => {
     }
     applyPreviewMutation.mutate();
   };
+
+  /** 월 일괄 — DB에 없는 경기만 실제 상태·점수로 추가한다 (기존 행은 건드리지 않음). */
+  const insertMonthMutation = useMutation({
+    mutationFn: async () => {
+      const { newRows } = monthSummary;
+      if (newRows.length === 0) {
+        throw new Error("추가할 신규 경기가 없습니다.");
+      }
+      const payload: GameRecordInsert[] = newRows.map((r) => ({
+        id: Number(r.id),
+        home_team_id: r.homeTeamId!,
+        away_team_id: r.awayTeamId!,
+        home_team_score: r.homeScore,
+        away_team_score: r.awayScore,
+        status: r.status,
+        match_date: r.matchDate,
+        stadium_id: r.stadiumId!,
+        youtube_url: null,
+      }));
+      // ignoreDuplicates: 이미 있는 id는 건너뛰어 기존 결과·youtube를 절대 덮지 않는다.
+      const { error } = await supabase
+        .from("game_records")
+        .upsert(payload, { onConflict: "id", ignoreDuplicates: true });
+      if (error) throw error;
+      return newRows.length;
+    },
+    onSuccess: (count) => {
+      void queryClient.invalidateQueries({ queryKey: ["admin-game-records"] });
+      void queryClient.invalidateQueries({
+        queryKey: ["admin-game-records-month-ids"],
+      });
+      void queryClient.invalidateQueries({ queryKey: [...YOUTUBE_AUDIT_QUERY_KEY] });
+      toast.success(`신규 ${count}건을 DB에 추가했습니다.`);
+    },
+    onError: (e: unknown) => {
+      toast.error(e instanceof Error ? e.message : "추가에 실패했습니다.");
+    },
+  });
 
   const insertManualMutation = useMutation({
     mutationFn: async () => {
@@ -596,6 +716,85 @@ const GameRecordsPage = () => {
               <span className="text-[11px] text-white/45">
                 비고(매핑 오류)가 있는 행은 제외됩니다.
               </span>
+            </div>
+          )}
+        </section>
+
+        <section className="rounded-[16px] border border-white/10 bg-white/4 p-4">
+          <h2 className="mb-2 text-[15px] font-semibold text-white">
+            1-1. 월 일괄 추가 (kbo-game → 없는 경기만)
+          </h2>
+          <p className="mb-3 text-[12px] leading-relaxed text-white/50">
+            선택한 달의 KBO 경기를 한 번에 조회해, DB에{" "}
+            <span className="text-white/75">없는 경기만</span> 실제 상태·점수로
+            추가합니다. 이미 있는 경기는{" "}
+            <span className="text-white/75">건드리지 않아</span> 과거 결과·youtube가
+            보존됩니다.
+          </p>
+          <div className="flex flex-wrap items-end gap-3">
+            <label className="flex flex-col gap-1 text-[12px] text-white/70">
+              조회 월
+              <input
+                type="month"
+                value={monthInput}
+                onChange={(e) => setMonthInput(e.target.value)}
+                className="rounded-[10px] border border-white/15 bg-[#232323] px-3 py-2 text-[14px] text-white"
+              />
+            </label>
+            <button
+              type="button"
+              onClick={() => {
+                void handleFetchMonth();
+              }}
+              disabled={monthFetchLoading}
+              className="rounded-[12px] bg-white/15 px-4 py-2 text-[14px] font-medium text-white transition-opacity hover:opacity-90 disabled:opacity-50"
+            >
+              {monthFetchLoading ? "불러오는 중…" : "월 조회"}
+            </button>
+          </div>
+
+          {monthFetchLoading && (
+            <p className="mt-3 text-[12px] text-violet-200/80">
+              {monthInput} 일정 불러오는 중… (하루씩 조회라 몇 초 걸릴 수 있어요)
+            </p>
+          )}
+
+          {monthPreviewDays != null && !monthFetchLoading && (
+            <div className="mt-4 space-y-3">
+              <div className="flex flex-wrap gap-x-5 gap-y-1 text-[13px] text-white/80">
+                <span>
+                  조회 경기 <b className="text-white">{monthSummary.total}</b>
+                </span>
+                <span className="text-emerald-200/90">
+                  신규 추가 대상 <b>{monthSummary.newRows.length}</b>
+                </span>
+                <span className="text-white/55">
+                  이미 있음 {monthSummary.alreadyHave}
+                </span>
+                {monthSummary.invalid > 0 && (
+                  <span className="text-amber-200/90">
+                    매핑 실패 {monthSummary.invalid}
+                  </span>
+                )}
+              </div>
+              <div className="flex flex-wrap items-center gap-3">
+                <button
+                  type="button"
+                  onClick={() => insertMonthMutation.mutate()}
+                  disabled={
+                    insertMonthMutation.isPending ||
+                    monthSummary.newRows.length === 0
+                  }
+                  className="rounded-[12px] bg-emerald-600/90 px-4 py-2 text-[14px] font-medium text-white transition-opacity hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-40"
+                >
+                  {insertMonthMutation.isPending
+                    ? "추가 중…"
+                    : `신규 ${monthSummary.newRows.length}건 추가`}
+                </button>
+                <span className="text-[11px] text-white/45">
+                  이미 있는 경기·매핑 실패 행은 제외됩니다.
+                </span>
+              </div>
             </div>
           )}
         </section>
