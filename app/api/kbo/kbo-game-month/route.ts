@@ -27,7 +27,8 @@ export async function GET(request: Request) {
     for (let i = 0; i < daysInMonth; i += 1) {
       const day = start.add(i, "day");
       const ymd = day.format("YYYY-MM-DD");
-      const games = await getGame(new Date(`${ymd}T00:00:00+09:00`));
+      // UTC 정오로 넘겨 런타임 타임존(Vercel=UTC)에서 날짜가 하루 밀리지 않게 한다.
+      const games = await getGame(new Date(`${ymd}T12:00:00Z`));
       if (games && games.length > 0) {
         result.push({ date: ymd, games });
       }

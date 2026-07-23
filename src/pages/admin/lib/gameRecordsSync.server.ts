@@ -89,9 +89,11 @@ export async function syncGameRecordsFromKboGame(): Promise<GameSyncResult> {
 
   const todayYmd = kstDateString(0);
   const yesterdayYmd = kstDateString(-1);
+  // kbo-game은 런타임 로컬 타임존의 날짜로 조회한다. Vercel(UTC)에서 KST 자정을
+  // 넘기면 하루 전으로 밀리므로, 어느 타임존에서도 날짜가 안 밀리는 UTC 정오로 넘긴다.
   const [yesterdayGames, todayGames] = await Promise.all([
-    getGame(new Date(`${yesterdayYmd}T00:00:00+09:00`)),
-    getGame(new Date(`${todayYmd}T00:00:00+09:00`)),
+    getGame(new Date(`${yesterdayYmd}T12:00:00Z`)),
+    getGame(new Date(`${todayYmd}T12:00:00Z`)),
   ]);
   // seq(더블헤더 순번)는 날짜별로 계산되므로 어제·오늘을 따로 변환한다.
   const allRows = [

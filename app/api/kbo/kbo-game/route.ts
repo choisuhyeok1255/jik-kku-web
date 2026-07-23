@@ -14,7 +14,8 @@ export async function GET(request: Request) {
     );
   }
   try {
-    const games = await getGame(new Date(`${date}T00:00:00+09:00`));
+    // UTC 정오로 넘겨 런타임 타임존(Vercel=UTC)에서 날짜가 하루 밀리지 않게 한다.
+    const games = await getGame(new Date(`${date}T12:00:00Z`));
     return NextResponse.json(games);
   } catch (e) {
     return NextResponse.json(
