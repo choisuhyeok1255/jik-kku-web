@@ -1,6 +1,6 @@
 /**
- * KBO 공식 유튜브 "하이라이트" 재생목록 RSS 조회·파싱 (server 전용).
- * - YouTube Data API 키 없이 재생목록 RSS 피드(최근 ~15개)를 가져온다.
+ * KBO 공식 유튜브 "하이라이트" 재생목록 조회·파싱 (server 전용).
+ * - YouTube Data API v3 `playlistItems.list`로 최근 영상(최신순 최대 50개)을 가져온다.
  * - 영상 제목(`[A vs B] M.D(요일) 야구 하이라이트…`)에서 경기일·두 팀명을 파싱한다.
  * - 재생목록 팀명 표기(공백 없음, 예: `SSG랜더스`)를 DB `teams`의 team_id로 매칭한다.
  */
@@ -10,13 +10,16 @@ import type { TeamServerModel } from "@/src/entities/team/model/types/api";
 
 /** 2026 시즌 KBO 리그 하이라이트 재생목록 ID (시즌마다 갱신 필요). */
 const KBO_HIGHLIGHTS_PLAYLIST_ID = "PLuY-NTS_5Ipz7qggSm4O0aTp4RQjNCLCl";
-const RSS_FEED_BASE = "https://www.youtube.com/feeds/videos.xml?playlist_id=";
+const PLAYLIST_ITEMS_ENDPOINT =
+  "https://www.googleapis.com/youtube/v3/playlistItems";
+/** 한 번에 가져올 영상 수 (API 상한 50). 재생목록은 최신이 앞이라 1페이지면 충분하다. */
+const MAX_RESULTS = 50;
 
-/** RSS 피드에서 뽑은 영상 1건. */
+/** 재생목록에서 뽑은 영상 1건. */
 export type KboHighlightVideo = {
   videoId: string;
   title: string;
-  /** 게시일 (ISO 8601, 예: `2026-07-22T13:32:04+00:00`) */
+  /** 영상 게시일 (ISO 8601, 예: `2026-07-24T13:32:04Z`) */
   publishedAt: string;
   /** `https://www.youtube.com/watch?v=<videoId>` */
   videoUrl: string;
@@ -30,48 +33,64 @@ export type ParsedHighlightTitle = {
   teamNames: [string, string];
 };
 
-const XML_ENTITIES: Record<string, string> = {
-  "&amp;": "&",
-  "&lt;": "<",
-  "&gt;": ">",
-  "&quot;": '"',
-  "&#39;": "'",
-  "&apos;": "'",
+type PlaylistItemsResponse = {
+  items?: {
+    snippet?: { title?: string };
+    contentDetails?: { videoId?: string; videoPublishedAt?: string };
+  }[];
 };
 
-const decodeXml = (s: string): string =>
-  s.replace(/&(amp|lt|gt|quot|#39|apos);/g, (m) => XML_ENTITIES[m] ?? m);
+/**
+ * 실패 응답에서 사람이 읽을 오류 메시지만 뽑는다.
+ * 본문 전체를 그대로 노출하지 않아 로그가 불필요하게 길어지지 않게 한다.
+ * @returns 메시지를 못 읽으면 빈 문자열
+ */
+async function readApiErrorMessage(response: Response): Promise<string> {
+  try {
+    const body = (await response.json()) as { error?: { message?: string } };
+    return body.error?.message ?? "";
+  } catch {
+    return "";
+  }
+}
 
 /**
- * KBO 하이라이트 재생목록 RSS를 가져와 영상 목록(최근 ~15개)으로 파싱한다.
- * @throws RSS 요청 실패(비 200) 시
+ * KBO 하이라이트 재생목록을 조회해 영상 목록(최신순 최대 50개)으로 파싱한다.
+ * @throws `YOUTUBE_API_KEY` 미설정 시, API 응답이 비 200일 때
  */
 export async function fetchKboHighlightVideos(): Promise<KboHighlightVideo[]> {
-  const url = `${RSS_FEED_BASE}${KBO_HIGHLIGHTS_PLAYLIST_ID}`;
-  const response = await fetch(url, {
-    headers: { Accept: "application/atom+xml" },
-    cache: "no-store",
-  });
-  if (!response.ok) {
-    throw new Error(`KBO 하이라이트 RSS 요청 실패: HTTP ${response.status}`);
+  const apiKey = process.env.YOUTUBE_API_KEY;
+  if (!apiKey) {
+    throw new Error("YOUTUBE_API_KEY가 설정되지 않았습니다.");
   }
-  const xml = await response.text();
+
+  const url = new URL(PLAYLIST_ITEMS_ENDPOINT);
+  url.searchParams.set("part", "snippet,contentDetails");
+  url.searchParams.set("playlistId", KBO_HIGHLIGHTS_PLAYLIST_ID);
+  url.searchParams.set("maxResults", String(MAX_RESULTS));
+  url.searchParams.set("key", apiKey);
+
+  const response = await fetch(url, { cache: "no-store" });
+  if (!response.ok) {
+    const detail = await readApiErrorMessage(response);
+    throw new Error(
+      `KBO 하이라이트 조회 실패: HTTP ${response.status}${detail ? ` — ${detail}` : ""}`,
+    );
+  }
+
+  const body = (await response.json()) as PlaylistItemsResponse;
 
   const videos: KboHighlightVideo[] = [];
-  const entries = xml.split("<entry>").slice(1);
-  for (const entry of entries) {
-    const videoId = entry
-      .match(/<yt:videoId>([^<]+)<\/yt:videoId>/)?.[1]
-      ?.trim();
-    const title = entry.match(/<title>([\s\S]*?)<\/title>/)?.[1];
-    const publishedAt = entry
-      .match(/<published>([^<]+)<\/published>/)?.[1]
-      ?.trim();
+  for (const item of body.items ?? []) {
+    const videoId = item.contentDetails?.videoId;
+    const title = item.snippet?.title;
+    // 비공개·삭제된 영상은 videoPublishedAt이 없다 → 경기일 연도를 못 정하므로 건너뛴다.
+    const publishedAt = item.contentDetails?.videoPublishedAt;
     if (!videoId || !title || !publishedAt) continue;
 
     videos.push({
       videoId,
-      title: decodeXml(title).trim(),
+      title: title.trim(),
       publishedAt,
       videoUrl: `https://www.youtube.com/watch?v=${videoId}`,
     });

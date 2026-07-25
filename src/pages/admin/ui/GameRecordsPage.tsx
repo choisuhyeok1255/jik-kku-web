@@ -1279,7 +1279,7 @@ const GameRecordsPage = () => {
             DB{" "}
             <span className="text-white/75">경기 종료</span> 기록 중{" "}
             <span className="text-white/75">youtube_url</span>이 비어 있는
-            경기를 날짜별로 표시합니다. 하이라이트는 KBO 재생목록(RSS) 크론이
+            경기를 날짜별로 표시합니다. 하이라이트는 KBO 재생목록 크론이
             자동으로 채웁니다.
           </p>
           <YoutubeMissingCalendarBlock

@@ -264,6 +264,7 @@ TheSportsDB의 KBO 경기 결과(점수·상태·유튜브)를 일정 시각마�
 | `SUPABASE_SERVICE_ROLE_KEY` | Supabase → Settings → API 의 `service_role` 키 (서버 전용) |
 | `SLACK_WEBHOOK_URL`         | 기존 Slack Incoming Webhook URL (동기화 알림도 같은 채널)  |
 | `THESPORTSDB_KEY`           | TheSportsDB API 키 (없으면 `NEXT_PUBLIC_THESPORTSDB_KEY`)  |
+| `YOUTUBE_API_KEY`           | YouTube Data API v3 키 (하이라이트 채우기 필수, 서버 전용) |
 
 ### 2. 스케줄 등록 (Supabase pg_cron)
 

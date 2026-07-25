@@ -15,7 +15,7 @@ import type { YoutubeFillResult } from "./youtubeHighlightSync.server";
 /**
  * 크론용 경기 기록 자동 동기화 (서버 전용).
  * - kbo-game(KBO 공식 사이트) 어제·오늘(KST) 경기 → `game_records` upsert (점수·상태).
- * - 유튜브 URL은 KBO 하이라이트 RSS(별도 단계)가 채우며, 여기선 기존 값만 보존한다.
+ * - 유튜브 URL은 KBO 하이라이트 재생목록(별도 단계)이 채우며, 여기선 기존 값만 보존한다.
  * - 이미 확정된 경기("경기 종료"/"우천 취소")는 "경기 전"으로 되돌리지 않는다(결과·점수 보호).
  * - 실제 변경(신규/점수·상태 변동)이 있는 행만 저장하고, 변경 내역을 Slack 메시지로 만든다.
  */
@@ -137,7 +137,7 @@ export async function syncGameRecordsFromKboGame(): Promise<GameSyncResult> {
     const id = Number(r.id);
     const existing = existingById.get(id);
 
-    // 유튜브는 KBO 하이라이트 RSS(별도 단계)가 채운다. 여기선 기존 값만 보존한다.
+    // 유튜브는 KBO 하이라이트 재생목록(별도 단계)이 채운다. 여기선 기존 값만 보존한다.
     const youtubeUrl = existing?.youtube_url ?? null;
 
     const next = {

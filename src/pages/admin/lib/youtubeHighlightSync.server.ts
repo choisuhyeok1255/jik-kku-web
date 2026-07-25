@@ -1,6 +1,6 @@
 /**
- * KBO 하이라이트 재생목록(RSS)으로 `game_records.youtube_url` 자동 채우기 (server 전용).
- * - RSS 최근 영상 → 경기(날짜 + 두 팀 조합, 순서 무관) 매칭 → youtube_url이 비었으면 채운다.
+ * KBO 하이라이트 재생목록으로 `game_records.youtube_url` 자동 채우기 (server 전용).
+ * - 재생목록 최근 영상 → 경기(날짜 + 두 팀 조합, 순서 무관) 매칭 → youtube_url이 비었으면 채운다.
  * - 이미 값이 있으면 보존(수동 입력 포함)하고, 더블헤더(매칭 2건+)는 건너뛰고 로그로 남긴다.
  * - 결과(채움/건너뜀/실패 수)는 크론의 Slack 요약에 합쳐 보고한다.
  */
@@ -14,7 +14,7 @@ import {
   fetchKboHighlightVideos,
   matchTeamIdByKoreanName,
   parseHighlightTitle,
-} from "./kboHighlightsRss";
+} from "./kboHighlights";
 
 type GameRecordMatchRow = Pick<
   Database["public"]["Tables"]["game_records"]["Row"],
@@ -40,7 +40,7 @@ export type YoutubeSkippedDoubleHeader = {
 export type YoutubeFillResult = {
   /** 실행 시각 (ISO 8601 UTC) */
   ranAt: string;
-  /** RSS에서 가져온 영상 수 */
+  /** 재생목록에서 가져온 영상 수 */
   totalVideos: number;
   /** 새로 채운 경기 목록 */
   filled: YoutubeFilledGame[];
@@ -64,8 +64,8 @@ const teamPairKey = (a: number, b: number): string =>
   [a, b].sort((x, y) => x - y).join("-");
 
 /**
- * KBO 하이라이트 RSS로 비어있는 `youtube_url`을 채운다.
- * @throws RSS 요청 실패·DB 조회/업데이트 실패 시
+ * KBO 하이라이트 재생목록으로 비어있는 `youtube_url`을 채운다.
+ * @throws 재생목록 조회 실패·DB 조회/업데이트 실패 시
  */
 export async function fillYoutubeFromKboHighlights(): Promise<YoutubeFillResult> {
   const ranAt = new Date().toISOString();

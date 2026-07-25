@@ -15,7 +15,7 @@ import { sendSlackMessage } from "@/src/shared/lib/slack";
  * 경기 데이터 자동 동기화 크론 엔드포인트.
  * - `Authorization: Bearer <CRON_SECRET>` 헤더로 보호한다 (pg_cron이 호출).
  * - kbo-game 어제·오늘 경기를 `game_records`에 동기화(점수·상태)하고, 이어서 KBO 하이라이트
- *   RSS로 비어있는 youtube_url을 채운다. 변경/채움이 있으면 Slack 요약을, 실패하면 실패 알림을 보낸다.
+ *   재생목록으로 비어있는 youtube_url을 채운다. 변경/채움이 있으면 Slack 요약을, 실패하면 실패 알림을 보낸다.
  * - 하이라이트 채우기 실패는 점수·상태 동기화를 막지 않는다(로그만 남기고 진행).
  */
 
