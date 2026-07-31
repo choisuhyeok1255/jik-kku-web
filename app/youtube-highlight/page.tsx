@@ -6,13 +6,13 @@ import {
   faqPageJsonLd,
 } from "@/src/shared/lib/seo-faq";
 import { breadcrumbListJsonLd } from "@/src/shared/lib/seo-jsonld";
+import { JsonLdScript } from "@/src/shared/ui/JsonLdScript";
 
 const titleSegment = "야구 하이라이트";
 const description =
   "기록한 경기의 하이라이트를 직관 기록 옆에서 바로 열 수 있습니다. 경기 후 다시보기 동선을 줄이고, 기록과 영상 소비가 이어지도록 구성했습니다.";
 
-const ogImage = "/ios_feed.png";
-
+/** OG 이미지는 같은 디렉토리의 opengraph-image.tsx가 1200×630으로 생성합니다. */
 export const metadata: Metadata = {
   title: titleSegment,
   description,
@@ -25,18 +25,11 @@ export const metadata: Metadata = {
     siteName: "직꾸",
     type: "website",
     locale: "ko_KR",
-    images: [
-      {
-        url: ogImage,
-        alt: "하이라이트 연동 기능이 보이는 피드 화면",
-      },
-    ],
   },
   twitter: {
     card: "summary_large_image",
     title: `${titleSegment} | 직꾸`,
     description,
-    images: [ogImage],
   },
 };
 
@@ -49,14 +42,8 @@ export default function Page() {
 
   return (
     <>
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(faqJsonLd) }}
-      />
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbLd) }}
-      />
+      <JsonLdScript data={faqJsonLd} />
+      <JsonLdScript data={breadcrumbLd} />
       <YoutubeHighlightLandingPage />
     </>
   );

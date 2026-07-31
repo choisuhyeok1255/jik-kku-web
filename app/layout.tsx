@@ -5,12 +5,18 @@ import { Toaster } from "sonner";
 
 import { Providers } from "@/src/app";
 import {
+  APP_STORE_URL,
+  GOOGLE_PLAY_URL,
+  TICKET_URL,
+} from "@/src/shared/config/external-links";
+import {
   HOME_PAGE_DESCRIPTION,
   HOME_PAGE_TITLE,
-  SITE_OG_IMAGE_PATH,
+  SITE_LOGO_PATH,
 } from "@/src/shared/lib/seo-home";
 import { softwareApplicationJsonLd } from "@/src/shared/lib/seo-jsonld";
 import { SITE_URL } from "@/src/shared/lib/site-url";
+import { JsonLdScript } from "@/src/shared/ui/JsonLdScript";
 import "./globals.css";
 
 const laundryGothic = localFont({
@@ -45,6 +51,7 @@ export const metadata: Metadata = {
   icons: {
     icon: "/icon.png",
   },
+  // OG 이미지는 각 라우트의 opengraph-image.tsx가 1200×630으로 생성합니다.
   openGraph: {
     title: HOME_PAGE_TITLE,
     description: HOME_PAGE_DESCRIPTION,
@@ -52,20 +59,11 @@ export const metadata: Metadata = {
     siteName: "직꾸",
     type: "website",
     locale: "ko_KR",
-    images: [
-      {
-        url: SITE_OG_IMAGE_PATH,
-        width: 512,
-        height: 512,
-        alt: "직꾸 앱 아이콘",
-      },
-    ],
   },
   twitter: {
     card: "summary_large_image",
     title: HOME_PAGE_TITLE,
     description: HOME_PAGE_DESCRIPTION,
-    images: [SITE_OG_IMAGE_PATH],
   },
 };
 
@@ -83,6 +81,8 @@ const RootLayout = ({
         name: "직꾸",
         description: HOME_PAGE_DESCRIPTION,
         url: SITE_URL,
+        logo: `${SITE_URL}${SITE_LOGO_PATH}`,
+        sameAs: [APP_STORE_URL, GOOGLE_PLAY_URL, TICKET_URL],
       },
       {
         "@type": "WebSite",
@@ -111,14 +111,9 @@ const RootLayout = ({
       <body
         className={`${laundryGothic.variable} ${laundryGothic.className} bg-[#232323]`}
       >
-        <script
-          type="application/ld+json"
-          dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
-        />
+        <JsonLdScript data={jsonLd} />
         <Providers>
-          <div className="min-h-dvh min-w-[360px]">
-            {children}
-          </div>
+          <div className="min-h-dvh min-w-[360px]">{children}</div>
           <Toaster richColors position="top-center" />
         </Providers>
       </body>

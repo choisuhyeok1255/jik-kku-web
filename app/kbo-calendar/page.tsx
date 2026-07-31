@@ -6,13 +6,13 @@ import {
   faqPageJsonLd,
 } from "@/src/shared/lib/seo-faq";
 import { breadcrumbListJsonLd } from "@/src/shared/lib/seo-jsonld";
+import { JsonLdScript } from "@/src/shared/ui/JsonLdScript";
 
 const titleSegment = "KBO 경기 일정";
 const description =
-"KBO 경기 일정을 팀별·날짜별로 확인하세요. 구단별 경기 일정, 상대팀, 경기 구장 정보를 한곳에서 볼 수 있습니다.";
+  "KBO 경기 일정을 팀별·날짜별로 확인하세요. 구단별 경기 일정과 상대팀, 경기 구장은 물론 경기일 구장 날씨와 기온까지 한곳에서 볼 수 있습니다.";
 
-const ogImage = "/ios_calendar.png";
-
+/** OG 이미지는 같은 디렉토리의 opengraph-image.tsx가 1200×630으로 생성합니다. */
 export const metadata: Metadata = {
   title: titleSegment,
   description,
@@ -25,18 +25,11 @@ export const metadata: Metadata = {
     siteName: "직꾸",
     type: "website",
     locale: "ko_KR",
-    images: [
-      {
-        url: ogImage,
-        alt: "KBO 경기 일정 확인 화면",
-      },
-    ],
   },
   twitter: {
     card: "summary_large_image",
     title: `${titleSegment} | 직꾸`,
     description,
-    images: [ogImage],
   },
 };
 
@@ -49,14 +42,8 @@ export default function Page() {
 
   return (
     <>
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(faqJsonLd) }}
-      />
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbLd) }}
-      />
+      <JsonLdScript data={faqJsonLd} />
+      <JsonLdScript data={breadcrumbLd} />
       <KboCalendarLandingPage />
     </>
   );

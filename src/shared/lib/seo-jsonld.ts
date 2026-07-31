@@ -1,11 +1,12 @@
+import { APP_SCREENS } from "@/src/shared/config/app-screens";
+import {
+  APP_STORE_URL,
+  GOOGLE_PLAY_URL,
+} from "@/src/shared/config/external-links";
+import { FEATURE_PAGE_NAV } from "@/src/shared/config/site-nav";
 import { SITE_URL } from "@/src/shared/lib/site-url";
 
 import { HOME_PAGE_DESCRIPTION } from "./seo-home";
-
-const APP_STORE_URL =
-  "https://apps.apple.com/kr/app/%EC%A7%81%EA%BE%B8/id6761379053";
-const GOOGLE_PLAY_URL =
-  "https://play.google.com/store/apps/details?id=com.jikkku.app&pcampaignid=web_share";
 
 /** 루트 레이아웃 @graph에 넣는 모바일 앱(SoftwareApplication) 스키마 — 스토어 링크와 서비스 설명은 실제 앱과 동일하게 유지합니다. */
 export function softwareApplicationJsonLd() {
@@ -16,6 +17,13 @@ export function softwareApplicationJsonLd() {
     description: HOME_PAGE_DESCRIPTION,
     applicationCategory: "SportsApplication",
     operatingSystem: "iOS, Android",
+    inLanguage: "ko-KR",
+    // 기능 목록·스크린샷은 site-nav / app-screens에서 파생시켜 llms.txt와 같은 내용을 쓴다
+    featureList: FEATURE_PAGE_NAV.map(({ summary }) => summary),
+    screenshot: Object.values(APP_SCREENS).map(
+      (screenPath) => `${SITE_URL}${screenPath}`,
+    ),
+    publisher: { "@id": `${SITE_URL}/#organization` },
     offers: {
       "@type": "Offer",
       price: "0",
