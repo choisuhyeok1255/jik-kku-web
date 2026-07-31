@@ -27,7 +27,7 @@ export default function TermsPage() {
         <div className="mx-auto flex max-w-3xl items-center justify-between gap-4">
           <Link
             href="/"
-            className="text-sm text-orange-400 underline-offset-4 hover:underline"
+            className="text-accent-400 text-sm underline-offset-4 hover:underline"
           >
             직꾸 홈으로
           </Link>
@@ -42,10 +42,10 @@ export default function TermsPage() {
       </header>
       <main className="mx-auto max-w-3xl px-4 py-10 md:px-6">
         <p className="mb-8 text-[15px] leading-relaxed text-white/55">
-          아래 내용은 앱 마이페이지의 서비스 정보에 게시된 이용약관과 동일합니다.
-          문의는 앱 내 문의하기를 이용해 주세요.
+          아래 내용은 앱 마이페이지의 서비스 정보에 게시된 이용약관과
+          동일합니다. 문의는 앱 내 문의하기를 이용해 주세요.
         </p>
-        <pre className="whitespace-pre-wrap font-sans text-[14px] leading-[22px] text-white/85">
+        <pre className="font-sans text-[14px] leading-[22px] whitespace-pre-wrap text-white/85">
           {TERMS_CONTENT.trim()}
         </pre>
       </main>

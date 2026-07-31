@@ -1,27 +1,29 @@
-"use client";
+/**
+ * 기능 소개 페이지 공용 레이아웃.
+ * 현재 경로는 각 페이지가 상수로 넘겨 준다 — usePathname을 쓰면 이 헤더 전체가
+ * 클라이언트 컴포넌트가 되어, 정적인 마케팅 문구까지 번들에 실리기 때문이다.
+ */
 
 import Image from "next/image";
 import Link from "next/link";
-import { usePathname } from "next/navigation";
 import type { ReactNode } from "react";
+
+import { TICKET_URL } from "@/src/shared/config/external-links";
+import {
+  FEATURE_PAGE_NAV,
+  type FeaturePagePath,
+} from "@/src/shared/config/site-nav";
 
 type MarketingSubpageLayoutProps = {
   children: ReactNode;
+  /** 네비게이션에서 현재 페이지를 표시하기 위한 경로 (예: "/live-score") */
+  currentPath: FeaturePagePath;
 };
-
-const SEO_LANDING_NAV = [
-  { href: "/easy-game-log", label: "직관 기록" },
-  { href: "/youtube-highlight", label: "야구 하이라이트" },
-  { href: "/kbo-calendar", label: "KBO 일정" },
-] as const;
-
-const TICKET_URL = "https://ticket.jik-kku.com";
 
 export const MarketingSubpageLayout = ({
   children,
+  currentPath,
 }: MarketingSubpageLayoutProps) => {
-  const pathname = usePathname();
-
   return (
     <div className="min-h-dvh w-full min-w-0 bg-[#0a0a0a] text-white">
       <header className="sticky top-0 z-50 border-b border-white/10 bg-[#0a0a0a]/90 backdrop-blur-md">
@@ -43,8 +45,8 @@ export const MarketingSubpageLayout = ({
             className="flex max-w-full flex-wrap items-center justify-end gap-x-2 gap-y-2 text-sm text-white/70 md:gap-x-3"
             aria-label="기능 소개 페이지"
           >
-            {SEO_LANDING_NAV.map(({ href, label }, i) => {
-              const isActive = pathname === href;
+            {FEATURE_PAGE_NAV.map(({ href, label }, i) => {
+              const isActive = currentPath === href;
               return (
                 <span key={href} className="inline-flex items-center gap-x-2">
                   {i > 0 ? (
@@ -56,7 +58,7 @@ export const MarketingSubpageLayout = ({
                     href={href}
                     className={
                       isActive
-                        ? "font-medium text-orange-400"
+                        ? "text-accent-400 font-medium"
                         : "transition-colors hover:text-white"
                     }
                     aria-current={isActive ? "page" : undefined}

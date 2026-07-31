@@ -1,5 +1,16 @@
 @import "tailwindcss";
 @import "tw-animate-css";
+
+/**
+ * 액센트 컬러 토큰 — 앱(iOS/Android) UI의 강조색을 웹과 맞추기 위한 단일 출처.
+ * 400은 앱 탭바·FAB에 쓰이는 기본 그린, 500은 배경 틴트(bg-accent-500/20)에 쓴다.
+ * 색을 바꿀 일이 생기면 이 두 값만 고치면 전 페이지에 반영된다.
+ */
+@theme {
+  --color-accent-400: #68ba7f;
+  --color-accent-500: #4e9f66;
+}
+
 body {
   color: #ffffff;
 }
