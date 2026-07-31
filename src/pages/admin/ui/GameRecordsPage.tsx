@@ -70,9 +70,7 @@ const GameRecordsPage = () => {
     null,
   );
   /** 월 일괄 추가 — 조회 월(`YYYY-MM`)과 불러온 일별 일정 */
-  const [monthInput, setMonthInput] = useState(() =>
-    dayjs().format("YYYY-MM"),
-  );
+  const [monthInput, setMonthInput] = useState(() => dayjs().format("YYYY-MM"));
   const [monthPreviewDays, setMonthPreviewDays] = useState<
     { date: string; games: KboGameListItem[] }[] | null
   >(null);
@@ -293,7 +291,8 @@ const GameRecordsPage = () => {
     });
 
   const youtubeMissingByDate = useMemo(
-    () => groupYoutubeMissingByMatchDate(youtubeAuditRecords ?? [], teamLabelById),
+    () =>
+      groupYoutubeMissingByMatchDate(youtubeAuditRecords ?? [], teamLabelById),
     [youtubeAuditRecords, teamLabelById],
   );
 
@@ -347,7 +346,9 @@ const GameRecordsPage = () => {
     },
     onSuccess: (count) => {
       void queryClient.invalidateQueries({ queryKey: ["admin-game-records"] });
-      void queryClient.invalidateQueries({ queryKey: [...YOUTUBE_AUDIT_QUERY_KEY] });
+      void queryClient.invalidateQueries({
+        queryKey: [...YOUTUBE_AUDIT_QUERY_KEY],
+      });
       toast.success(`${count}건을 DB에 반영했습니다.`);
     },
     onError: (e: unknown) => {
@@ -395,7 +396,9 @@ const GameRecordsPage = () => {
       void queryClient.invalidateQueries({
         queryKey: ["admin-game-records-month-ids"],
       });
-      void queryClient.invalidateQueries({ queryKey: [...YOUTUBE_AUDIT_QUERY_KEY] });
+      void queryClient.invalidateQueries({
+        queryKey: [...YOUTUBE_AUDIT_QUERY_KEY],
+      });
       toast.success(`신규 ${count}건을 DB에 추가했습니다.`);
     },
     onError: (e: unknown) => {
@@ -447,7 +450,9 @@ const GameRecordsPage = () => {
     },
     onSuccess: () => {
       void queryClient.invalidateQueries({ queryKey: ["admin-game-records"] });
-      void queryClient.invalidateQueries({ queryKey: [...YOUTUBE_AUDIT_QUERY_KEY] });
+      void queryClient.invalidateQueries({
+        queryKey: [...YOUTUBE_AUDIT_QUERY_KEY],
+      });
       toast.success("수기 입력한 경기를 저장했습니다.");
     },
     onError: (e: unknown) => {
@@ -530,7 +535,9 @@ const GameRecordsPage = () => {
       void queryClient.invalidateQueries({
         queryKey: ["admin-game-records-edit-batch"],
       });
-      void queryClient.invalidateQueries({ queryKey: [...YOUTUBE_AUDIT_QUERY_KEY] });
+      void queryClient.invalidateQueries({
+        queryKey: [...YOUTUBE_AUDIT_QUERY_KEY],
+      });
       toast.success("선택한 날짜의 수정 사항을 저장했습니다.");
     },
     onError: (e: unknown) => {
@@ -728,8 +735,8 @@ const GameRecordsPage = () => {
             선택한 달의 KBO 경기를 한 번에 조회해, DB에{" "}
             <span className="text-white/75">없는 경기만</span> 실제 상태·점수로
             추가합니다. 이미 있는 경기는{" "}
-            <span className="text-white/75">건드리지 않아</span> 과거 결과·youtube가
-            보존됩니다.
+            <span className="text-white/75">건드리지 않아</span> 과거
+            결과·youtube가 보존됩니다.
           </p>
           <div className="flex flex-wrap items-end gap-3">
             <label className="flex flex-col gap-1 text-[12px] text-white/70">
@@ -755,7 +762,8 @@ const GameRecordsPage = () => {
 
           {monthFetchLoading && (
             <p className="mt-3 text-[12px] text-violet-200/80">
-              {monthInput} 일정 불러오는 중… (하루씩 조회라 몇 초 걸릴 수 있어요)
+              {monthInput} 일정 불러오는 중… (하루씩 조회라 몇 초 걸릴 수
+              있어요)
             </p>
           )}
 
@@ -1276,8 +1284,7 @@ const GameRecordsPage = () => {
             5. 유튜브 누락 달력
           </h2>
           <p className="mb-3 text-[12px] leading-relaxed text-white/50">
-            DB{" "}
-            <span className="text-white/75">경기 종료</span> 기록 중{" "}
+            DB <span className="text-white/75">경기 종료</span> 기록 중{" "}
             <span className="text-white/75">youtube_url</span>이 비어 있는
             경기를 날짜별로 표시합니다. 하이라이트는 KBO 재생목록 크론이
             자동으로 채웁니다.
@@ -1371,7 +1378,10 @@ function YoutubeMissingCalendarBlock({
           }`;
 
           return (
-            <div key={`${cell.dateYmd ?? "pad"}-${index}`} className={cellClassName}>
+            <div
+              key={`${cell.dateYmd ?? "pad"}-${index}`}
+              className={cellClassName}
+            >
               <div
                 className={`mb-1 text-[12px] font-medium ${
                   hasMissing ? "text-amber-100" : "text-white/70"

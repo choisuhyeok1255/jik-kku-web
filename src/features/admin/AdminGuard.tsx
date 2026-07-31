@@ -56,7 +56,9 @@ export const AdminGuard = ({ children }: { children: React.ReactNode }) => {
   if (!user) {
     return (
       <div className="flex min-h-dvh flex-col items-center justify-center gap-6 bg-[#0a0a0a] px-4">
-        <h1 className="text-center text-2xl font-bold text-white">직꾸 어드민</h1>
+        <h1 className="text-center text-2xl font-bold text-white">
+          직꾸 어드민
+        </h1>
         <p className="text-center text-[15px] text-white/70">
           관리자 로그인이 필요합니다
         </p>

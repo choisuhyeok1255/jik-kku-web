@@ -125,9 +125,7 @@ const NoticeFormPage = ({ mode, noticeId }: NoticeFormPageProps) => {
           prevPage={{ href: "/admin/notices" }}
         />
         <div className="flex flex-1 items-center justify-center">
-          <span className="text-white/60">
-            공지사항을 불러오지 못했습니다.
-          </span>
+          <span className="text-white/60">공지사항을 불러오지 못했습니다.</span>
         </div>
       </div>
     );

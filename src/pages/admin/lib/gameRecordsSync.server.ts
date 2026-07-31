@@ -260,7 +260,10 @@ export function buildSyncSlackMessage(
     );
     blocks.push({
       type: "section",
-      text: { type: "mrkdwn", text: `*🎥 하이라이트 채움*\n${filledLines.join("\n")}` },
+      text: {
+        type: "mrkdwn",
+        text: `*🎥 하이라이트 채움*\n${filledLines.join("\n")}`,
+      },
     });
   }
 

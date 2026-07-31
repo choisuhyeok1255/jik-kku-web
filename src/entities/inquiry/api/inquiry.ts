@@ -15,7 +15,9 @@ export const useGetAllInquiries = () => {
     queryFn: async () => {
       const { data, error } = await supabase
         .from("inquiries")
-        .select("id, user_id, title, content, answer, admin_answer_at, created_at")
+        .select(
+          "id, user_id, title, content, answer, admin_answer_at, created_at",
+        )
         .order("created_at", { ascending: false });
 
       if (error) throw error;

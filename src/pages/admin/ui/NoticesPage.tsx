@@ -88,8 +88,7 @@ const NoticesPage = () => {
                   </h2>
                   <div className="mt-[4px] flex flex-wrap items-center gap-[8px] text-[13px] text-white/60">
                     <span>
-                      작성{" "}
-                      {dayjs(notice.created_at).format("YYYY-MM-DD HH:mm")}
+                      작성 {dayjs(notice.created_at).format("YYYY-MM-DD HH:mm")}
                     </span>
                     {/* 생성 이후 수정이 있었을 때만 수정 시각을 덧붙입니다. */}
                     {notice.updated_at &&

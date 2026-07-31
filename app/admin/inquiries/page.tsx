@@ -13,7 +13,11 @@ export const metadata: Metadata = {
     type: "website",
     locale: "ko_KR",
   },
-  twitter: { card: "summary", title: "문의 관리 | 직꾸 어드민", description: "사용자 문의를 확인하고 답변합니다." },
+  twitter: {
+    card: "summary",
+    title: "문의 관리 | 직꾸 어드민",
+    description: "사용자 문의를 확인하고 답변합니다.",
+  },
 };
 
 export { InquiriesPage as default };

@@ -54,7 +54,10 @@ async function handleSyncRequest(request: Request) {
       youtube === null;
 
     if (webhookUrl && shouldNotify) {
-      await sendSlackMessage(webhookUrl, buildSyncSlackMessage(result, youtube));
+      await sendSlackMessage(
+        webhookUrl,
+        buildSyncSlackMessage(result, youtube),
+      );
     }
 
     return NextResponse.json({ ok: true, sync: result, youtube });
@@ -63,7 +66,10 @@ async function handleSyncRequest(request: Request) {
 
     if (webhookUrl) {
       try {
-        await sendSlackMessage(webhookUrl, buildSyncFailureSlackMessage(message));
+        await sendSlackMessage(
+          webhookUrl,
+          buildSyncFailureSlackMessage(message),
+        );
       } catch {
         // Slack 전송 실패는 무시 (원본 오류 보고가 우선)
       }

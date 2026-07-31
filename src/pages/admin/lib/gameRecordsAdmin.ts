@@ -18,8 +18,7 @@ export const buildGameRecordId = (
   homeTeamId: number,
   awayTeamId: number,
   sequence: number,
-) =>
-  `${yymmdd}${pad2(homeTeamId)}${pad2(awayTeamId)}${pad2(sequence)}`;
+) => `${yymmdd}${pad2(homeTeamId)}${pad2(awayTeamId)}${pad2(sequence)}`;
 
 export const matchTeamId = (
   teams: TeamServerModel[],
@@ -120,9 +119,7 @@ export const buildPreviewRowsFromKboGame = (
 
     const strTimestamp = kboStartToTimestampStr(matchDateYmd, g.startTime);
     const strTime =
-      g.startTime.split(":").length === 2
-        ? `${g.startTime}:00`
-        : g.startTime;
+      g.startTime.split(":").length === 2 ? `${g.startTime}:00` : g.startTime;
 
     let id = "";
     if (homeId !== null && awayId !== null) {

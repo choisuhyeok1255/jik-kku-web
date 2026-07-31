@@ -42,9 +42,7 @@ export async function fetchYoutubeAuditGameRecords(
 
   const { data, error } = await supabase
     .from("game_records")
-    .select(
-      "id, match_date, home_team_id, away_team_id, youtube_url, status",
-    )
+    .select("id, match_date, home_team_id, away_team_id, youtube_url, status")
     .eq("status", GAME_RECORD_STATUS_FINISHED)
     .gte("match_date", fromDate)
     .lte("match_date", toDate)
@@ -68,10 +66,8 @@ export const groupYoutubeMissingByMatchDate = (
     if (r.status !== GAME_RECORD_STATUS_FINISHED) continue;
     if (!isMissingYoutubeUrl(r.youtube_url)) continue;
 
-    const homeLabel =
-      teamLabelById.get(r.home_team_id) ?? `#${r.home_team_id}`;
-    const awayLabel =
-      teamLabelById.get(r.away_team_id) ?? `#${r.away_team_id}`;
+    const homeLabel = teamLabelById.get(r.home_team_id) ?? `#${r.home_team_id}`;
+    const awayLabel = teamLabelById.get(r.away_team_id) ?? `#${r.away_team_id}`;
 
     const item: YoutubeMissingGameItem = {
       id: r.id,
@@ -121,8 +117,7 @@ export const buildYoutubeAuditMonthGrid = (
     cells.push({
       dateYmd,
       dayOfMonth: inMonth ? d.date() : null,
-      missingGames:
-        dateYmd != null ? (missingByDate.get(dateYmd) ?? []) : [],
+      missingGames: dateYmd != null ? (missingByDate.get(dateYmd) ?? []) : [],
     });
   }
 

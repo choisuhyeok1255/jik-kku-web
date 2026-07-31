@@ -1,4 +1,4 @@
-import { cn } from "@/src/shared/lib/tailwind"
+import { cn } from "@/src/shared/lib/tailwind";
 
 function Skeleton({ className, ...props }: React.ComponentProps<"div">) {
   return (
@@ -7,7 +7,7 @@ function Skeleton({ className, ...props }: React.ComponentProps<"div">) {
       className={cn("bg-accent animate-pulse rounded-md", className)}
       {...props}
     />
-  )
+  );
 }
 
-export { Skeleton }
+export { Skeleton };
