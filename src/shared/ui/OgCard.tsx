@@ -72,23 +72,7 @@ export const OgCard = ({ title, subtitle, screenshotSrc }: OgCardProps) => {
           color: OG_CARD_COLORS.ink,
         }}
       >
-        <div style={{ display: "flex", alignItems: "center", gap: 14 }}>
-          <div
-            style={{
-              width: 44,
-              height: 44,
-              borderRadius: 12,
-              background: OG_CARD_COLORS.ink,
-              color: OG_CARD_COLORS.backdrop,
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-              fontSize: 26,
-              fontFamily: "LaundryBold",
-            }}
-          >
-            직
-          </div>
+        <div style={{ display: "flex", alignItems: "center" }}>
           <span style={{ fontSize: 30, fontFamily: "LaundryBold" }}>직꾸</span>
         </div>
 
