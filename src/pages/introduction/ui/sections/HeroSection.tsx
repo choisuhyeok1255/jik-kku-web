@@ -25,8 +25,11 @@ export const HeroSection = () => {
             야구 직관 기록 · KBO 실시간 중계
           </p>
           <h1 className="text-3xl leading-tight font-bold tracking-tight md:text-4xl lg:text-5xl lg:leading-[1.15]">
-            야구 직관 기록도, KBO 실시간 중계도
-            <br className="hidden sm:block" /> 직꾸 하나로
+            {/* 자연 줄바꿈에 맡기면 폭에 따라 "실시/간"처럼 단어가 끊기므로
+                모든 화면에서 의미 단위로 고정한다 */}
+            야구 직관 기록도,
+            <br /> KBO 실시간 중계도
+            <br /> 직꾸 하나로
           </h1>
           <p className="mt-4 text-[15px] leading-relaxed text-white/65 md:text-base lg:max-w-lg">
             앱을 열면 내 직관 승률이 바로 보입니다. 응원 팀 경기 일정과 구장
