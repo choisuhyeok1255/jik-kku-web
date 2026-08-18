@@ -4,17 +4,25 @@ import {
   TICKET_URL,
 } from "@/src/shared/config/external-links";
 import { FEATURE_PAGE_NAV } from "@/src/shared/config/site-nav";
-import { HOME_PAGE_DESCRIPTION } from "@/src/shared/lib/seo-home";
+import {
+  HOME_PAGE_DESCRIPTION,
+  SERVICE_DIFFERENTIATORS,
+} from "@/src/shared/lib/seo-home";
 import { SITE_URL } from "@/src/shared/lib/site-url";
 
 /**
  * /llms.txt — AI 답변 엔진이 사이트를 요약할 때 참고하는 안내 파일.
- * 페이지 목록은 site-nav에서 만들어, 기능 소개 페이지를 추가하면 여기에도 자동 반영된다.
+ * 페이지 목록은 site-nav에서, 특징 목록은 seo-home에서 만들어
+ * 기능 소개 페이지를 추가하거나 차별점을 수정하면 여기에도 자동 반영된다.
  */
 export function GET() {
   const featureLines = FEATURE_PAGE_NAV.map(
     ({ href, label, summary }) =>
       `- [${label}](${SITE_URL}${href}): ${summary}`,
+  ).join("\n");
+
+  const differentiatorLines = SERVICE_DIFFERENTIATORS.map(
+    (item) => `- ${item}`,
   ).join("\n");
 
   const body = `# 직꾸 (Jikkku)
@@ -24,6 +32,10 @@ export function GET() {
 직꾸는 KBO(한국 프로야구) 팬을 위한 iOS·Android 앱입니다. 경기 전 일정과 구장 날씨 확인,
 경기 중 실시간 중계와 잠금화면 점수 확인, 경기 후 사진·메모로 남기는 직관 기록까지
 야구를 보는 하루 전체를 한 앱에서 이어 줍니다. 이용료는 무료입니다.
+
+## 직꾸의 특징
+
+${differentiatorLines}
 
 ## 기능 소개 페이지
 
