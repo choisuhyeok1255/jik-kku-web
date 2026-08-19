@@ -3,7 +3,7 @@
  * 랜딩 페이지·OG 이미지·구조화 데이터가 같은 경로를 쓰도록 모아 둔다.
  * (경로를 각자 하드코딩하면 파일을 옮겼을 때 일부만 갱신돼 404가 남는다.)
  */
-/** 폰 프레임을 포함한 투명 배경 스크린샷 (705×1483) */
+/** 폰 프레임을 포함한 투명 배경 스크린샷 (940×2003) — App Store 스크린샷에서 폰 목업만 잘라낸 것 */
 export const APP_SCREENS = {
   home: "/app-screens/home.png",
   calendar: "/app-screens/calendar.png",
@@ -25,8 +25,8 @@ export const CREATE_FLOW_SCREENS = {
   step2: "/app-screens/create-step2.png",
 } as const;
 
-/** 폰 프레임 포함 스크린샷(705×1483)의 가로세로 비율 */
-export const PHONE_ASPECT_CLASS = "aspect-705/1483";
+/** 폰 프레임 포함 스크린샷(940×2003)의 가로세로 비율 */
+export const PHONE_ASPECT_CLASS = "aspect-940/2003";
 
 /** 등록 화면 캡처(1206×2622)의 가로세로 비율 */
 export const CREATE_FLOW_ASPECT_CLASS = "aspect-1206/2622";

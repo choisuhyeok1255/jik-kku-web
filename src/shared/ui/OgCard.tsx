@@ -11,9 +11,9 @@ export const OG_CARD_COLORS = {
   ink: "#12281B",
 } as const;
 
-/** 스크린샷 표시 크기 — 원본 705×1483 비율(1483/705)을 그대로 유지한다. */
+/** 스크린샷 표시 크기 — 원본 940×2003 비율(2003/940)을 그대로 유지한다. */
 const SCREENSHOT_WIDTH = 340;
-const SCREENSHOT_HEIGHT = Math.round((SCREENSHOT_WIDTH * 1483) / 705);
+const SCREENSHOT_HEIGHT = Math.round((SCREENSHOT_WIDTH * 2003) / 940);
 
 /** 폰을 아래로 흘려보내 잘리게 하는 오프셋 (캔버스보다 이미지가 길다) */
 const SCREENSHOT_OFFSET_TOP = 150;
