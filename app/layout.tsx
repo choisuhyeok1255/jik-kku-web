@@ -49,7 +49,7 @@ export const metadata: Metadata = {
   },
   description: HOME_PAGE_DESCRIPTION,
   icons: {
-    icon: "/icon.png",
+    icon: SITE_LOGO_PATH,
   },
   // OG 이미지는 각 라우트의 opengraph-image.tsx가 1200×630으로 생성합니다.
   openGraph: {

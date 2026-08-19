@@ -39,7 +39,15 @@ export const PAGE_LAST_MODIFIED = {
 } as const satisfies Record<string, Date>;
 
 /**
- * 조직(Organization) 구조화 데이터의 로고 경로.
+ * 조직(Organization) 구조화 데이터의 로고 경로이자, 화면 상단·하단 로고 이미지 경로.
+ * 파비콘·PWA 아이콘도 같은 파일을 쓰므로, 브랜드 아이콘을 바꿀 때 이 파일 하나만 교체하면 된다.
  * SNS 미리보기 이미지는 각 라우트의 opengraph-image.tsx가 따로 생성합니다.
  */
 export const SITE_LOGO_PATH = "/icon.png";
+
+/**
+ * PWA manifest의 192×192 슬롯용 아이콘.
+ * manifest가 선언한 크기와 실제 파일 크기가 다르면 브라우저·Lighthouse가 경고하므로,
+ * 512×512(SITE_LOGO_PATH)와 별개로 실제 192×192 파일을 둔다.
+ */
+export const SITE_LOGO_192_PATH = "/icon-192.png";

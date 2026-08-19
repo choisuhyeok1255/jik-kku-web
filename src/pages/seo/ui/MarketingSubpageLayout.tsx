@@ -4,8 +4,8 @@
  * 클라이언트 컴포넌트가 되어, 정적인 마케팅 문구까지 번들에 실리기 때문이다.
  */
 
-import Image from "next/image";
 import Link from "next/link";
+
 import type { ReactNode } from "react";
 
 import { TICKET_URL } from "@/src/shared/config/external-links";
@@ -13,6 +13,7 @@ import {
   FEATURE_PAGE_NAV,
   type FeaturePagePath,
 } from "@/src/shared/config/site-nav";
+import { BrandLogo } from "@/src/shared/ui/BrandLogo";
 
 type MarketingSubpageLayoutProps = {
   children: ReactNode;
@@ -32,14 +33,7 @@ export const MarketingSubpageLayout = ({
             href="/"
             className="flex items-center gap-2 text-lg font-bold tracking-tight"
           >
-            <Image
-              src="/2.svg"
-              alt="직꾸 로고"
-              width={32}
-              height={32}
-              className="h-8 w-8 shrink-0"
-            />
-            <span>직꾸</span>
+            <BrandLogo />
           </Link>
           <nav
             className="flex max-w-full flex-wrap items-center justify-end gap-x-2 gap-y-2 text-sm text-white/70 md:gap-x-3"

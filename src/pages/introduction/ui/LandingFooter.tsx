@@ -2,7 +2,6 @@
  * 홈 랜딩 하단 푸터.
  * 기능 소개 페이지·자매 서비스 링크와 스토어 다운로드, 약관 링크를 모아 노출한다.
  */
-import Image from "next/image";
 import Link from "next/link";
 
 import {
@@ -11,6 +10,7 @@ import {
   TICKET_URL,
 } from "@/src/shared/config/external-links";
 import { FEATURE_PAGE_NAV } from "@/src/shared/config/site-nav";
+import { BrandLogo } from "@/src/shared/ui/BrandLogo";
 
 export const LandingFooter = () => {
   return (
@@ -19,14 +19,7 @@ export const LandingFooter = () => {
         <div className="flex flex-col items-center justify-between gap-6 text-center md:flex-row md:items-start md:text-left">
           <div className="flex flex-col items-center gap-4 md:flex-row md:items-center md:gap-8">
             <div className="flex items-center gap-2">
-              <Image
-                src="/2.svg"
-                alt="직꾸 로고"
-                width={32}
-                height={32}
-                className="h-8 w-8 shrink-0"
-              />
-              <span className="font-semibold text-white/80">직꾸</span>
+              <BrandLogo labelClassName="font-semibold text-white/80" />
             </div>
             <nav
               className="flex flex-wrap items-center justify-center gap-x-4 gap-y-2 text-white/60"

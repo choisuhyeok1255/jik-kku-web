@@ -6,11 +6,11 @@
 "use client";
 
 import { Menu, X } from "lucide-react";
-import Image from "next/image";
 import Link from "next/link";
 
 import { TICKET_URL } from "@/src/shared/config/external-links";
 import { FEATURE_PAGE_NAV } from "@/src/shared/config/site-nav";
+import { BrandLogo } from "@/src/shared/ui/BrandLogo";
 
 import { LANDING_NAV_ANCHORS } from "../config/landing";
 import { useMobileNav } from "../model/useMobileNav";
@@ -26,14 +26,7 @@ export const LandingHeader = () => {
           className="relative z-10 flex items-center gap-2 text-lg font-bold tracking-tight"
           onClick={close}
         >
-          <Image
-            src="/2.svg"
-            alt="직꾸 로고"
-            width={32}
-            height={32}
-            className="h-8 w-8 shrink-0"
-          />
-          <span>직꾸</span>
+          <BrandLogo />
         </Link>
 
         {/* 기능 소개 페이지가 6개라 md 폭에서는 한 줄에 담기지 않아, lg부터 펼치고 그 아래는 햄버거로 넘긴다 */}
