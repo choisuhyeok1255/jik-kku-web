@@ -4,3 +4,4 @@ export { default as GameRecordsPage } from "./ui/GameRecordsPage";
 export { default as RecommendChecklistPage } from "./ui/RecommendChecklistPage";
 export { default as NoticesPage } from "./ui/NoticesPage";
 export { default as NoticeFormPage } from "./ui/NoticeFormPage";
+export { default as UserPhotosPage } from "./ui/UserPhotosPage";
