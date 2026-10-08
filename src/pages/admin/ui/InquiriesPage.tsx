@@ -5,6 +5,7 @@ import { useEffect, useState } from "react";
 
 import { toast } from "sonner";
 import {
+  getNicknameOrShortId,
   useGetAllInquiries,
   useGetUsersByIds,
   useUpdateInquiryAnswer,
@@ -24,7 +25,7 @@ const InquiriesPage = () => {
   });
 
   const getUserNickname = (userId: string) =>
-    users.find((u) => u.id === userId)?.nickname ?? userId.slice(0, 8) + "...";
+    getNicknameOrShortId(userId, users.find((u) => u.id === userId)?.nickname);
 
   if (isLoading) {
     return (
