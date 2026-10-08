@@ -1,4 +1,5 @@
 export * from "./checklist-item";
+export * from "./game-log";
 export * from "./inquiry";
 export * from "./kbo";
 export * from "./notice";
