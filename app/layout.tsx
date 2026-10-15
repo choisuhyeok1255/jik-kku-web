@@ -19,21 +19,32 @@ import { SITE_URL } from "@/src/shared/lib/site-url";
 import { JsonLdScript } from "@/src/shared/ui/JsonLdScript";
 import "./globals.css";
 
+/**
+ * 사이트 전체 본문 글꼴(세탁소체).
+ * - 원본 woff는 KS X 1001 밖 한글 대부분(8,821자)이 빈 모양이라, 브라우저가 대체 글꼴로 넘기지 않고 빈칸을 그렸다.
+ * - 그래서 "모양이 빈 한글"만 뺀 서브셋을 쓴다. 빠진 글자는 대체 글꼴로 보인다.
+ * - 형식은 woff2로 바꿔 용량을 약 절반으로 줄였다(줄어든 양의 대부분은 woff2 압축 효과).
+ * - OG 이미지 생성(og-image.tsx)은 woff2를 읽지 못해 원본 woff를 그대로 쓴다.
+ */
 const laundryGothic = localFont({
   src: [
     {
-      path: "../public/fonts/laundrygo Regular.woff",
+      path: "../public/fonts/laundrygo-Regular.subset.woff2",
       weight: "400",
       style: "normal",
     },
     {
-      path: "../public/fonts/laundrygo Bold.woff",
+      path: "../public/fonts/laundrygo-Bold.subset.woff2",
       weight: "700",
       style: "normal",
     },
   ],
   variable: "--font-laundry-gothic",
   display: "swap",
+  // 서브셋에서 뺀 드문 한글이 기기 기본값(명조일 수 있음)이 아닌 고딕 계열로 보이게 한다.
+  // 애플 기기는 Apple SD Gothic Neo, 윈도우는 맑은 고딕, 그 밖의 기기는 기본 고딕을 쓴다.
+  // 웹폰트를 내려받는 동안(display: swap)이나 내려받기에 실패했을 때도 화면 전체가 이 순서로 보인다.
+  fallback: ["Apple SD Gothic Neo", "Malgun Gothic", "sans-serif"],
 });
 
 export const viewport: Viewport = {
