@@ -1,9 +1,12 @@
+/**
+ * 사이트 전체 루트 레이아웃.
+ * - 전역 글꼴, 메타데이터, 구조화 데이터(JSON-LD), 구글 태그 매니저를 담당한다.
+ * - 로그인 상태, 서버 데이터, 알림 설정은 관리자 화면에서만 쓰여 app/admin/layout.tsx에서 감싼다.
+ */
 import { GoogleTagManager } from "@next/third-parties/google";
 import type { Metadata, Viewport } from "next";
 import localFont from "next/font/local";
-import { Toaster } from "sonner";
 
-import { Providers } from "@/src/app";
 import {
   APP_STORE_URL,
   GOOGLE_PLAY_URL,
@@ -123,10 +126,9 @@ const RootLayout = ({
         className={`${laundryGothic.variable} ${laundryGothic.className} bg-[#232323]`}
       >
         <JsonLdScript data={jsonLd} />
-        <Providers>
-          <div className="min-h-dvh min-w-[360px]">{children}</div>
-          <Toaster richColors position="top-center" />
-        </Providers>
+        {/* 로그인, 서버 데이터, 알림 설정은 관리자 화면에서만 쓰여 app/admin/layout.tsx에 둔다.
+            여기 두면 공개 페이지(랜딩, 기능 소개 등)까지 Supabase, React Query, sonner 코드를 내려받는다. */}
+        <div className="min-h-dvh min-w-[360px]">{children}</div>
       </body>
     </html>
   );
