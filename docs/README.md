@@ -12,6 +12,9 @@
 ## 인프라 (알림 등)
 - [slack-notify](slack-notify.md) — DB Webhook 기반 Slack 알림 Edge Function
 
+## 성능
+- [font-split](font-split.md) — 본문 글꼴을 공통 조각과 나머지 조각으로 나누는 구조와 재생성 방법
+
 ## SEO
 - [jik-kku-seo-spec-v2](jik-kku-seo-spec-v2.md) — SEO 스펙
 - [seo-roadmap](seo-roadmap.md) — SEO 로드맵
