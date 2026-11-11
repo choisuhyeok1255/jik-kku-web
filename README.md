@@ -223,24 +223,21 @@ supabase functions deploy slack-notify --no-verify-jwt
 
 Supabase Dashboard → Edge Functions → Secrets에서 추가:
 
-| 이름                          | 값                                                     |
-| ----------------------------- | ------------------------------------------------------ |
-| `SLACK_WEBHOOK_URL`           | Slack Incoming Webhook URL (1대1 문의 기본)            |
-| `SLACK_WEBHOOK_URL_GAME_LOGS` | (선택) 직관 생성 전용. 없으면 `SLACK_WEBHOOK_URL` 사용 |
-| `SLACK_WEBHOOK_URL_USERS`     | (선택) 회원가입 전용. 없으면 `SLACK_WEBHOOK_URL` 사용  |
+| 이름                          | 값                                                                  |
+| ----------------------------- | ------------------------------------------------------------------- |
+| `SLACK_WEBHOOK_URL`           | Slack Incoming Webhook URL (1대1 문의 기본)                         |
+| `SLACK_WEBHOOK_URL_GAME_LOGS` | (선택) 직관 생성 전용. 없으면 `SLACK_WEBHOOK_URL` 사용              |
+| `SLACK_WEBHOOK_URL_USERS`     | (선택) 회원가입 전용. 없으면 `SLACK_WEBHOOK_URL` 사용               |
+| `SLACK_NOTIFY_SECRET`         | (필수) 요청 확인용 공유 비밀. vault `slack_notify_secret`과 같은 값 |
 
-### 3. Database Webhook 설정
+### 3. DB 트리거 설정
 
-Supabase Dashboard → Database → Webhooks에서 생성:
+대시보드 Database → Webhooks는 쓰지 않습니다. 헤더를 트리거 정의에 글자 그대로 저장해 비밀 값이 드러나기 때문입니다.
 
-| 이름            | 테이블             | 이벤트 | URL                                                           |
-| --------------- | ------------------ | ------ | ------------------------------------------------------------- |
-| inquiries-slack | `public.inquiries` | INSERT | `https://<project-ref>.supabase.co/functions/v1/slack-notify` |
-| users-slack     | `public.users`     | INSERT | `https://<project-ref>.supabase.co/functions/v1/slack-notify` |
-| game-logs-slack | `public.game_logs` | INSERT | `https://<project-ref>.supabase.co/functions/v1/slack-notify` |
-
-- `<project-ref>`는 Supabase Dashboard URL의 프로젝트 ID입니다.
-- HTTP Headers: `Content-Type: application/json` (기본값)
+- 트리거 `inquiries-slack` / `users-slack` / `game-logs-slack`(각 테이블 INSERT)이 트리거 함수 `private.invoke_slack_notify()`를 호출합니다.
+- 트리거 함수는 vault의 `slack_notify_secret`을 읽어 `x-webhook-secret` 헤더에 실어 보냅니다. 함수는 이 헤더가 `SLACK_NOTIFY_SECRET`과 다르면 401로 거절합니다.
+- 정의는 jik-kku 저장소의 마이그레이션(`20261111094351_slack_notify_webhooks_send_secret_header.sql`)에 있습니다.
+- 비밀 값 교체 순서와 확인 방법은 [docs/slack-notify.md](docs/slack-notify.md)를 참고하세요.
 
 ### 알림 조건
 
