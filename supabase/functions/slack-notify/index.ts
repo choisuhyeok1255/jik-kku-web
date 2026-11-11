@@ -1,5 +1,9 @@
-// Supabase Database Webhook → Slack 알림
-// inquiries INSERT, users INSERT(회원가입), game_logs INSERT(경기 기록) 시 호출됨
+/**
+ * DB 트리거(private.invoke_slack_notify) → Slack 알림.
+ * - inquiries INSERT, users INSERT(회원가입), game_logs INSERT(경기 기록) 시 호출된다.
+ * - 인증: 게이트웨이 JWT 대신 공유 비밀 헤더(x-webhook-secret)로 DB 트리거가 보낸 요청만 받는다.
+ *   값은 vault의 slack_notify_secret을 트리거 함수가 실어 보낸다 (Edge Function Secret SLACK_NOTIFY_SECRET과 같은 값).
+ */
 declare const Deno: {
   serve: (handler: (req: Request) => Response | Promise<Response>) => void;
   env: { get: (key: string) => string | undefined };
@@ -245,6 +249,17 @@ async function buildSlackMessage(
 Deno.serve(async (req: Request) => {
   if (req.method !== "POST") {
     return new Response("Method Not Allowed", { status: 405 });
+  }
+
+  // 비밀 값이 설정되지 않았으면 설정 누락으로 열리지 않도록 모든 요청을 거절한다
+  const webhookSecret = Deno.env.get("SLACK_NOTIFY_SECRET");
+  if (!webhookSecret) {
+    console.error("SLACK_NOTIFY_SECRET is not set");
+    return new Response("Unauthorized", { status: 401 });
+  }
+  // 헤더가 틀린 요청은 외부 스캔일 수 있어 로그 없이 거절한다
+  if (req.headers.get("x-webhook-secret") !== webhookSecret) {
+    return new Response("Unauthorized", { status: 401 });
   }
 
   try {
